@@ -1,10 +1,9 @@
 import os
 from pprint import pprint
 
-import columns
-import transform
-import exceptions
-from manage import manager
+from icv5.components.monday import columns
+from icv5.components.monday import exceptions
+from icv5.components.monday.manage import manager
 import settings
 
 
@@ -16,7 +15,8 @@ class MondayWrapper:
         'dropdown': columns.DropdownValue,
         'date': columns.DateValue,
         'check': columns.CheckboxValue,
-        'link': columns.LinkValue
+        'link': columns.LinkValue,
+        'connect': columns.ConnectValue
     }
 
     board_dictionary = {
@@ -36,7 +36,6 @@ class MondayWrapper:
             self.debug = True
 
     def set_client_and_item(self, board_item_object, item_id):
-
         for pulse in manager.create_client().get_items(ids=[item_id], limit=1):
             board_item_object.item = pulse
             board_item_object.item.get_column_values()
@@ -44,7 +43,6 @@ class MondayWrapper:
             board_item_object.id = pulse.id
 
     def set_attributes(self, board_item_object, column_dictionary):
-
         for attribute in column_dictionary:
             setattr(board_item_object, attribute, None)
             if board_item_object.item:
@@ -55,44 +53,30 @@ class MondayWrapper:
                             attribute,
                             self.column_type_dictionary[column_dictionary[attribute]['type']](
                                 self,
-                                column,
-                                attribute
+                                attribute,
+                                column
+                            )
+                        )
+            else:
+                setattr(board_item_object,
+                        attribute,
+                        self.column_type_dictionary[column_dictionary[attribute]['type']](
+                            self,
+                            attribute,
+                            column_dictionary[attribute]['column_id']
                             )
                         )
 
-
-
     def apply_column_changes(self):
-
         if not self.adjusted_values:
             print('No changes detected')
             return False
-
         if self.debug:
             for item in self.adjusted_values:
                 print(item)
                 print(self.adjusted_values[item])
-
-        self.item.change_multiple_column_values(self.adjusted_values)
-
-
-    def convert_to_board(self, target_board):
-        new_item = transform.TranslationObject(target_board)
-
-
-
-class TranslationObject:
-
-    def __init__(self, board, ori_repair_object):
-        self.result = self.classes[board]
-        pass
-
-    def create_item(self):
-
-        return self.result()
-
-    def load_values(self, ori_repair_object):
-
-        pprint(vars(self))
-
+        if self.item:
+            self.item.change_multiple_column_values(self.adjusted_values)
+        else:
+            print('repair object has no item (has been created from within program)')
 

@@ -32,7 +32,8 @@ class Manager:
     board_ids = {
         'main': '349212843',
         'stock': '867934405',
-        'mappings': '14028101',
+        'inventory_mappings': '14028101',
+        'stock_levels': '867934405',
         'refurb_toplevel': '925661179'
     }
 
@@ -57,6 +58,58 @@ class Manager:
         board = client.get_board_by_id(self.board_ids[board_name])
 
         return board
+
+    def compare_repair_objects(self, object_to_change, object_to_read, attributes_dictionary):
+        ignore_list = ['adjusted_values']
+        copy_list = ['client', 'debug']
+        for item in attributes_dictionary:
+
+            if item in ignore_list:
+                continue
+
+            if item in copy_list:
+                setattr(object_to_change, item, getattr(object_to_read, item))
+                continue
+
+            if item in object_to_change.__dict__:
+
+                object_value = getattr(object_to_change, item)
+                replacement_value = attributes_dictionary[item]
+
+                if not object_value and replacement_value:
+                    # No ori value, write replacement value
+                    result = replacement_value
+
+                elif object_value and replacement_value:
+                    # Both values present, overwrite ori value with new value
+                    result = replacement_value
+
+                elif object_value and not replacement_value:
+                    # No replacement available - skip change
+                    return False
+
+                elif not object_value and not replacement_value:
+                    # No values available - skip change
+                    return False
+
+                else:
+                    print('else route')
+                    return False
+
+                to_change = getattr(object_to_change, item)
+
+                if to_change:
+                    to_change.change_value(result)
+
+    def get_attribute_list(self, custom_object):
+        dicts = custom_object.__dict__
+        ignore_list = ['item']
+        result = {}
+        for item in dicts:
+            if item not in ignore_list:
+                result[item] = dicts[item]
+
+        return result
 
 
 manager = Manager()

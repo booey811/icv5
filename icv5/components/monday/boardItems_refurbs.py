@@ -1,15 +1,10 @@
-import boardItem
-import boardItems_main
+from icv5.components.monday import boardItem
+
 
 class RefurbWrapper(boardItem.MondayWrapper):
 
-    boardItem_conversions = {
-        'refurb_top_level': boardItems_main.MainBoardWrapper
-    }
+    def __init__(self, item_id, parent_obj_columns, blank_item=False):
 
-
-
-    def __init__(self, item_id=False, convert_to=False):
         new_column_dictionary = {
             'unit_code': {
                 'column_id': 'text4',
@@ -22,20 +17,28 @@ class RefurbWrapper(boardItem.MondayWrapper):
             'batch_code': {
                 'column_id': 'text0',
                 'type': 'text'
+            },
+            'test_status_column': {
+                'column_id': 'status3',
+                'type': 'status'
             }
         }
+
         super().__init__()
-        if item_id:
+
+        if not blank_item:
             self.set_client_and_item(self, item_id)
-            self.set_attributes(self, new_column_dictionary)
-        elif convert_to:
-            self.create_blank_item(convert_to)
-        else:print('else route')
 
+        column_dictionary = {**new_column_dictionary, **parent_obj_columns}
+        self.set_attributes(self, column_dictionary)
 
+        if blank_item:
+            self.create_blank_item(blank_item)
 
-    def create_blank_item(self, board):
-        return self.boardItem_conversions[board]()
+    def create_blank_item(self):
+
+        return self
+
 
 class TopLevelBoardItem(RefurbWrapper):
     column_dictionary = {
@@ -73,9 +76,10 @@ class TopLevelBoardItem(RefurbWrapper):
         },
     }
 
-    def __init__(self, item_id):
-        super().__init__(item_id)
-        self.set_attributes(self, self.column_dictionary)
-
+    def __init__(self, item_id=False, blank_item=False):
+        if item_id:
+            super().__init__(item_id, self.column_dictionary)
+        elif blank_item:
+            super().__init__(None, self.column_dictionary, blank_item=blank_item)
 
 

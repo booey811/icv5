@@ -4,27 +4,42 @@ import json
 
 import moncli
 
-import exceptions
-from manage import manager
+from icv5.components.monday import exceptions
+from icv5.components.monday.manage import manager
 
 
 class ColumnWrapper:
 
-    def __init__(self, repair_object, column_value, attribute):
+    def __init__(self, repair_object, attribute, column_value=False, column_id=False):
+
+        self.return_value = self
         self.attribute = attribute
         self.repair_object = repair_object
-        self.moncli_val = column_value
-        self.id = column_value.id
-        self.title = column_value.title
+        self.moncli_val = None
+
+        if isinstance(column_value, str):
+            self.id = column_value
+
+        elif column_value:
+            self.moncli_val = column_value
+            self.id = column_value.id
+            self.title = column_value.title
+
+        else:
+            print('else route')
 
 
 class StatusValue(ColumnWrapper):
 
-    def __init__(self, repair_object, column_value, attribute):
-        super().__init__(repair_object, column_value, attribute)
+    def __init__(self, repair_object, attribute, column_value):
+        super().__init__(repair_object, attribute, column_value)
 
-        self.text = column_value.text
-        self.index = column_value.index
+        if isinstance(column_value, str):
+            self.text = None
+            self.index = None
+        else:
+            self.text = column_value.text
+            self.index = column_value.index
 
     def __repr__(self):
         return repr(self.text)
@@ -46,10 +61,13 @@ class StatusValue(ColumnWrapper):
 
 class TextValue(ColumnWrapper):
 
-    def __init__(self, repair_object, column_value, attribute):
-        super().__init__(repair_object, column_value, attribute)
+    def __init__(self, repair_object, attribute, column_value):
+        super().__init__(repair_object, attribute, column_value)
 
-        self.text = column_value.text
+        if isinstance(column_value, str):
+            self.text = None
+        else:
+            self.text = column_value.text
 
     def __repr__(self):
         return repr(self.text)
@@ -65,11 +83,15 @@ class TextValue(ColumnWrapper):
 
 class NumberValue(ColumnWrapper):
 
-    def __init__(self, repair_object, column_value, attribute):
-        super().__init__(repair_object, column_value, attribute)
+    def __init__(self, repair_object, attribute, column_value):
+        super().__init__(repair_object, attribute, column_value)
 
-        self.number = column_value.number
-        self.text = str(column_value.number)
+        if isinstance(column_value, str):
+            self.number = None
+            self.text = None
+        else:
+            self.number = column_value.number
+            self.text = str(column_value.number)
 
     def __repr__(self):
         return repr(self.number)
@@ -85,12 +107,13 @@ class NumberValue(ColumnWrapper):
 
 class DropdownValue(ColumnWrapper):
 
-    def __init__(self, repair_object, column_value, attribute):
-        super().__init__(repair_object, column_value, attribute)
-        ids_raw = json.loads(self.moncli_val.value)
-        if ids_raw and self.moncli_val.text:
-            self.ids = ids_raw['ids']
-            self.labels = [label.strip() for label in self.moncli_val.text.split(',')]
+    def __init__(self, repair_object, attribute, column_value):
+        super().__init__(repair_object, attribute, column_value)
+        if self.moncli_val:
+            ids_raw = json.loads(self.moncli_val.value)
+            if ids_raw and self.moncli_val.text:
+                self.ids = ids_raw['ids']
+                self.labels = [label.strip() for label in self.moncli_val.text.split(',')]
         else:
             self.ids = []
             self.labels = []
@@ -138,22 +161,42 @@ Allows changing of dropdown columns via the 'add', 'replace' or 'remove' methods
 
         return {self.id: inner}
 
+
 class DateValue(ColumnWrapper):
 
-    def __init__(self, repair_object, column_value, attribute):
-        super().__init__(repair_object, column_value, attribute)
+    def __init__(self, repair_object, attribute, column_value):
+        super().__init__(repair_object, attribute, column_value)
         pass
 
 
 class CheckboxValue(ColumnWrapper):
 
-    def __init__(self, repair_object, column_value, attribute):
-        super().__init__(repair_object, column_value, attribute)
+    def __init__(self, repair_object, attribute, column_value):
+        super().__init__(repair_object, attribute, column_value)
         pass
 
 
 class LinkValue(ColumnWrapper):
 
-    def __init__(self, repair_object, column_value, attribute):
-        super().__init__(repair_object, column_value, attribute)
+    def __init__(self, repair_object, attribute, column_value):
+        super().__init__(repair_object, attribute, column_value)
+        pass
+
+
+class ConnectValue(ColumnWrapper):
+
+    def __init__(self, repair_object, attribute, column_value):
+        super().__init__(repair_object, attribute, column_value)
+
+        if isinstance(column_value, str):
+            self.id = None
+        else:
+            convert = json.loads(column_value.value)
+            self.id = convert['linkedPulseIds'][0]['linkedPulseId']
+
+    def __repr__(self):
+        return repr(self.id)
+
+    def change_value(self, text=False, index=False, keep_original=False):
+        """Currently Not Able to complete this function"""
         pass
