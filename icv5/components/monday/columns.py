@@ -192,7 +192,10 @@ class ConnectValue(ColumnWrapper):
             self.id = None
         else:
             convert = json.loads(column_value.value)
-            self.id = convert['linkedPulseIds'][0]['linkedPulseId']
+            if convert:
+                self.id = convert['linkedPulseIds'][0]['linkedPulseId']
+            else:
+                self.id = None
 
     def __repr__(self):
         return repr(self.id)
