@@ -19,11 +19,6 @@ class MondayWrapper:
         'connect': columns.ConnectValue
     }
 
-    board_dictionary = {
-        '349212843': {
-            'item': None
-        }
-    }
 
     def __init__(self):
         self.client = manager.create_client()

@@ -1,16 +1,14 @@
-import copy
 from pprint import pprint
 import json
 
 import moncli
 
 from icv5.components.monday import exceptions
-from icv5.components.monday.manage import manager
 
 
 class ColumnWrapper:
 
-    def __init__(self, repair_object, attribute, column_value=False, column_id=False):
+    def __init__(self, repair_object, attribute, column_value):
 
         self.return_value = self
         self.attribute = attribute
@@ -20,13 +18,10 @@ class ColumnWrapper:
         if isinstance(column_value, str):
             self.id = column_value
 
-        elif column_value:
+        else:
             self.moncli_val = column_value
             self.id = column_value.id
             self.title = column_value.title
-
-        else:
-            print('else route')
 
 
 class StatusValue(ColumnWrapper):
@@ -166,21 +161,97 @@ class DateValue(ColumnWrapper):
 
     def __init__(self, repair_object, attribute, column_value):
         super().__init__(repair_object, attribute, column_value)
-        pass
+
+        if self.moncli_val:
+            values_raw = json.loads(self.moncli_val.value)
+            if values_raw and self.moncli_val.text:
+                self.date = values_raw['date']
+                self.time = values_raw['time']
+                self.text = self.moncli_val.text
+
+        else:
+            self.date = None
+            self.time = None
+            self.text = None
+
+    def __repr__(self):
+        return repr(self.text)
+
+    def change_value(self, date, time):
+        """Changes this column value and adds it to the 'adjusted_columns' attribute of repair
+        keep_original allows the creation of a new value while maintaining the original object
+        but may not work in some cases"""
+
+        raise exceptions.NotDevelopedError('Date')
+        # self.repair_object.adjusted_values[self.id] = {'date': date, 'time': time}
+        # return {self.id: {'date': date, 'time': time}}
 
 
 class CheckboxValue(ColumnWrapper):
 
     def __init__(self, repair_object, attribute, column_value):
         super().__init__(repair_object, attribute, column_value)
-        pass
+
+        if self.moncli_val:
+            if self.moncli_val.text:
+                self.checked = True
+            else:
+                self.checked = False
+        else:
+            self.checked = False
+
+    def __repr__(self):
+        return repr(self.checked)
+
+    def change_value(self, checked=False):
+        """Changes this column value and adds it to the 'adjusted_columns' attribute of repair
+        keep_original allows the creation of a new value while maintaining the original object
+        but may not work in some cases"""
+        if checked:
+            self.repair_object.adjusted_values[self.id] = {'checked': 'true'}
+            return {self.id: {'checked': 'true'}}
+        else:
+            self.repair_object.adjusted_values[self.id] = {}
+            return {self.id: {}}
 
 
 class LinkValue(ColumnWrapper):
 
     def __init__(self, repair_object, attribute, column_value):
         super().__init__(repair_object, attribute, column_value)
-        pass
+
+        if self.moncli_val:
+            if self.moncli_val.value:
+                values_raw = json.loads(self.moncli_val.value)
+                self.url = values_raw['url']
+                self.text = values_raw['text']
+
+            else:
+                self.url = None
+                self.text = None
+
+        else:
+            self.url = None
+            self.text = None
+
+    def __repr__(self):
+        return repr(self.text)
+
+    def change_value(self, text):
+        """Will change the value for a Link column, however the url for this column is currently
+        set to https://icorrect.zendesk.com/{TICKET NUMBER}, so will only work for the Ticket Column"""
+
+        text = str(text)
+        self.repair_object.adjusted_values[self.id] = {
+            'url': 'https://icorrect.zendesk.com/agent/tickets/{}'.format(text),
+            'text': text
+        }
+        return {
+            self.id: {
+                'url': 'https://icorrect.zendesk.com/agent/tickets/{}'.format(text),
+                'text': text
+            }
+        }
 
 
 class ConnectValue(ColumnWrapper):
@@ -202,4 +273,4 @@ class ConnectValue(ColumnWrapper):
 
     def change_value(self, text=False, index=False, keep_original=False):
         """Currently Not Able to complete this function"""
-        pass
+        raise exceptions.NotDevelopedError('Connect Boards')

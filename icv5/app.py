@@ -52,6 +52,3 @@ def test_route_monday():
     print(data)
     print("--- %s seconds ---" % (time.time() - start_time))
     return "MONDAY TEST COMPLETE"
-
-
-

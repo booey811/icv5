@@ -1,4 +1,4 @@
-from icv5.components.monday import boardItem
+from icv5.components.monday import boardItem, exceptions
 
 
 class MainBoardWrapper(boardItem.MondayWrapper):
@@ -28,7 +28,15 @@ class MainBoardWrapper(boardItem.MondayWrapper):
                 'type': 'date'
             },
             'date_repaired': {
-                'column_id': 'repair_complete',
+                'column_id': 'collection_date',
+                'type': 'date'
+            },
+            'booking_date': {
+                'column_id': 'date6',
+                'type': 'date'
+            },
+            'deadline_date': {
+                'column_id': 'date36',
                 'type': 'date'
             },
             'deactivate': {
@@ -149,19 +157,33 @@ class MainBoardWrapper(boardItem.MondayWrapper):
             self.create_blank_item()
 
     def create_blank_item(self):
-
         return self
 
 
 class MainBoardItem(MainBoardWrapper):
-
     column_dictionary = {
 
     }
 
-    def __init__(self, item_id=False, blank_item=False):
+    def __init__(self, item_id=False, blank_item=True):
         if item_id:
             super().__init__(item_id, self.column_dictionary)
         elif blank_item:
             super().__init__(None, self.column_dictionary, blank_item=True)
+        else:
+            raise exceptions.BoardItemArgumentError
 
+
+def ongoing_development(monday_id):
+    from pprint import pprint
+    import datetime
+
+    # Checking all columns are assigned a Repir Object Value
+
+    test = MainBoardItem(monday_id)
+
+    test.zendesk_url.change_value(9999)
+
+    test.apply_column_changes()
+
+ongoing_development(926422006)

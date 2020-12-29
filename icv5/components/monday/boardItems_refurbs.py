@@ -33,7 +33,7 @@ class RefurbWrapper(boardItem.MondayWrapper):
         self.set_attributes(self, column_dictionary)
 
         if blank_item:
-            self.create_blank_item(blank_item)
+            self.create_blank_item()
 
     def create_blank_item(self):
 

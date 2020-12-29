@@ -1,7 +1,10 @@
 import os
 
 import moncli
+from moncli.api_v2 import exceptions as moncli_except
+
 import settings
+from icv5.components.monday import exceptions
 
 
 class Manager:
@@ -25,16 +28,15 @@ class Manager:
             'v2': os.environ['MONV2ERR'],
             'user_name': 'admin@icorrect.co.uk',
             'user_id': 15365289
-        },
-
+        }
     }
 
     board_ids = {
         'main': '349212843',
         'stock': '867934405',
-        'inventory_mappings': '14028101',
+        'inventory_mappings': '868065293',
         'stock_levels': '867934405',
-        'refurb_toplevel': '925661179'
+        'refurb_toplevel': '925661179',
     }
 
     def __init__(self):
@@ -54,12 +56,14 @@ class Manager:
 
     def get_board(self, board_name, client_name=False):
         client = self.create_client(client_name=client_name)
-
-        board = client.get_board_by_id(self.board_ids[board_name])
-
+        try:
+            board = client.get_board_by_id(self.board_ids[board_name])
+        except moncli_except.MondayApiError:
+            raise exceptions.NoBoardFound(self.board_ids[board_name], board_name)
         return board
 
-    def compare_repair_objects(self, object_to_change, object_to_read, attributes_dictionary):
+    @staticmethod
+    def compare_repair_objects(object_to_change, object_to_read, attributes_dictionary):
         ignore_list = ['adjusted_values']
         copy_list = ['client', 'debug']
         for item in attributes_dictionary:
@@ -101,7 +105,8 @@ class Manager:
                 if to_change:
                     to_change.change_value(result)
 
-    def get_attribute_list(self, custom_object):
+    @staticmethod
+    def get_attribute_list(custom_object):
         dicts = custom_object.__dict__
         ignore_list = ['item']
         result = {}
