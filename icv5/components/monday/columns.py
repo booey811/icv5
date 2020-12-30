@@ -1,7 +1,4 @@
-from pprint import pprint
 import json
-
-import moncli
 
 from icv5.components.monday import exceptions
 
@@ -109,6 +106,9 @@ class DropdownValue(ColumnWrapper):
             if ids_raw and self.moncli_val.text:
                 self.ids = ids_raw['ids']
                 self.labels = [label.strip() for label in self.moncli_val.text.split(',')]
+            else:
+                self.ids = []
+                self.labels = []
         else:
             self.ids = []
             self.labels = []

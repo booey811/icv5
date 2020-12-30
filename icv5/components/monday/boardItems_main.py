@@ -185,5 +185,3 @@ def ongoing_development(monday_id):
     test.zendesk_url.change_value(9999)
 
     test.apply_column_changes()
-
-ongoing_development(926422006)
