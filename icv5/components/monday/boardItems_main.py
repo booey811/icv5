@@ -172,16 +172,3 @@ class MainBoardItem(MainBoardWrapper):
             super().__init__(None, self.column_dictionary, blank_item=True)
         else:
             raise exceptions.BoardItemArgumentError
-
-
-def ongoing_development(monday_id):
-    from pprint import pprint
-    import datetime
-
-    # Checking all columns are assigned a Repir Object Value
-
-    test = MainBoardItem(monday_id)
-
-    test.zendesk_url.change_value(9999)
-
-    test.apply_column_changes()
