@@ -1,6 +1,8 @@
+from pprint import pprint as p
+
 import moncli
 
-from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, exceptions
+from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, exceptions, manage
 
 
 class UnifiedObject:
@@ -40,6 +42,33 @@ class UnifiedObject:
 
     def collect_inventory_objects(self):
 
+        def create_search_string(monday_object, repair_id, colour=True):
+
+            device_tup = tuple([monday_object.device.ids[0]])
+            repair_tup = tuple([repair_id])
+            colour_tup = tuple([monday_object.colour.index])
+
+            if colour:
+                search = str(tuple([device_tup, repair_tup, colour_tup]))
+            else:
+                search = str(tuple([device_tup, repair_tup, ()]))
+
+            return search
+
+        def search_inventory_board(search_string):
+
+            search_val.value = '"{}"'.format(search_string)
+
+            results = inv_board.get_items_by_column_values(search_val)
+
+            return results
+
+        import copy
+
+        manager = manage.Manager()
+        inv_board = manager.get_board('inventory_mappings')
+        search_val = inv_board.get_column_value('text99')
+
         direct_links = {
             '35': '901008625',  # Tempered Glass
         }
@@ -47,37 +76,43 @@ class UnifiedObject:
         if not self.main_item:
             raise exceptions.SubObjectNotAvailable
         else:
-            item = self.main_item
+            main_board_item = self.main_item
 
-        print(item.repairs)
+        for repair_code in main_board_item.repairs.ids:
 
-        for rep_index in item.repairs.ids:
-            # Filter out items that do not require a device
-            if str(rep_index) in direct_links:
-                item.inventory_items.append(boardItems_inventory.InventoryMappingItem(direct_links[str(rep_index)]))
+            if str(repair_code) in direct_links:
+                main_board_item.inventory_items.append(boardItems_inventory.InventoryMappingItem(direct_links[str(repair_code)]))
+                continue
+
+            string = create_search_string(main_board_item, repair_code, colour=True)
+
+            results = search_inventory_board(string)
+
+            if len(results) < 1:
+                new_string = create_search_string(main_board_item, repair_code, colour=False)
+                new_results = search_inventory_board(new_string)
+                if len(new_results) < 1:
+                    raise exceptions.CannotFindRepairMapping(main_board_item, string)
+                elif len(new_results) > 1:
+                    raise exceptions.FoundTooManyRepairMappings(main_board_item, new_string)
+                else:
+                    for pulse in new_results:
+                        main_board_item.inventory_items.append(boardItems_inventory.InventoryMappingItem(pulse.id))
+
+            elif len(results) > 1:
+                raise exceptions.FoundTooManyRepairMappings(main_board_item, string)
+
             else:
-                device_tup = (item.device.ids[0],)
-                repair_tup = (rep_index,)
-                colour_tup = (item.colour.index,)
-                search1 = (device_tup, repair_tup, colour_tup)
-                search_val = moncli.create_column_value(id='text99', column_type=moncli.ColumnType.text,
-                                                        value=str(search1))
-                results = item.client.get_board('inventory_mappings').get_items_by_column_value(search_val)
+                for pulse in results:
+                    main_board_item.inventory_items.append(boardItems_inventory.InventoryMappingItem(pulse.id))
 
-                if len(results) == 0:
-                    search2 = (device_tup, repair_tup)
-                    search_val = moncli.create_column_value(id='text99', column_type=moncli.ColumnType.text,
-                                                            value=str(search2))
-                    results = item.client.get_board('inventory_mappings').get_items_by_column_value(search_val)
 
-                    if len(results) == 0:
-                        raise exceptions.CannotFindRepairMapping(item, search1, 'error')
 
-                    elif len(results) > 1:
-                        pass
-                        # Raise an exception
 
-test = UnifiedObject({
+
+from pprint import pprint as p
+
+test_unify = UnifiedObject({
     'event': {
         'app': 'monday',
         'boardId': 349212843,
@@ -85,8 +120,12 @@ test = UnifiedObject({
     }
 })
 
-test.main_item = test.create_monday_object(894201398)
+test_unify.main_item = boardItems_main.MainBoardItem(894201398)
 
-test.collect_inventory_objects()
+print(test_unify.main_item.repairs.ids)
 
-print(test.main_item.inventory_items)
+test_unify.collect_inventory_objects()
+
+
+for item in test_unify.main_item.inventory_items:
+    p(vars(item))

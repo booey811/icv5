@@ -57,7 +57,7 @@ class Manager:
     def get_board(self, board_name, client_name=False):
         client = self.create_client(client_name=client_name)
         try:
-            board = client.get_board_by_id(self.board_ids[board_name])
+            board = client.get_board(self.board_ids[board_name])
         except moncli_except.MondayApiError:
             raise exceptions.NoBoardFound(self.board_ids[board_name], board_name)
         return board

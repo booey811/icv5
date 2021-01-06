@@ -69,6 +69,7 @@ class InventoryStockItem(InventoryWrapper):
 
 
 class InventoryMappingItem(InventoryWrapper):
+
     column_dictionary = {
         'device_id': {
             'column_id': 'numbers3',
@@ -147,7 +148,7 @@ class InventoryOrderItem(InventoryWrapper):
         }
     }
 
-    def __init__(self, item_id=False, blank_item=False):
+    def __init__(self, item_id=None, blank_item=False):
         if item_id:
             super().__init__(item_id, self)
 

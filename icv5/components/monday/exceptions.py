@@ -1,4 +1,4 @@
-import manage
+from icv5.components.monday import manage
 
 
 class ColumnInput(Exception):
@@ -47,13 +47,27 @@ class NotDevelopedError(Exception):
 
 class CannotFindRepairMapping(Exception):
 
-    def __init__(self, monday_object, code_string, client=False):
+    def __init__(self, monday_object, code_string):
         print('Unable to find this repair on Repair Mappings Board')
 
         manage.Manager().add_update(
             item_object=monday_object.item,
             user_id=monday_object.user_id,
-            client=client,
+            client='error',
             update='Cannot Find Repair Mapping For {}'.format(code_string),
             notify=['Cannot Find Repair Mapping For {}'.format(code_string), 4251271]
+        )
+
+
+class FoundTooManyRepairMappings(Exception):
+
+    def __init__(self, monday_object, code_string):
+        print('Unable to find this repair on Repair Mappings Board')
+
+        manage.Manager().add_update(
+            item_object=monday_object.item,
+            user_id=monday_object.user_id,
+            client='error',
+            update='Too Many Repair Mappings Found For {}'.format(code_string),
+            notify=['Too Many Repair Mappings Found For {}'.format(code_string), 4251271]
         )
