@@ -88,7 +88,7 @@ class InventoryOrderItem(InventoryWrapper):
             super().__init__(None, self.column_dictionary, blank_item=blank_item)
 
 
-class InventoryItemScreenRefurb(InventoryWrapper):
+class InventoryScreenRefurbItem(InventoryWrapper):
     column_dictionary = {
         'sku': {
             'column_id': 'text',

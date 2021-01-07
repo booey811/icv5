@@ -40,7 +40,7 @@ class RefurbWrapper(boardItem.MondayWrapper):
         return self
 
 
-class TopLevelBoardItem(RefurbWrapper):
+class RefurbTopLevelBoardItem(RefurbWrapper):
     column_dictionary = {
         'bought': {
             'column_id': 'status5',
@@ -74,9 +74,41 @@ class TopLevelBoardItem(RefurbWrapper):
             'column_id': 'status6',
             'type': 'status'
         },
+        'purchasing_item': {
+            'column_id': 'connect_boards5',
+            'type': 'connect'
+        },
+        'received_item': {
+            'column_id': 'received__beta__1',
+            'type': 'connect'
+        },
+        'tested_item': {
+            'column_id': 'connect_boards_1',
+            'type': 'connect'
+        },
+        'repairs_item': {
+            'column_id': 'connect_boards_2',
+            'type': 'connect'
+        },
+        'sales_item': {
+            'column_id': 'connect_boards4',
+            'type': 'connect'
+        }
     }
 
-    def __init__(self, item_id=False, blank_item=False):
+    def __init__(self, item_id=None, blank_item=None):
+        if item_id:
+            super().__init__(item_id, self.column_dictionary)
+        elif blank_item:
+            super().__init__(None, self.column_dictionary, blank_item=blank_item)
+
+class RefurbPurchasingItem(RefurbWrapper):
+
+    column_dictionary = {
+
+    }
+
+    def __init__(self, item_id=None, blank_item=None):
         if item_id:
             super().__init__(item_id, self.column_dictionary)
         elif blank_item:

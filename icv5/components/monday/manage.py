@@ -37,6 +37,14 @@ class Manager:
         'inventory_mappings': '868065293',
         'stock_levels': '867934405',
         'refurb_toplevel': '925661179',
+        'refurb_purchasing': '952635143',
+        'refurb_received': '925661892',
+        'refurb_tested': '925877501',
+        'refurb_repairing': '925662587',
+        'refurb_selling': '925662877',
+        'refurb_backlog': '925663181',
+        'refurb_returns': '925663428',
+        'backmarket_refs': '928091586'
     }
 
     def __init__(self):
