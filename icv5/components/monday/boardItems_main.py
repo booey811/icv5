@@ -165,7 +165,7 @@ class MainBoardItem(MainBoardWrapper):
 
     }
 
-    def __init__(self, item_id=False, blank_item=True):
+    def __init__(self, item_id=None, blank_item=True):
         if item_id:
             super().__init__(item_id, self.column_dictionary)
         elif blank_item:
@@ -174,16 +174,6 @@ class MainBoardItem(MainBoardWrapper):
             raise exceptions.BoardItemArgumentError
 
 
-def ongoing_development(monday_id):
-    from pprint import pprint
-    import datetime
+test = MainBoardItem(894201398)
 
-    # Checking all columns are assigned a Repir Object Value
-
-    test = MainBoardItem(monday_id)
-
-    test.zendesk_url.change_value(9999)
-
-    test.apply_column_changes()
-
-ongoing_development(926422006)
+print(test.device)

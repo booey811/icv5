@@ -221,11 +221,10 @@ class LinkValue(ColumnWrapper):
         super().__init__(repair_object, attribute, column_value)
 
         if self.moncli_val:
-            if self.moncli_val.value:
-                values_raw = json.loads(self.moncli_val.value)
+            values_raw = json.loads(self.moncli_val.value)
+            if values_raw:
                 self.url = values_raw['url']
                 self.text = values_raw['text']
-
             else:
                 self.url = None
                 self.text = None
