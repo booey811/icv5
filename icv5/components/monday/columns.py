@@ -33,8 +33,17 @@ class StatusValue(ColumnWrapper):
             self.text = column_value.text
             self.index = column_value.index
 
+        self.easy = self.text
+
+    def __str__(self):
+        return 'Status Custom Column Value'
+
     def __repr__(self):
-        return repr(self.text)
+        return 'StatusValue(ID: {}, attribute: {}, column_val: {})'.format(
+            self.repair_object.id,
+            self.attribute,
+            self.moncli_val
+        )
 
     def change_value(self, text=False, index=False, keep_original=False):
         """Changes this column value and adds it to the 'adjusted_columns' attribute of repair
@@ -61,8 +70,17 @@ class TextValue(ColumnWrapper):
         else:
             self.text = column_value.text
 
+        self.easy = self.text
+
+    def __str__(self):
+        return 'Text Custom Column Value'
+
     def __repr__(self):
-        return repr(self.text)
+        return 'TextValue(ID: {}, attribute: {}, column_val: {})'.format(
+            self.repair_object.id,
+            self.attribute,
+            self.moncli_val
+        )
 
     def change_value(self, text):
         """Changes this column value and adds it to the 'adjusted_columns' attribute of repair
@@ -85,8 +103,17 @@ class NumberValue(ColumnWrapper):
             self.number = column_value.number
             self.text = str(column_value.number)
 
+        self.easy = self.number
+
+    def __str__(self):
+        return 'Number Custom Column Value'
+
     def __repr__(self):
-        return repr(self.number)
+        return 'NumberValue(ID: {}, attribute: {}, column_val: {})'.format(
+            self.repair_object.id,
+            self.attribute,
+            self.moncli_val
+        )
 
     def change_value(self, number):
         """Changes this column value and adds it to the 'adjusted_columns' attribute of repair
@@ -113,8 +140,17 @@ class DropdownValue(ColumnWrapper):
             self.ids = []
             self.labels = []
 
+        self.easy = self.labels
+
+    def __str__(self):
+        return 'Dropdown Custom Column Value'
+
     def __repr__(self):
-        return repr(self.ids)
+        return 'DropdownValue(ID: {}, attribute: {}, column_val: {})'.format(
+            self.repair_object.id,
+            self.attribute,
+            self.moncli_val
+        )
 
     def change_value(self, method, ids_list=False, labels_list=False):
         """
@@ -174,8 +210,17 @@ class DateValue(ColumnWrapper):
                     self.time = values_raw['time']
                 self.text = self.moncli_val.text
 
+                self.easy = self.date
+
+    def __str__(self):
+        return 'Date Custom Column Value'
+
     def __repr__(self):
-        return repr(self.text)
+        return 'DateValue(ID: {}, attribute: {}, column_val: {})'.format(
+            self.repair_object.id,
+            self.attribute,
+            self.moncli_val
+        )
 
     def change_value(self, date, time):
         """Changes this column value and adds it to the 'adjusted_columns' attribute of repair
@@ -200,8 +245,17 @@ class CheckboxValue(ColumnWrapper):
         else:
             self.checked = False
 
+        self.easy = self.checked
+
     def __repr__(self):
-        return repr(self.checked)
+        return 'CheckBoxValue(ID: {}, attribute: {}, column_val: {})'.format(
+            self.repair_object.id,
+            self.attribute,
+            self.moncli_val
+        )
+
+    def __str__(self):
+        return 'Checkbox Custom Column Value'
 
     def change_value(self, checked=False):
         """Changes this column value and adds it to the 'adjusted_columns' attribute of repair
@@ -235,9 +289,6 @@ class LinkValue(ColumnWrapper):
 
         self.easy = self.text
 
-    def __repr__(self):
-        return repr(self.text)
-
     def change_value(self, text):
         """Will change the value for a Link column, however the url for this column is currently
         set to https://icorrect.zendesk.com/{TICKET NUMBER}, so will only work for the Ticket Column"""
@@ -254,6 +305,16 @@ class LinkValue(ColumnWrapper):
             }
         }
 
+    def __str__(self):
+        return 'URL Link Custom Column Value'
+
+    def __repr__(self):
+        return 'LinkValue(ID: {}, attribute: {}, column_val: {})'.format(
+            self.repair_object.id,
+            self.attribute,
+            self.moncli_val
+        )
+
 
 class ConnectValue(ColumnWrapper):
 
@@ -269,8 +330,17 @@ class ConnectValue(ColumnWrapper):
             else:
                 self.id = None
 
+        self.easy = self.id
+
+    def __str__(self):
+        return 'Connect Boards Custom Column Value'
+
     def __repr__(self):
-        return repr(self.id)
+        return 'LinkValue(ID: {}, attribute: {}, column_val: {})'.format(
+            self.repair_object.id,
+            self.attribute,
+            self.moncli_val
+        )
 
     def change_value(self, text=False, index=False, keep_original=False):
         """Currently Not Able to complete this function"""

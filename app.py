@@ -76,7 +76,7 @@ def get_phonecheck_details_and_transfer():
     refurb = unify.UnifiedObject(data)
     refurb.received = refurb.create_monday_object(data['event']['pulseId'], 'refurb_received')
 
-    for item in vars(refurb.received):
+    for item in vars(refurb.received.__dict__):
         print(item.index)
 
     print("--- %s seconds ---" % (time.time() - start_time))
