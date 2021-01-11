@@ -3,6 +3,7 @@ import time
 
 import flask
 
+from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage
 
 # APP SET UP
 app = flask.Flask(__name__)
@@ -52,3 +53,26 @@ def test_route_monday():
     print(data)
     print("--- %s seconds ---" % (time.time() - start_time))
     return "MONDAY TEST COMPLETE"
+
+
+# ROUTES // ++++++++++++ MONDAY ++++++++++++ \\
+# MONDAY ROUTES == Refurbishment Boards
+# Refurbs [Received -> Tested]
+@app.route('/monday/refurb-phones/tested', methods=["POST"])
+def get_phonecheck_details_and_transfer():
+    """This route is for getting data from Phonecheck's database (grabbed with info from the 'Received' board),
+    and creating a pulse with corresponding statuses on 'Repairing'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    refurb = boardItems_refurbs(data['event']['pulseId'])
+
+    print(data)
+    print("--- %s seconds ---" % (time.time() - start_time))

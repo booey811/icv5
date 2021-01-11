@@ -173,7 +173,3 @@ class MainBoardItem(MainBoardWrapper):
         else:
             raise exceptions.BoardItemArgumentError
 
-
-test = MainBoardItem(894201398)
-
-print(test.device)
