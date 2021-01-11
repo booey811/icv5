@@ -164,10 +164,11 @@ class MainBoardItem(MainBoardWrapper):
     column_dictionary = {
     }
 
-    def __init__(self, item_id=False, blank_item=True):
+    def __init__(self, item_id=None, blank_item=True):
         if item_id:
             super().__init__(item_id, self.column_dictionary)
         elif blank_item:
             super().__init__(None, self.column_dictionary, blank_item=True)
         else:
             raise exceptions.BoardItemArgumentError
+

@@ -225,7 +225,6 @@ class LinkValue(ColumnWrapper):
             if values_raw:
                 self.url = values_raw['url']
                 self.text = values_raw['text']
-
             else:
                 self.url = None
                 self.text = None
