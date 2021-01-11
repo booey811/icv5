@@ -1,3 +1,6 @@
+from icv5.components.monday import manage
+
+
 class ColumnInput(Exception):
     def __init__(self, repair_name, attribute):
         """Raised when incompatible values are sent to a column value"""
@@ -29,7 +32,42 @@ class BoardItemArgumentError(Exception):
         print('Unable to create boardItem, an item ID or the "blank_item" arguments must be given')
 
 
+class SubObjectNotAvailable(Exception):
+
+    def __init__(self, parent_object, object_to_attach):
+        print(
+            '{} Object has not been created so {} Object cannot be added to it'.format(parent_object, object_to_attach))
+
+
 class NotDevelopedError(Exception):
 
     def __init__(self, column_type):
         print("{} columns have not been developed fully yet".format(column_type))
+
+
+class CannotFindRepairMapping(Exception):
+
+    def __init__(self, monday_object, code_string):
+        print('Unable to find this repair on Repair Mappings Board')
+
+        manage.Manager().add_update(
+            item_object=monday_object.item,
+            user_id=monday_object.user_id,
+            client='error',
+            update='Cannot Find Repair Mapping For {}'.format(code_string),
+            notify=['Cannot Find Repair Mapping For {}'.format(code_string), 4251271]
+        )
+
+
+class FoundTooManyRepairMappings(Exception):
+
+    def __init__(self, monday_object, code_string):
+        print('Unable to find this repair on Repair Mappings Board')
+
+        manage.Manager().add_update(
+            item_object=monday_object.item,
+            user_id=monday_object.user_id,
+            client='error',
+            update='Too Many Repair Mappings Found For {}'.format(code_string),
+            notify=['Too Many Repair Mappings Found For {}'.format(code_string), 4251271]
+        )

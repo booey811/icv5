@@ -1,7 +1,4 @@
-from pprint import pprint
 import json
-
-import moncli
 
 from icv5.components.monday import exceptions
 
@@ -44,10 +41,10 @@ class StatusValue(ColumnWrapper):
         keep_original allows the creation of a new value while maintaining the original object
         but may not work in some cases"""
 
-        if text:
+        if text and not index:
             self.repair_object.adjusted_values[self.id] = {'label': text}
             return {self.id: {'label': text}}
-        elif index:
+        elif index and not text:
             self.repair_object.adjusted_values[self.id] = {'index': index}
             return {self.id: {'index': index}}
         else:
@@ -109,6 +106,9 @@ class DropdownValue(ColumnWrapper):
             if ids_raw and self.moncli_val.text:
                 self.ids = ids_raw['ids']
                 self.labels = [label.strip() for label in self.moncli_val.text.split(',')]
+            else:
+                self.ids = []
+                self.labels = []
         else:
             self.ids = []
             self.labels = []
@@ -162,17 +162,17 @@ class DateValue(ColumnWrapper):
     def __init__(self, repair_object, attribute, column_value):
         super().__init__(repair_object, attribute, column_value)
 
+        self.date = None
+        self.time = None
+        self.text = None
+
         if self.moncli_val:
             values_raw = json.loads(self.moncli_val.value)
             if values_raw and self.moncli_val.text:
                 self.date = values_raw['date']
-                self.time = values_raw['time']
+                if 'time' in values_raw.keys():
+                    self.time = values_raw['time']
                 self.text = self.moncli_val.text
-
-        else:
-            self.date = None
-            self.time = None
-            self.text = None
 
     def __repr__(self):
         return repr(self.text)
@@ -221,8 +221,8 @@ class LinkValue(ColumnWrapper):
         super().__init__(repair_object, attribute, column_value)
 
         if self.moncli_val:
-            if self.moncli_val.value:
-                values_raw = json.loads(self.moncli_val.value)
+            values_raw = json.loads(self.moncli_val.value)
+            if values_raw:
                 self.url = values_raw['url']
                 self.text = values_raw['text']
 

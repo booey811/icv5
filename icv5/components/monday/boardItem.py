@@ -19,19 +19,20 @@ class MondayWrapper:
         'connect': columns.ConnectValue
     }
 
-
     def __init__(self):
-        self.client = manager.create_client()
+        self.cli_client = manager.create_client()
         self.id = None
         self.item = None
         self.name = None
+        self.user_id = None
         self.adjusted_values = {}
+        self.inventory_items = []
 
         if os.environ['DEBUG'] == 'console':
             self.debug = True
 
     def set_client_and_item(self, board_item_object, item_id):
-        for pulse in manager.create_client().get_items(ids=[item_id], limit=1):
+        for pulse in self.cli_client.get_items(ids=[item_id], limit=1):
             board_item_object.item = pulse
             board_item_object.item.get_column_values()
             board_item_object.name = pulse.name.replace('"', ' Inch')
@@ -59,7 +60,7 @@ class MondayWrapper:
                             self,
                             attribute,
                             column_dictionary[attribute]['column_id']
-                            )
+                        )
                         )
 
     def apply_column_changes(self):
@@ -74,4 +75,3 @@ class MondayWrapper:
             self.item.change_multiple_column_values(self.adjusted_values)
         else:
             print('repair object has no item (has been created from within program)')
-
