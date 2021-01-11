@@ -65,7 +65,7 @@ class Manager:
     def get_board(self, board_name, client_name=False):
         client = self.create_client(client_name=client_name)
         try:
-            board = client.get_board_by_id(self.board_ids[board_name])
+            board = client.get_board(self.board_ids[board_name])
         except moncli_except.MondayApiError:
             raise exceptions.NoBoardFound(self.board_ids[board_name], board_name)
         return board
@@ -123,6 +123,46 @@ class Manager:
                 result[item] = dicts[item]
 
         return result
+
+    def add_update(self, item_object, user_id=False, client=False, update=False, status=False, notify=False):
+        # Select Client (Which User Will be posting updates/notifications)
+        """Adds updates or notifies monday users, with options to adjust statuses
+
+        Args:
+            monday_id (int): ID of the Monday ite mthat the update will be centered around
+            user (str): Name of the user and client to be used to post the update/notification
+            update (bool, optional): Provide the text of the update required. Defaults to False.
+            status (list[2], optional): List containing the ID of the status column to be changed and the label to be changed to. Defaults to False.
+            notify (list[2], optional): Contains text for the notification to be sent and the ID of the user to send it to. Defaults to False.
+            non_main (bool, optional): [description]. Defaults to False.
+
+        Returns:
+            False: No item could be found for the provided ID
+        """
+        client = self.create_client(client)
+        # Post Update, if provided
+        if update:
+            item_object.add_update(body=update)
+        # Change Status, if provided
+        # if status:
+        #     # Ensure 'status' is a 2 length list
+        #     if len(status) == 2:
+        #         item.change_column_value(column_id=status[0], column_value={"label": status[1]})
+        #     else:
+        #         print("status list has not been provided correctly")
+        # Send Notification, if requested
+        if notify:
+            # Check 'notify' is a 2 length list
+            if len(notify) == 2:
+                client.create_notification(
+                    text=notify[0],
+                    user_id=notify[1],
+                    target_id=item_object.id,
+                    target_type=moncli.NotificationTargetType.Project
+                )
+            else:
+                print("notify list has not been provided correctly")
+
 
 
 manager = Manager()

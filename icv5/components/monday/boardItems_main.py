@@ -162,7 +162,6 @@ class MainBoardWrapper(boardItem.MondayWrapper):
 
 class MainBoardItem(MainBoardWrapper):
     column_dictionary = {
-
     }
 
     def __init__(self, item_id=None, blank_item=True):
