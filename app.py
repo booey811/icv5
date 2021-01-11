@@ -3,9 +3,8 @@ import time
 
 import flask
 
-
-from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage, UnifiedObject
-
+from icv5.components import unify
+from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage
 
 # APP SET UP
 app = flask.Flask(__name__)
@@ -57,11 +56,10 @@ def test_route_monday():
     return "MONDAY TEST COMPLETE"
 
 
-
 # ROUTES // ++++++++++++ MONDAY ++++++++++++ \\
 # MONDAY ROUTES == Refurbishment Boards
 # Refurbs [Received -> Tested]
-@app.route('/monday/refurb-phones/tested', methods=["POST"])
+@app.route('/monday/refurb-phones/phonecheck', methods=["POST"])
 def get_phonecheck_details_and_transfer():
     """This route is for getting data from Phonecheck's database (grabbed with info from the 'Received' board),
     and creating a pulse with corresponding statuses on 'Repairing'"""
@@ -75,8 +73,16 @@ def get_phonecheck_details_and_transfer():
     else:
         data = data[1]
 
-    refurb = boardItems_refurbs(data['event']['pulseId'])
+    refurb = unify.UnifiedObject(data)
+    refurb.received = refurb.create_monday_object(data['event']['pulseId'], 'refurb_received')
 
-    print(data)
+    for item in vars(refurb.received):
+        print(item.index)
+
     print("--- %s seconds ---" % (time.time() - start_time))
 
+    return 'Refurb Get Phonecheck Data Route Complete'
+
+
+if __name__ == "__main__":
+    app.run(load_dotenv=True)

@@ -172,3 +172,4 @@ class MainBoardItem(MainBoardWrapper):
         else:
             raise exceptions.BoardItemArgumentError
 
+

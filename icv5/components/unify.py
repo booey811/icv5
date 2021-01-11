@@ -9,8 +9,11 @@ class UnifiedObject:
 
     def __init__(self, webhook_data):
         self.webhook = webhook_data
+        print(webhook_data)
+
         self.main_item = None
         self.inv_items = []
+
         self.zendesk = None
         self.stuart = None
         self.vend = None
@@ -21,7 +24,15 @@ class UnifiedObject:
             'inventory_order': boardItems_inventory.InventoryOrderItem,
             'inventory_screenrefurb': boardItems_inventory.InventoryScreenRefurbItem,
             'inventory_stock': boardItems_inventory.InventoryStockItem,
-            'refurb_toplevel': boardItems_refurbs.TopLevelBoardItem
+            'refurb_toplevel': boardItems_refurbs.RefurbTopLevelBoardItem,
+            'refurb_received': boardItems_refurbs.RefurbReceivedItem,
+            'refurb_tested': boardItems_refurbs.RefurbTestedItem,
+            'refurb_repairing': boardItems_refurbs.RefurbRepairingItem,
+            'refurb_selling': boardItems_refurbs.RefurbSellingItem,
+            'refurb_final': boardItems_refurbs.RefurbFinalItem,
+            'refurb_backlog': boardItems_refurbs.RefurbBacklogItem,
+            'refurb_return': boardItems_refurbs.RefurbReturnItem,
+            'refurb_purchasing': boardItems_refurbs.RefurbPurchasingItem
         }
 
         boardid_by_item = {
@@ -81,7 +92,8 @@ class UnifiedObject:
         for repair_code in main_board_item.repairs.ids:
 
             if str(repair_code) in direct_links:
-                main_board_item.inventory_items.append(boardItems_inventory.InventoryMappingItem(direct_links[str(repair_code)]))
+                main_board_item.inventory_items.append(
+                    boardItems_inventory.InventoryMappingItem(direct_links[str(repair_code)]))
                 continue
 
             string = create_search_string(main_board_item, repair_code, colour=True)
@@ -107,25 +119,3 @@ class UnifiedObject:
                     main_board_item.inventory_items.append(boardItems_inventory.InventoryMappingItem(pulse.id))
 
 
-
-
-
-from pprint import pprint as p
-
-test_unify = UnifiedObject({
-    'event': {
-        'app': 'monday',
-        'boardId': 349212843,
-        'userId': 4251271
-    }
-})
-
-test_unify.main_item = boardItems_main.MainBoardItem(894201398)
-
-print(test_unify.main_item.repairs.ids)
-
-test_unify.collect_inventory_objects()
-
-
-for item in test_unify.main_item.inventory_items:
-    p(vars(item))

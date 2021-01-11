@@ -233,6 +233,8 @@ class LinkValue(ColumnWrapper):
             self.url = None
             self.text = None
 
+        self.easy = self.text
+
     def __repr__(self):
         return repr(self.text)
 
