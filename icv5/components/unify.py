@@ -3,6 +3,7 @@ from pprint import pprint as p
 import moncli
 
 from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, exceptions, manage
+from icv5.components.phonecheck import phonecheck
 
 
 class UnifiedObject:
@@ -17,6 +18,7 @@ class UnifiedObject:
         self.zendesk = None
         self.stuart = None
         self.vend = None
+        self.phonecheck = None
 
     def create_monday_object(self, monday_id, board=None):
         item_types = {
