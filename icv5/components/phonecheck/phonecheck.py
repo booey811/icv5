@@ -157,6 +157,8 @@ from pprint import pprint as p
 ren = 357290098600568
 gabe = 353041099097179
 
+aa210 = 357299094598064
+
 test = PhoneCheckResult(gabe)
 
 p(test.get_device_info())

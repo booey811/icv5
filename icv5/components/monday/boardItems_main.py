@@ -34,6 +34,15 @@ class MainBoardItem(MainBoardWrapper):
         else:
             raise exceptions.BoardItemArgumentError
 
+test = MainBoardItem(894201398)
+
+print(test.device.ids)
+
+ids = list(enumerate(test.device.ids))
+labels = list(enumerate(test.device.labels))
 
 
-test = MainBoardItem(908690635)
+count = 0
+while count < len(ids):
+    print(ids[count][1])
+    count += 1
