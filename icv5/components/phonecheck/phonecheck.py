@@ -76,90 +76,78 @@ class PhoneCheckResult:
         else:
             return False
 
-    # def convert_check_info(self, check_info):
-    #     code_to_apply = self.get_next_code()
-    #     col_vals = {
-    #         'numbers17': int(check_info['BatteryHealthPercentage']),
-    #         'text84': code_to_apply
-    #     }
-    #     self.batt_percentage = int(check_info['BatteryHealthPercentage'])
-    #     if self.batt_percentage < 84:
-    #         col_vals['haptic2'] = {'index': 2}
-    #     else:
-    #         col_vals['haptic2'] = {'index': 3}
-    #
-    #     all_checks = []
-    #     ignore = ['Face ID', 'LCD', 'Glass Cracked']
-    #
-    #     for fault in check_info['Failed'].split(','):
-    #         all_checks.append([fault, 'Failed'])
-    #         if fault in ignore:
-    #             continue
-    #         if fault in self.standard_checks and self.standard_checks[fault]:
-    #             col_vals[self.standard_checks[fault]] = {'index': 2}
-    #
-    #     for passed in check_info['Passed'].split(','):
-    #         all_checks.append([passed, 'Passed'])
-    #         if passed in ignore:
-    #             continue
-    #
-    #         if (passed in self.standard_checks) \
-    #                 and (self.standard_checks[passed]) \
-    #                 and (self.standard_checks[passed] not in col_vals):
-    #             col_vals[self.standard_checks[passed]] = {'index': 3}
-    #
-    #     return [all_checks, col_vals]
-    #
-    # def record_check_info(self):
-    #
-    #     info = self.get_device_info()
-    #
-    #     if not info:
-    #         manager.add_update(
-    #             self.refurb_id,
-    #             'error',
-    #             status=[
-    #                 'status_14',
-    #                 'Unable to Fetch'
-    #             ],
-    #             notify=[
-    #                 'Unable to Find this IMEI on Phonecheck',
-    #                 self.user_id
-    #             ]
-    #         )
-    #         return False
-    #     add_to_board = self.convert_check_info(info)
-    #     add_to_board[1]['status_14'] = {'label': 'Complete'}
-    #     for item in add_to_board[1]:
-    #         value = {item: add_to_board[1][item]}
-    #         print(value)
-    #         self.refurb_item.change_multiple_column_values(value)
-    #     update = [str(item[0]) + ': ' + str(item[1]) for item in add_to_board[0]]
-    #     self.refurb_item.add_update("\n".join(update))
-    #
-    # def get_next_code(self):
-    #
-    #     for pulse in monday_client.get_items(ids=[906832350], limit=1):
-    #         item = pulse
-    #
-    #     code = item.get_column_value(id='text0').text
-    #     letter = code.split('-')[0]
-    #     number = code.split('-')[1]
-    #     new_code = str(letter) + str(int(number) + 1)
-    #     replace_code = str(letter) + '-' + str(int(number) + 1)
-    #     item.change_multiple_column_values({
-    #         'text0': replace_code
-    #     })
-    #     return new_code
+    def convert_check_info(self, check_info):
+        code_to_apply = self.get_next_code()
+        col_vals = {
+            'numbers17': int(check_info['BatteryHealthPercentage']),
+            'text84': code_to_apply
+        }
+        self.batt_percentage = int(check_info['BatteryHealthPercentage'])
+        if self.batt_percentage < 84:
+            col_vals['haptic2'] = {'index': 2}
+        else:
+            col_vals['haptic2'] = {'index': 3}
 
-from pprint import pprint as p
+        all_checks = []
+        ignore = ['Face ID', 'LCD', 'Glass Cracked']
 
-ren = 357290098600568
-gabe = 353041099097179
+        for fault in check_info['Failed'].split(','):
+            all_checks.append([fault, 'Failed'])
+            if fault in ignore:
+                continue
+            if fault in self.standard_checks and self.standard_checks[fault]:
+                col_vals[self.standard_checks[fault]] = {'index': 2}
 
-aa210 = 357299094598064
+        for passed in check_info['Passed'].split(','):
+            all_checks.append([passed, 'Passed'])
+            if passed in ignore:
+                continue
 
-test = PhoneCheckResult(gabe)
+            if (passed in self.standard_checks) \
+                    and (self.standard_checks[passed]) \
+                    and (self.standard_checks[passed] not in col_vals):
+                col_vals[self.standard_checks[passed]] = {'index': 3}
 
-p(test.get_device_info())
+        return [all_checks, col_vals]
 
+    def record_check_info(self):
+
+        info = self.get_device_info()
+
+        if not info:
+            manager.add_update(
+                self.refurb_id,
+                'error',
+                status=[
+                    'status_14',
+                    'Unable to Fetch'
+                ],
+                notify=[
+                    'Unable to Find this IMEI on Phonecheck',
+                    self.user_id
+                ]
+            )
+            return False
+        add_to_board = self.convert_check_info(info)
+        add_to_board[1]['status_14'] = {'label': 'Complete'}
+        for item in add_to_board[1]:
+            value = {item: add_to_board[1][item]}
+            print(value)
+            self.refurb_item.change_multiple_column_values(value)
+        update = [str(item[0]) + ': ' + str(item[1]) for item in add_to_board[0]]
+        self.refurb_item.add_update("\n".join(update))
+
+    def get_next_code(self):
+
+        for pulse in monday_client.get_items(ids=[906832350], limit=1):
+            item = pulse
+
+        code = item.get_column_value(id='text0').text
+        letter = code.split('-')[0]
+        number = code.split('-')[1]
+        new_code = str(letter) + str(int(number) + 1)
+        replace_code = str(letter) + '-' + str(int(number) + 1)
+        item.change_multiple_column_values({
+            'text0': replace_code
+        })
+        return new_code

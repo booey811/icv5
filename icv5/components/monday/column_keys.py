@@ -1,3 +1,4 @@
+# Main Board Dictionaries
 main_wrapper = {
     'address1': {
         'column_id': 'passcode',
@@ -140,6 +141,7 @@ main_wrapper = {
 main_item = {}
 
 
+# Inventory Dictionaries
 inventory_wrapper = {}
 
 inventory_stock = {
@@ -259,6 +261,7 @@ inventory_screenrefurb = {
 }
 
 
+# Unit Refurbishment Dictionaries
 refurb_wrapper = {}
 
 refurb_toplevel = {
@@ -340,11 +343,11 @@ refurb_received = {
         'type': 'text'
     },
     'batch_code': {
-        'column_id': 'text8',
+        'column_id': 'batch_code',
         'type': 'text'
     },
     'unit_code': {
-        'column_id': 'text6',
+        'column_id': 'unit_code',
         'type': 'text'
     },
     'face_id': {
@@ -407,7 +410,7 @@ refurb_received = {
         'column_id': 'rear_camera',
         'type': 'status'
     },
-    'front_camera': {
+    'front_cam': {
         'column_id': 'rear_lens',
         'type': 'status'
     },
@@ -422,10 +425,111 @@ refurb_received = {
     'batt_health': {
         'column_id': 'numbers',
         'type': 'number'
+    },
+    'haptic': {
+        'column_id': 'nfc',
+        'type': 'status'
     }
 }
 
-refurb_tested = {}
+refurb_tested = {
+    'phonecheck': {
+        'column_id': 'phonecheck',
+        'type': 'status'
+    },
+    'imei_sn': {
+        'column_id': 'imei',
+        'type': 'text'
+    },
+    'batch_code': {
+        'column_id': 'batch_code',
+        'type': 'text'
+    },
+    'unit_code': {
+        'column_id': 'unit_code',
+        'type': 'text'
+    },
+    'face_id': {
+        'column_id': 'face_id7',
+        'type': 'status'
+    },
+    'battery': {
+        'column_id': 'battery9',
+        'type': 'status'
+    },
+    'screen': {
+        'column_id': 'battery',
+        'type': 'status'
+    },
+    'rear_glass': {
+        'column_id': 'front_screen',
+        'type': 'status'
+    },
+    'microphone': {
+        'column_id': 'rear_glass',
+        'type': 'status'
+    },
+    'charging_port': {
+        'column_id': 'microphone',
+        'type': 'status'
+    },
+    'wireless': {
+        'column_id': 'charging_port',
+        'type': 'status'
+    },
+    'mute_vol': {
+        'column_id': 'wireless',
+        'type': 'status'
+    },
+    'power': {
+        'column_id': 'mute_vol_buttons',
+        'type': 'status'
+    },
+    'earpiece': {
+        'column_id': 'power_button',
+        'type': 'status'
+    },
+    'loudspeaker': {
+        'column_id': 'earpiece_mesh',
+        'type': 'status'
+    },
+    'wifi': {
+        'column_id': 'loudspeaker',
+        'type': 'status'
+    },
+    'bluetooth': {
+        'column_id': 'wifi',
+        'type': 'status'
+    },
+    'rear_cam': {
+        'column_id': 'bluetooth',
+        'type': 'status'
+    },
+    'rear_lens': {
+        'column_id': 'rear_camera',
+        'type': 'status'
+    },
+    'front_cam': {
+        'column_id': 'rear_lens',
+        'type': 'status'
+    },
+    'siri': {
+        'column_id': 'front_camera',
+        'type': 'status'
+    },
+    'nfc': {
+        'column_id': 'siri',
+        'type': 'status'
+    },
+    'batt_health': {
+        'column_id': 'numbers',
+        'type': 'number'
+    },
+    'haptic': {
+        'column_id': 'nfc',
+        'type': 'status'
+    }
+}
 
 refurb_repairing = {}
 
