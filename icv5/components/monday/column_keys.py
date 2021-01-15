@@ -261,6 +261,71 @@ inventory_screenrefurb = {
 }
 
 
+# Screen Refurb Dictionaries
+
+screen_refurb_wrapper = {
+
+}
+
+screen_refurb_item = {
+    'sub_item_ids': {
+        'column_id': 'subitems',
+        'type': 'subitem'
+    },
+    'batch_code': {
+        'column_id': 'batch_code',
+        'type': 'text'
+    },
+    'batch_status': {
+        'column_id': 'batch_status',
+        'type': 'status'
+    }
+}
+
+screen_refurb_sub_item = {
+    'unit_code': {
+        'column_id': 'unit_code',
+        'type': 'text'
+    },
+    'ic': {
+        'column_id': 'ic',
+        'type': 'status'
+    },
+    'model': {
+        'column_id': 'model',
+        'type': 'status'
+    },
+    'refurb_type': {
+        'column_id': 'refurb_type',
+        'type': 'status'
+    },
+    'deglassing': {
+        'column_id': 'deglassing',
+        'type': 'status'
+    },
+    'glassing': {
+        'column_id': 'glassing',
+        'type': 'status'
+    },
+    'result': {
+        'column_id': 'result',
+        'type': 'status'
+    },
+    'complete': {
+        'column_id': 'complete',
+        'type': 'status'
+    },
+    'damage': {
+        'column_id': 'damage',
+        'type': 'status'
+    },
+    'final_refurb_type': {
+        'column_id': 'final_refurb_type',
+        'type': 'status'
+    },
+
+}
+
 # Unit Refurbishment Dictionaries
 refurb_wrapper = {}
 
