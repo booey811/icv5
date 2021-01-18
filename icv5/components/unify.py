@@ -118,12 +118,3 @@ class UnifiedObject:
             else:
                 for pulse in results:
                     main_board_item.inventory_items.append(boardItems_inventory.InventoryMappingItem(pulse.id))
-
-
-test = UnifiedObject({'event': {'userId': 4251271}})
-
-test.refurb_item = test.create_monday_object(971316040, 'refurb_received')
-
-phonecheck = phonecheck.PhoneCheckResult(test.refurb_item.imei_sn.easy)
-
-test.refurb_item.process_phonecheck_results(phonecheck)

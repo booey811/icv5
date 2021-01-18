@@ -60,29 +60,29 @@ def test_route_monday():
 # ROUTES // ++++++++++++ MONDAY ++++++++++++ \\
 # MONDAY ROUTES == Refurbishment Boards
 # Refurbs [Received -> Tested]
-@app.route('/monday/refurb-phones/phonecheck', methods=["POST"])
-def get_phonecheck_details_and_transfer():
-    """This route is for getting data from Phonecheck's database (grabbed with info from the 'Received' board),
-    and creating a pulse with corresponding statuses on 'Repairing'"""
-
-    start_time = time.time()
-    webhook = flask.request.get_data()
-    # Authenticate & Create Object
-    data = monday_handshake(webhook)
-    if data[0] is False:
-        return data[1]
-    else:
-        data = data[1]
-
-    refurb = unify.UnifiedObject(data)
-    refurb.received = refurb.create_monday_object(data['event']['pulseId'], 'refurb_received')
-    checks = phonecheck.PhoneCheckResult(refurb.received.imei)
-    refurb.received.process_phonecheck_results(checks)
-
-    print("--- %s seconds ---" % (time.time() - start_time))
-
-    return 'Refurb Get Phonecheck Data Route Complete'
-
+# @app.route('/monday/refurb-phones/phonecheck', methods=["POST"])
+# def get_phonecheck_details_and_transfer():
+#     """This route is for getting data from Phonecheck's database (grabbed with info from the 'Received' board),
+#     and creating a pulse with corresponding statuses on 'Repairing'"""
+#
+#     start_time = time.time()
+#     webhook = flask.request.get_data()
+#     # Authenticate & Create Object
+#     data = monday_handshake(webhook)
+#     if data[0] is False:
+#         return data[1]
+#     else:
+#         data = data[1]
+#
+#     refurb = unify.UnifiedObject(data)
+#     refurb.received = refurb.create_monday_object(data['event']['pulseId'], 'refurb_received')
+#     checks = phonecheck.PhoneCheckResult(refurb.received.imei)
+#     refurb.received.process_phonecheck_results(checks)
+#
+#     print("--- %s seconds ---" % (time.time() - start_time))
+#
+#     return 'Refurb Get Phonecheck Data Route Complete'
+#
 
 if __name__ == "__main__":
     app.run(load_dotenv=True)
