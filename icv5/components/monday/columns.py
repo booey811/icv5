@@ -345,3 +345,31 @@ class ConnectValue(ColumnWrapper):
     def change_value(self, text=False, index=False, keep_original=False):
         """Currently Not Able to complete this function"""
         raise exceptions.NotDevelopedError('Connect Boards')
+
+
+class SubitemValue(ColumnWrapper):
+
+    def __init__(self, repair_object, attribute, column_value):
+        super().__init__(repair_object, attribute, column_value)
+
+        if isinstance(column_value, str):
+            self.ids =None
+
+        else:
+            convert = json.loads(column_value.value)
+            if convert:
+                self.ids = [item['linkedPulseId'] for item in convert['linkedPulseIds']]
+            else:
+                self.ids = None
+
+        self.easy = self.ids
+
+    def __str__(self):
+        return 'Subitem Custom Column Value'
+
+    def __repr__(self):
+        return 'SubitemValue(ID: {}, attribute: {}, column_val: {})'.format(
+            self.repair_object.id,
+            self.attribute,
+            self.moncli_val
+        )

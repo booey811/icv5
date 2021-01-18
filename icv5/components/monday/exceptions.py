@@ -71,3 +71,16 @@ class FoundTooManyRepairMappings(Exception):
             update='Too Many Repair Mappings Found For {}'.format(code_string),
             notify=['Too Many Repair Mappings Found For {}'.format(code_string), 4251271]
         )
+
+
+class IncorrectCodeTypeRequest(Exception):
+
+    def __init__(self, code_type):
+        print('The available options for this function are "unit" or "batch", you have selected "{}"'.format(code_type))
+
+
+class NoItemsFoundFromMondayClientSearch(Exception):
+
+    def __init__(self, search_value):
+        print('Unable to find item with ID {}'.format(search_value))
+

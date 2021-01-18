@@ -3,6 +3,7 @@ from pprint import pprint as p
 import moncli
 
 from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, exceptions, manage
+from icv5.components.phonecheck import phonecheck
 
 
 class UnifiedObject:
@@ -12,11 +13,13 @@ class UnifiedObject:
         print(webhook_data)
 
         self.main_item = None
+        self.refurb_item = None
         self.inv_items = []
 
         self.zendesk = None
         self.stuart = None
         self.vend = None
+        self.phonecheck = None
 
     def create_monday_object(self, monday_id, board=None):
         item_types = {
@@ -38,7 +41,7 @@ class UnifiedObject:
         boardid_by_item = {
             '349212843': boardItems_main.MainBoardItem,
             '867934405': boardItems_inventory.InventoryStockItem,
-            '868065293': None,  # To be changed to repair mapping item
+            '868065293': boardItems_inventory.InventoryMappingItem,
             '925661179': None
         }
 
@@ -73,8 +76,6 @@ class UnifiedObject:
             results = inv_board.get_items_by_column_values(search_val)
 
             return results
-
-        import copy
 
         manager = manage.Manager()
         inv_board = manager.get_board('inventory_mappings')
@@ -119,3 +120,10 @@ class UnifiedObject:
                     main_board_item.inventory_items.append(boardItems_inventory.InventoryMappingItem(pulse.id))
 
 
+test = UnifiedObject({'event': {'userId': 4251271}})
+
+test.refurb_item = test.create_monday_object(971316040, 'refurb_received')
+
+phonecheck = phonecheck.PhoneCheckResult(test.refurb_item.imei_sn.easy)
+
+test.refurb_item.process_phonecheck_results(phonecheck)

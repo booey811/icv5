@@ -2,16 +2,13 @@ import unittest
 
 import pytest
 
+@pytest.fixture
+def attributes_to_test():
+    return ['status', 'imei', 'device']
 
 
-@pytest.mark.offline
-class TestMondayObjectColumnChanges(unittest.TestCase):
 
-    @pytest.mark.usefixtures('blank_object_for_columns_tests')
-    @staticmethod
-    def test_change_status_value_by_label(blank_object_for_columns_tests):
+def test_change_status_value(blank_main_object, attributes_to_test):
 
-        changed_value = blank_object_for_columns_tests.status.change_value('Adjusted in change by status')
-        assert changed_value == {'statu': {'label': 'Adjusted in change by status'}}
-
-
+    # Take blank object from conftest and do stuff
+    pass

@@ -5,6 +5,7 @@ import flask
 
 from icv5.components import unify
 from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage
+from icv5.components.phonecheck import phonecheck
 
 # APP SET UP
 app = flask.Flask(__name__)
@@ -75,9 +76,8 @@ def get_phonecheck_details_and_transfer():
 
     refurb = unify.UnifiedObject(data)
     refurb.received = refurb.create_monday_object(data['event']['pulseId'], 'refurb_received')
-
-    for item in vars(refurb.received.__dict__):
-        print(item.index)
+    checks = phonecheck.PhoneCheckResult(refurb.received.imei)
+    refurb.received.process_phonecheck_results(checks)
 
     print("--- %s seconds ---" % (time.time() - start_time))
 
