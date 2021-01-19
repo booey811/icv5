@@ -625,4 +625,8 @@ enquiries_general = {
         'column_id': 'status6',
         'type': 'status'
     },
+    'converted': {
+        'column_id': 'converted',
+        'type': 'status'
+    }
 }

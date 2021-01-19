@@ -107,5 +107,27 @@ def create_zendesk_ticket_for_enquiry():
     return 'Zendesk Query Creation Complete'
 
 
+# ROUTES // ++++++++++++ ZENDESK ++++++++++++ \\
+# ZENDESK ROUTES == Enquiries Board Updates
+# Add to Monday:Checked and BoardID Present
+@app.route('/zendesk/update_enquiries', methods=["POST"])
+def update_enquiry_board_with_destination():
+    """This route is for getting data from Phonecheck's database (grabbed with info from the 'Received' board),
+    and creating a pulse with corresponding statuses on 'Repairing'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data().decode()
+    data = json.loads(webhook)
+
+    enquiry = boardItems_misc.GeneralEnquiryItem(data['enquiry_id'])
+    enquiry.converted.change_value('Added to Main Board')
+    enquiry.apply_column_changes()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Zendesk Query Creation Complete'
+
+
 if __name__ == "__main__":
     app.run(load_dotenv=True)
+
+
