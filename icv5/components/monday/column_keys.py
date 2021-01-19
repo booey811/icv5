@@ -632,5 +632,9 @@ enquiries_general = {
     'converted': {
         'column_id': 'converted',
         'type': 'status'
+    },
+    'zendesk_id': {
+        'column_id': 'zendesk_id',
+        'type': 'text'
     }
 }
