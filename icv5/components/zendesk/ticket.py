@@ -53,7 +53,6 @@ class ZendeskWrapper:
 
             return comment
 
-        from pprint import pprint as p
         user = ZendeskSearch().search_or_create_user(query_object)
         zenpy_ticket = Ticket(
             description='Your Repair with iCorrect',
