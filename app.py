@@ -101,8 +101,14 @@ def create_zendesk_ticket_for_enquiry():
         return data[1]
     else:
         data = data[1]
+
     monday_enquiry = boardItems_misc.GeneralEnquiryItem(data["event"]["pulseId"])
-    ticket.ZendeskSearch().create_ticket_enquiry(monday_enquiry, monday_enquiry.body.easy)
+
+    new_ticket = ticket.ZendeskSearch().create_ticket_enquiry(monday_enquiry, monday_enquiry.body.easy)
+
+    monday_enquiry.zendesk_id.change_value(new_ticket.ticket.id)
+    monday_enquiry.apply_column_changes()
+
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Zendesk Query Creation Complete'
 
