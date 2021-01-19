@@ -76,6 +76,10 @@ main_wrapper = {
         'column_id': 'dropdown8',
         'type': 'dropdown'
     },
+    'parts_used': {
+        'column_id': 'parts_used',
+        'type': 'dropdown'
+    },
     'refurb': {
         'column_id': 'status_15',
         'type': 'status'
