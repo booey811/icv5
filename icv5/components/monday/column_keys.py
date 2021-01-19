@@ -635,6 +635,6 @@ enquiries_general = {
     },
     'zendesk_id': {
         'column_id': 'zendesk_id',
-        'tpye': 'text'
+        'type': 'text'
     }
 }
