@@ -120,13 +120,3 @@ class UnifiedObject:
             else:
                 for pulse in results:
                     main_board_item.inventory_items.append(boardItems_inventory.InventoryMappingItem(pulse.id))
-
-
-from pprint import pprint as p
-
-test_ticket = ticket.ZendeskTicket()
-
-info = boardItems_misc.GeneralEnquiryItem(981923695)
-
-
-
