@@ -4,8 +4,9 @@ import time
 import flask
 
 from icv5.components import unify
-from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage
+from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage, boardItems_misc
 from icv5.components.phonecheck import phonecheck
+from icv5.components.zendesk import ticket
 
 # APP SET UP
 app = flask.Flask(__name__)
@@ -83,6 +84,28 @@ def test_route_monday():
 #
 #     return 'Refurb Get Phonecheck Data Route Complete'
 #
+
+
+# MONDAY ROUTES == Enquiries Board
+# ** -> Item Creation
+@app.route('/monday/enquiry/received', methods=["POST"])
+def create_zendesk_ticket_for_enquiry():
+    """This route is for getting data from Phonecheck's database (grabbed with info from the 'Received' board),
+    and creating a pulse with corresponding statuses on 'Repairing'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+    monday_enquiry = boardItems_misc.GeneralEnquiryItem(data["event"]["pulseId"])
+    ticket.ZendeskSearch().create_ticket_enquiry(monday_enquiry, monday_enquiry.body.easy)
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Zendesk Query Creation Complete'
+
 
 if __name__ == "__main__":
     app.run(load_dotenv=True)
