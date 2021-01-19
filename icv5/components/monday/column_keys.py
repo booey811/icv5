@@ -605,3 +605,24 @@ refurb_final = {}
 refurb_return = {}
 
 refurb_backlog = {}
+
+# Misc Dictionaries
+
+enquiries_general = {
+    'email': {
+        'column_id': 'text',
+        'type': 'text'
+    },
+    'phone': {
+        'column_id': 'text0',
+        'type': 'text'
+    },
+    'body': {
+        'column_id': 'long_text',
+        'type': 'text'
+    },
+    'fault_type': {
+        'column_id': 'status6',
+        'type': 'status'
+    },
+}
