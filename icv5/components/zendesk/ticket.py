@@ -5,12 +5,13 @@ from zenpy.lib.api_objects import User, Ticket, Comment
 
 import settings
 from icv5.components.zendesk import exceptions
+from icv5.components.zendesk.assets import custom_fields
 from icv5.components.zendesk.assets import ticket_descriptions
 
 
 class ZendeskWrapper:
 
-    def __init__(self):
+    def __init__(self, ticket_number=None):
         self.client = self.create_client()
 
     @staticmethod
@@ -83,3 +84,53 @@ class ZendeskSearch(ZendeskWrapper):
             public=False
         )
         return self.client.tickets.create(ticket)
+
+
+class ZendeskTicket(ZendeskWrapper):
+
+    def __init__(self, ticket_number=None):
+        super().__init__(ticket_number)
+
+        self.client = self.create_client()
+
+        if ticket_number:
+            self.ticket_number = ticket_number
+            self.ticket = self.client.tickets(id=ticket_number)
+            self.requester = self.ticket.requester
+
+        self.set_custom_fields()
+
+    def set_custom_fields(self):
+
+        for item in self.ticket.custom_fields:
+
+            if item['id'] in custom_fields.ids_to_attributes:
+                setattr(
+                    self,
+                    custom_fields.ids_to_attributes[item['id']]['attribute'],
+                    custom_fields.ids_to_attributes[item['id']]['type'](self, item)
+                )
+
+    def add_tag(self, tag):
+        if isinstance(tag, list):
+            self.ticket.tags += tag
+        elif isinstance(tag, str):
+            self.ticket.tags += [tag]
+        else:
+            print('ZendeskCustomFieldWrapper.add_tag else route')
+
+    def remove_tag(self, tag):
+        if isinstance(tag, list):
+            for item in tag:
+                if item in self.ticket.tags:
+                    self.ticket.tags.remove(item)
+        elif isinstance(tag, str):
+            if tag in self.ticket.tags:
+                self.ticket.tags.remove(tag)
+        else:
+            print('ZendeskCustomFieldWrapper.remove_tag else route')
+
+    def update_ticket(self):
+
+        return self.client.tickets.update(self.ticket)
+
