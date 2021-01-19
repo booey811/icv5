@@ -64,15 +64,15 @@ class MondayWrapper:
                         )
                         )
 
-    def apply_column_changes(self):
+    def apply_column_changes(self, verbose=False):
         if not self.adjusted_values:
             print('No changes detected')
             return False
-        if self.debug:
-            for item in self.adjusted_values:
-                print(item)
-                print(self.adjusted_values[item])
-        if self.item:
+        if self.item and not verbose:
             self.item.change_multiple_column_values(self.adjusted_values)
+        elif self.item and verbose:
+            for item in self.adjusted_values:
+                print('{}: {}'.format(item, self.adjusted_values[item]))
+                self.item.change_multiple_column_values({item: str(self.adjusted_values[item])})
         else:
             print('repair object has no item (has been created from within program)')
