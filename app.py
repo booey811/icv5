@@ -103,10 +103,10 @@ def create_zendesk_ticket_for_enquiry():
         data = data[1]
 
     monday_enquiry = boardItems_misc.GeneralEnquiryItem(data["event"]["pulseId"])
-
-    new_ticket = ticket.ZendeskSearch().create_ticket_enquiry(monday_enquiry, monday_enquiry.body.easy)
-
-    monday_enquiry.zendesk_id.change_value(new_ticket.ticket.id)
+    searcher = ticket.ZendeskSearch()
+    new_zenpy_ticket = searcher.create_ticket(monday_enquiry, 'enquiries')
+    ticket_audit = searcher.client.tickets.create(new_zenpy_ticket)
+    monday_enquiry.zendesk_id.change_value(str(ticket_audit.ticket.id))
     monday_enquiry.apply_column_changes(verbose=True)
 
     print("--- %s seconds ---" % (time.time() - start_time))

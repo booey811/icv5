@@ -1,7 +1,8 @@
 import os
 
 import zenpy
-from zenpy.lib.api_objects import User, Ticket, Comment
+from zenpy.lib.api_objects import User, Ticket, Comment, CustomField
+from zenpy.lib.exception import APIException
 
 import settings
 from icv5.components.zendesk import exceptions
@@ -22,6 +23,46 @@ class ZendeskWrapper:
             subdomain="icorrect"
         )
         return client
+
+    @staticmethod
+    def create_ticket(query_object, source):
+
+        def comment_and_field_customisation(zenpy_ticket_object, source):
+
+            if source == 'enquiries':
+                comment = Comment(
+                    body="""Name: {}
+                    Enquiry: {}
+                    Email: {}
+                    Phone: {}
+                    """.format(
+                        query_object.name,
+                        query_object.body.easy,
+                        query_object.email.easy,
+                        query_object.phone.easy
+                    ),
+                    public=False
+                )
+                zenpy_ticket_object.custom_fields = [CustomField(id=360012686858, value=str(query_object.id))]
+
+            else:
+                comment = Comment(
+                    body='iCorrect Ltd',
+                    public=False
+                )
+
+            return comment
+
+        from pprint import pprint as p
+        user = ZendeskSearch().search_or_create_user(query_object)
+        zenpy_ticket = Ticket(
+            description='Your Repair with iCorrect',
+            subject='Your Repair with iCorrect',
+            requester_id=user.id
+        )
+        zenpy_ticket.comment = comment_and_field_customisation(zenpy_ticket, source)
+
+        return zenpy_ticket
 
 
 class ZendeskSearch(ZendeskWrapper):
@@ -45,19 +86,25 @@ class ZendeskSearch(ZendeskWrapper):
 
     def create_user(self, query_object):
         if query_object.phone.easy:
-            user = User(name=query_object.name, email=query_object.email.easy, phone=query_object.phone.easy)
+            try:
+                user = User(name=query_object.name, email=query_object.email.easy, phone=query_object.phone.easy)
+            except APIException:
+                user = User(name=query_object.name, email=query_object.email.easy)
         else:
             user = User(name=query_object.name, email=query_object.email.easy)
         return self.client.users.create(user)
 
     def check_user_details(self, user, query_object):
-
         if not user.phone and query_object.phone.easy:
             print('adding phone to zen')
             user.phone = query_object.phone.easy
-            self.client.users.update(user)
+            try:
+                self.client.users.update(user)
+            except APIException:
+                pass
 
-    def create_ticket_enquiry(self, query_object, description):
+    def search_or_create_user(self, query_object):
+
         try:
             user = self.search_user_by_email(query_object)
             self.check_user_details(user, query_object)
@@ -65,25 +112,8 @@ class ZendeskSearch(ZendeskWrapper):
             return False
         except exceptions.ZeroResultsFromUserEmail:
             user = self.create_user(query_object)
-        ticket = Ticket(
-            requester_id=user.id,
-            subject='Your Enquiry with iCorrect',
-            description=str(ticket_descriptions.added_to_enquiries_board(description))
-        )
-        ticket.comment = Comment(
-            body="""Name: {}
-            Enquiry: {}
-            Email: {}
-            Phone: {}
-            """.format(
-                query_object.name,
-                description,
-                query_object.email.easy,
-                query_object.phone.easy
-            ),
-            public=False
-        )
-        return self.client.tickets.create(ticket)
+
+        return user
 
 
 class ZendeskTicket(ZendeskWrapper):
@@ -98,12 +128,22 @@ class ZendeskTicket(ZendeskWrapper):
             self.ticket = self.client.tickets(id=ticket_number)
             self.requester = self.ticket.requester
 
+        else:
+            self.ticket = Ticket()
+
         self.set_custom_fields()
 
     def set_custom_fields(self):
 
-        for item in self.ticket.custom_fields:
+        if not self.ticket.custom_fields:
+            self.ticket.custom_fields = []
+            for field in custom_fields.ids_to_attributes:
+                self.ticket.custom_fields.append({
+                    'id': field,
+                    'value': ''
+                })
 
+        for item in self.ticket.custom_fields:
             if item['id'] in custom_fields.ids_to_attributes:
                 setattr(
                     self,
@@ -130,7 +170,4 @@ class ZendeskTicket(ZendeskWrapper):
         else:
             print('ZendeskCustomFieldWrapper.remove_tag else route')
 
-    def update_ticket(self):
-
-        return self.client.tickets.update(self.ticket)
 
