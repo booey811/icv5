@@ -2,7 +2,8 @@ from pprint import pprint as p
 
 import moncli
 
-from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, exceptions, manage, boardItems_misc
+from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, exceptions, manage, \
+    boardItems_misc
 from icv5.components.phonecheck import phonecheck
 from icv5.components.zendesk import ticket
 

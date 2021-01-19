@@ -107,7 +107,7 @@ def create_zendesk_ticket_for_enquiry():
     new_ticket = ticket.ZendeskSearch().create_ticket_enquiry(monday_enquiry, monday_enquiry.body.easy)
 
     monday_enquiry.zendesk_id.change_value(new_ticket.ticket.id)
-    monday_enquiry.apply_column_changes()
+    monday_enquiry.apply_column_changes(verbose=True)
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Zendesk Query Creation Complete'
