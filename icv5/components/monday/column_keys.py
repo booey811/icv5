@@ -153,39 +153,46 @@ main_item = {}
 inventory_wrapper = {}
 
 inventory_stock = {
-    'sku': {
-        'column_id': 'better_sku',
+    'combined_id': {
+        'column_id': 'combined_id',
         'type': 'text'
-    },
-    'model': {
-        'column_id': 'type',
-        'type': 'text'
-    },
-    'category': {
-        'column_id': 'status',
-        'type': 'status'
-    },
-    'type': {
-        'column_id': 'status6',
-        'type': 'status'
-    },
-    'stock_level': {
-        'column_id': 'inventory_oc_walk_in',
-        'type': 'number'
-    },
-    'tracking': {
-        'column_id': 'text',
-        'type': 'text'
-    },
-    'vend_product_id': {
-        'column_id': 'id',
-        'type': 'text'
-    },
-    'stock_status': {
-        'column_id': 'status5',
-        'type': 'status'
     }
 }
+
+# inventory_stock = {
+#     'sku': {
+#         'column_id': 'better_sku',
+#         'type': 'text'
+#     },
+#     'model': {
+#         'column_id': 'type',
+#         'type': 'text'
+#     },
+#     'category': {
+#         'column_id': 'status',
+#         'type': 'status'
+#     },
+#     'type': {
+#         'column_id': 'status6',
+#         'type': 'status'
+#     },
+#     'stock_level': {
+#         'column_id': 'inventory_oc_walk_in',
+#         'type': 'number'
+#     },
+#     'tracking': {
+#         'column_id': 'text',
+#         'type': 'text'
+#     },
+#     'vend_product_id': {
+#         'column_id': 'id',
+#         'type': 'text'
+#     },
+#     'stock_status': {
+#         'column_id': 'status5',
+#         'type': 'status'
+#     }
+# }
 
 inventory_mapping = {
     'device_id': {

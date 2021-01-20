@@ -44,7 +44,8 @@ class Manager:
         'refurb_selling': '925662877',
         'refurb_backlog': '925663181',
         'refurb_returns': '925663428',
-        'backmarket_refs': '928091586'
+        'backmarket_refs': '928091586',
+        'stock_new': '983761433'
     }
 
     def __init__(self):
@@ -69,6 +70,23 @@ class Manager:
         except moncli_except.MondayApiError:
             raise exceptions.NoBoardFound(self.board_ids[board_name], board_name)
         return board
+
+    def search_board(self, board_name, column_type, column_id, value):
+
+        if column_type == 'status':
+            col_val = moncli.create_column_value(id=column_id, column_type=moncli.ColumnType.status, label=value)
+        elif column_type == 'text':
+            col_val = moncli.entities.create_column_value(id=column_id, column_type=moncli.ColumnType.text,
+                                                          text=str(value))
+        else:
+            print('Need to write this column type')
+            return False
+
+        board = self.get_board(board_name)
+        val = board.get_column_value(column_id)
+        val.text = value
+        results = board.get_items_by_column_values(val, 'id', 'name')
+        return results
 
     @staticmethod
     def compare_repair_objects(object_to_change, object_to_read, attributes_dictionary):

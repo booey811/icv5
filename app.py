@@ -119,6 +119,29 @@ def zenlink_creation():
     return 'Main Board Zendesk Link Creation Complete'
 
 
+# MONDAY ROUTES == Repaired | Inventory Builder | Stock Controller
+# ** -> Item Creation
+@app.route('/monday/eod/do-now', methods=["POST"])
+def check_out_stock():
+    """This route is for checking stock out, and will also build inventory as time goes on'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    repair = boardItems_main.MainBoardItem(data["event"]["pulseId"])
+
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Zendesk Query Creation Complete'
+
+
+
 # MONDAY ROUTES == Enquiries Board
 # ** -> Item Creation
 @app.route('/monday/enquiry/received', methods=["POST"])

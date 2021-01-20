@@ -22,48 +22,58 @@ class InventoryWrapper(boardItem.MondayWrapper):
 
         return self
 
-
-class InventoryStockItem(InventoryWrapper):
+class InventoryLogItem(InventoryWrapper):
 
     column_dictionary = column_keys.inventory_stock
 
-    def __init__(self, item_id=False, blank_item=False):
+    def __init__(self, item_id=None, blank_item=True):
         if item_id:
             super().__init__(item_id, self)
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
 
-class InventoryMappingItem(InventoryWrapper):
-
-    column_dictionary = column_keys.inventory_mapping
-
-    def __init__(self, item_id=False, blank_item=False):
-        if item_id:
-            super().__init__(item_id, self)
-        elif blank_item:
-            super().__init__(None, self, blank_item=blank_item)
-
-
-class InventoryOrderItem(InventoryWrapper):
-
-    column_dictionary = column_keys.inventory_order
-
-    def __init__(self, item_id=None, blank_item=False):
-        if item_id:
-            super().__init__(item_id, self)
-
-        elif blank_item:
-            super().__init__(None, self, blank_item=blank_item)
-
-
-class InventoryScreenRefurbItem(InventoryWrapper):
-
-    column_dictionary = column_keys.inventory_screenrefurb
-
-    def __init__(self, item_id=False, blank_item=False):
-        if item_id:
-            super().__init__(item_id, self)
-        elif blank_item:
-            super().__init__(None, self, blank_item=blank_item)
-
+# class InventoryStockItem(InventoryWrapper):
+#
+#     column_dictionary = column_keys.inventory_stock
+#
+#     def __init__(self, item_id=False, blank_item=False):
+#         if item_id:
+#             super().__init__(item_id, self)
+#         elif blank_item:
+#             super().__init__(None, self, blank_item=blank_item)
+#
+#
+# class InventoryMappingItem(InventoryWrapper):
+#
+#     column_dictionary = column_keys.inventory_mapping
+#
+#     def __init__(self, item_id=False, blank_item=False):
+#         if item_id:
+#             super().__init__(item_id, self)
+#         elif blank_item:
+#             super().__init__(None, self, blank_item=blank_item)
+#
+#
+# class InventoryOrderItem(InventoryWrapper):
+#
+#     column_dictionary = column_keys.inventory_order
+#
+#     def __init__(self, item_id=None, blank_item=False):
+#         if item_id:
+#             super().__init__(item_id, self)
+#
+#         elif blank_item:
+#             super().__init__(None, self, blank_item=blank_item)
+#
+#
+# class InventoryScreenRefurbItem(InventoryWrapper):
+#
+#     column_dictionary = column_keys.inventory_screenrefurb
+#
+#     def __init__(self, item_id=False, blank_item=False):
+#         if item_id:
+#             super().__init__(item_id, self)
+#         elif blank_item:
+#             super().__init__(None, self, blank_item=blank_item)
+#
