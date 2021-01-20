@@ -36,29 +36,55 @@ class MainBoardItem(MainBoardWrapper):
         else:
             raise exceptions.BoardItemArgumentError
 
+        self.product_codes = {}
+
     def create_inventory_info(self):
         ids = []
         names = []
+        colours = {
+            'TrackPad',
+            'Charging Port',
+            'Headphone Jack',
+            'Home Button',
+            'Front Screen Universal',
+            'Rear Glass',
+            'Front Screen (LG)',
+            'Front Screen (Tosh)'
+        }
+        id_count = 0
         for repair in self.repairs.ids:
-            ids.append('{}-{}-{}'.format(self.device.ids[0], repair, self.colour.index))
+            if self.repairs.labels[id_count] in colours:
+                ids.append('{}-{}-{}'.format(self.device.ids[0], repair, self.colour.index))
+            else:
+                ids.append('{}-{}'.format(self.device.ids[0], repair, self.colour.index))
+            id_count += 1
 
+        name_count = 0
         for repair in self.repairs.easy:
-            names.append('{} {} {}'.format(self.device.easy[0], repair, self.colour.easy))
+            if self.repairs.labels[name_count] in colours:
+                names.append('{} {} {}'.format(self.device.easy[0], repair, self.colour.easy))
+            else:
+                names.append('{} {}'.format(self.device.easy[0], repair))
+
 
         return {'ids': ids, 'names': names}
 
-    def create_product_item(self, part_id, name):
+    def create_product_item(self, part_id, name, count):
 
         new_product_item = boardItems_inventory.InventoryProductItem()
 
+        id_split = part_id.split('-')
+
         new_product_item.combined_id.change_value(part_id)
-        new_product_item.device_id.change_value(str(self.device.ids[0]))
-        new_product_item.repair_id.change_value(str(self.repairs.ids[count]))
-        new_product_item.colour_id.change_value(str(self.colour.index))
-        new_product_item.colour.change_value(str(self.colour.easy))
+        new_product_item.device_id.change_value(str(id_split[0]))
+        new_product_item.repair_id.change_value(str(id_split[1]))
+        if len(id_split) == 3:
+            new_product_item.colour_id.change_value(str(id_split[2]))
+            new_product_item.colour_label.change_value(str(self.colour.easy))
+            new_product_item.colour.change_value(str(self.colour.easy))
         new_product_item.device_label.change_value(str(self.device.easy[0]))
         new_product_item.repair_label.change_value(str(self.repairs.easy[count]))
-        new_product_item.colour_label.change_value(str(self.colour.easy))
+
 
         created_item = manage.Manager().get_board('inventory_products').add_item(
             item_name=name,
@@ -66,34 +92,6 @@ class MainBoardItem(MainBoardWrapper):
         )
 
         return created_item
-
-    def create_product_subitem(self, part_id, name, repair_id, repair_label, parent_item=None):
-        parent = None
-        if not parent_item:
-            for item in self.cli_client.get_items(ids=[985573124], limit=1):
-                parent = item
-        else:
-            parent = parent_item
-
-        new_sub_item = boardItems_inventory.InventoryProductSubItem()
-
-        new_sub_item.combined_id.change_value(part_id)
-        new_sub_item.device_id.change_value(str(self.device.ids[0]))
-        new_sub_item.repair_id.change_value(str(repair_id))
-        new_sub_item.colour_id.change_value(str(self.colour.index))
-        new_sub_item.colour.change_value(str(self.colour.easy))
-        new_sub_item.device_label.change_value(str(self.device.easy[0]))
-        new_sub_item.repair_label.change_value(str(repair_label))
-        new_sub_item.colour_label.change_value(str(self.colour.easy))
-        if parent:
-            new_sub_item.parent_id.change_value(str(parent.id))
-
-        board_item = parent.create_subitem(
-            item_name=name,
-            column_values=new_sub_item.adjusted_values
-        )
-
-        return board_item
 
     def create_log_item(self, product_item):
 
@@ -132,31 +130,23 @@ class MainBoardItem(MainBoardWrapper):
         for part_id in info['ids']:
 
             results = manage.Manager().search_board(
-                board_id='985542500',
+                board_id='984924063',
                 column_type='text',
-                column_id=boardItems_inventory.InventoryProductSubItem.column_dictionary['combined_id']['column_id'],
+                column_id=boardItems_inventory.InventoryProductItem.column_dictionary['combined_id']['column_id'],
                 value=str(part_id)
             )
 
             if len(results) == 0:
 
-                product_subitem = self.create_product_subitem(
-                    part_id,
-                    info['names'][count],
-                    self.repairs.ids[count],
-                    self.repairs.easy[count]
-                )
+                new_product = self.create_product_item(part_id, info['names'][count], count)
 
             elif len(results) == 1:
-                product_subitem = results[0:1][0]
-                print(product_subitem)
+                pass
 
             else:
                 print('MainBoardItem.create_inventory_log else route')
                 return False
 
-            # noinspection PyTypeChecker
-            self.create_log_item(boardItems_inventory.InventoryProductSubItem(product_subitem.id))
 
             count += 1
 
