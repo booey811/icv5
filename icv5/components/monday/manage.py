@@ -45,7 +45,8 @@ class Manager:
         'refurb_backlog': '925663181',
         'refurb_returns': '925663428',
         'backmarket_refs': '928091586',
-        'stock_new': '983761433'
+        'inventory_products': '984924063',
+        'inventory_logging': '984943727'
     }
 
     def __init__(self):
@@ -76,16 +77,18 @@ class Manager:
         if column_type == 'status':
             col_val = moncli.create_column_value(id=column_id, column_type=moncli.ColumnType.status, label=value)
         elif column_type == 'text':
-            col_val = moncli.entities.create_column_value(id=column_id, column_type=moncli.ColumnType.text,
-                                                          text=str(value))
+            col_val = moncli.entities.create_column_value(
+                id=column_id,
+                column_type=moncli.ColumnType.text,
+                text=str(value)
+            )
+            col_val.value = '"{}"'.format(str(value))
         else:
             print('Need to write this column type')
             return False
 
         board = self.get_board(board_name)
-        val = board.get_column_value(column_id)
-        val.text = value
-        results = board.get_items_by_column_values(val, 'id', 'name')
+        results = board.get_items_by_column_values(col_val)
         return results
 
     @staticmethod

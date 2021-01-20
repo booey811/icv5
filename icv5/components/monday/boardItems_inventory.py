@@ -33,6 +33,9 @@ class InventoryLogItem(InventoryWrapper):
             super().__init__(None, self, blank_item=blank_item)
 
 
+
+
+
 # class InventoryStockItem(InventoryWrapper):
 #
 #     column_dictionary = column_keys.inventory_stock
