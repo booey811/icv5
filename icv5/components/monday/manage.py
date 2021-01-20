@@ -46,7 +46,8 @@ class Manager:
         'refurb_returns': '925663428',
         'backmarket_refs': '928091586',
         'inventory_products': '984924063',
-        'inventory_logging': '984943727'
+        'inventory_logging': '984943727',
+        'subtest': '985337895'
     }
 
     def __init__(self):
@@ -64,15 +65,18 @@ class Manager:
 
         return client
 
-    def get_board(self, board_name, client_name=False):
+    def get_board(self, board_name=None, board_id=None, client_name=False):
         client = self.create_client(client_name=client_name)
         try:
-            board = client.get_board(self.board_ids[board_name])
+            if board_name:
+                board = client.get_board(self.board_ids[board_name])
+            else:
+                board = client.get_board(board_id)
         except moncli_except.MondayApiError:
             raise exceptions.NoBoardFound(self.board_ids[board_name], board_name)
         return board
 
-    def search_board(self, board_name, column_type, column_id, value):
+    def search_board(self, column_type, column_id, value, board_name=None, board_id=None):
 
         if column_type == 'status':
             col_val = moncli.create_column_value(id=column_id, column_type=moncli.ColumnType.status, label=value)
@@ -87,7 +91,14 @@ class Manager:
             print('Need to write this column type')
             return False
 
-        board = self.get_board(board_name)
+        if board_name:
+            board = self.get_board(board_name=board_name)
+        elif board_id:
+            board = self.get_board(board_id=board_id)
+        else:
+            print('Manager.search_board else route')
+            return False
+
         results = board.get_items_by_column_values(col_val)
         return results
 

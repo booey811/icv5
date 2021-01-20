@@ -134,8 +134,9 @@ def check_out_stock():
     else:
         data = data[1]
 
-    repair = boardItems_main.MainBoardItem(data["event"]["pulseId"])
+    main_item = boardItems_main.MainBoardItem(data["event"]["pulseId"])
 
+    main_item.create_inventory_log()
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Zendesk Query Creation Complete'

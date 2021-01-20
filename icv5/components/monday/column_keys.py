@@ -69,7 +69,7 @@ main_wrapper = {
         'type': 'dropdown'
     },
     'eod': {
-        'column_id': 'blocker',
+        'column_id': 'eod',
         'type': 'status'
     },
     'has_case': {
@@ -152,7 +152,7 @@ main_item = {}
 # Inventory Dictionaries
 inventory_wrapper = {}
 
-inventory_stock = {
+inventory_product = {
     'combined_id': {
         'column_id': 'combined_id',
         'type': 'text'
@@ -190,6 +190,90 @@ inventory_stock = {
         'type': 'text'
     }
 }
+
+inventory_product_sub = {
+    'combined_id': {
+        'column_id': 'combined_id',
+        'type': 'text'
+    },
+    'colour': {
+        'column_id': 'colour',
+        'type': 'status'
+    },
+    'device': {
+        'column_id': 'device',
+        'type': 'text'
+    },
+    'device_id': {
+        'column_id': 'device_id',
+        'type': 'text'
+    },
+    'repair_id': {
+        'column_id': 'repair_id',
+        'type': 'text'
+    },
+    'colour_id': {
+        'column_id': 'colour_id',
+        'type': 'text'
+    },
+    'device_label': {
+        'column_id': 'device_label',
+        'type': 'text'
+    },
+    'repair_label': {
+        'column_id': 'repair_label',
+        'type': 'text'
+    },
+    'colour_label': {
+        'column_id': 'colour_label',
+        'type': 'text'
+    },
+    'parent_id': {
+        'column_id': 'parent_id',
+        'type': 'text'
+    }
+}
+
+
+inventory_log = {
+    'combined_id': {
+        'column_id': 'combined_id',
+        'type': 'text'
+    },
+    'colour': {
+        'column_id': 'colour',
+        'type': 'status'
+    },
+    'device': {
+        'column_id': 'device',
+        'type': 'text'
+    },
+    'device_id': {
+        'column_id': 'device_id',
+        'type': 'text'
+    },
+    'repair_id': {
+        'column_id': 'repair_id',
+        'type': 'text'
+    },
+    'colour_id': {
+        'column_id': 'colour_id',
+        'type': 'text'
+    },
+    'device_label': {
+        'column_id': 'device_label',
+        'type': 'text'
+    },
+    'repair_label': {
+        'column_id': 'repair_label',
+        'type': 'text'
+    },
+    'colour_label': {
+        'column_id': 'colour_label',
+        'type': 'text'
+    }
+}
+
 
 # inventory_stock = {
 #     'sku': {
