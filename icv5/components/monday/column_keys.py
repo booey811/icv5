@@ -40,6 +40,10 @@ main_wrapper = {
         'column_id': 'text5',
         'type': 'text'
     },
+    'phone': {
+        'column_id': 'text00',
+        'type': 'text'
+    },
     'imei_sn': {
         'column_id': 'text4',
         'type': 'text'
@@ -128,7 +132,7 @@ main_wrapper = {
         'column_id': 'text88',
         'type': 'text'
     },
-    'z_ticket_id': {
+    'zendesk_id': {
         'column_id': 'text6',
         'type': 'text'
     },
