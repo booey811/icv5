@@ -73,6 +73,8 @@ class MainBoardItem(MainBoardWrapper):
 
     def create_product_item(self, part_id, name, count):
 
+        name = name.replace('"', ' Inch')
+
         new_product_item = boardItems_inventory.InventoryProductItem()
 
         id_split = part_id.split('-')
