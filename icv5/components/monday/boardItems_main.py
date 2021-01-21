@@ -149,8 +149,3 @@ class MainBoardItem(MainBoardWrapper):
 
 
             count += 1
-
-
-test = MainBoardItem(984662235)
-
-test.create_inventory_log()
