@@ -170,6 +170,7 @@ Allows changing of dropdown columns via the 'add', 'replace' or 'remove' methods
             ori_val = self.ids
             input_val = ids_list
         elif labels_list:
+            print(labels_list)
             inner_key = 'labels'
             ori_val = self.labels
             input_val = labels_list

@@ -53,7 +53,6 @@ class ZendeskWrapper:
 
             return comment
 
-        from pprint import pprint as p
         user = ZendeskSearch().search_or_create_user(query_object)
         zenpy_ticket = Ticket(
             description='Your Repair with iCorrect',
@@ -129,7 +128,15 @@ class ZendeskTicket(ZendeskWrapper):
             self.requester = self.ticket.requester
 
         else:
-            self.ticket = Ticket()
+            fields = [CustomField(id=item, value='') for item in custom_fields.ids_to_attributes]
+            self.ticket = Ticket(
+                custom_fields=fields,
+                description='Your Repair with iCorrect'
+            )
+            self.ticket.comment = Comment(
+                body='iCorrect Ltd',
+                public=False
+            )
 
         self.set_custom_fields()
 
@@ -144,11 +151,11 @@ class ZendeskTicket(ZendeskWrapper):
                 })
 
         for item in self.ticket.custom_fields:
-            if item['id'] in custom_fields.ids_to_attributes:
+            if item.id in custom_fields.ids_to_attributes:
                 setattr(
                     self,
-                    custom_fields.ids_to_attributes[item['id']]['attribute'],
-                    custom_fields.ids_to_attributes[item['id']]['type'](self, item)
+                    custom_fields.ids_to_attributes[item.id]['attribute'],
+                    custom_fields.ids_to_attributes[item.id]['type'](self, item)
                 )
 
     def add_tag(self, tag):

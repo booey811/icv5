@@ -72,7 +72,8 @@ class MondayWrapper:
             self.item.change_multiple_column_values(self.adjusted_values)
         elif self.item and verbose:
             for item in self.adjusted_values:
-                print('{}: {}'.format(item, self.adjusted_values[item]))
-                self.item.change_multiple_column_values({item: str(self.adjusted_values[item])})
+                thing = {item: self.adjusted_values[item]}
+                print(thing)
+                self.item.change_multiple_column_values(thing)
         else:
             print('repair object has no item (has been created from within program)')

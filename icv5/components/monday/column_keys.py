@@ -40,6 +40,10 @@ main_wrapper = {
         'column_id': 'text5',
         'type': 'text'
     },
+    'phone': {
+        'column_id': 'text00',
+        'type': 'text'
+    },
     'imei_sn': {
         'column_id': 'text4',
         'type': 'text'
@@ -65,7 +69,7 @@ main_wrapper = {
         'type': 'dropdown'
     },
     'eod': {
-        'column_id': 'blocker',
+        'column_id': 'eod',
         'type': 'status'
     },
     'has_case': {
@@ -128,7 +132,7 @@ main_wrapper = {
         'column_id': 'text88',
         'type': 'text'
     },
-    'z_ticket_id': {
+    'zendesk_id': {
         'column_id': 'text6',
         'type': 'text'
     },
@@ -148,40 +152,163 @@ main_item = {}
 # Inventory Dictionaries
 inventory_wrapper = {}
 
-inventory_stock = {
-    'sku': {
-        'column_id': 'better_sku',
+inventory_product = {
+    'combined_id': {
+        'column_id': 'combined_id',
         'type': 'text'
     },
-    'model': {
-        'column_id': 'type',
-        'type': 'text'
-    },
-    'category': {
-        'column_id': 'status',
+    'colour': {
+        'column_id': 'colour',
         'type': 'status'
     },
-    'type': {
-        'column_id': 'status6',
-        'type': 'status'
-    },
-    'stock_level': {
-        'column_id': 'inventory_oc_walk_in',
-        'type': 'number'
-    },
-    'tracking': {
-        'column_id': 'text',
+    'device': {
+        'column_id': 'device',
         'type': 'text'
     },
-    'vend_product_id': {
-        'column_id': 'id',
+    'device_id': {
+        'column_id': 'device_id',
         'type': 'text'
     },
-    'stock_status': {
-        'column_id': 'status5',
-        'type': 'status'
+    'repair_id': {
+        'column_id': 'repair_id',
+        'type': 'text'
+    },
+    'colour_id': {
+        'column_id': 'colour_id',
+        'type': 'text'
+    },
+    'device_label': {
+        'column_id': 'device_label',
+        'type': 'text'
+    },
+    'repair_label': {
+        'column_id': 'repair_label',
+        'type': 'text'
+    },
+    'colour_label': {
+        'column_id': 'colour_label',
+        'type': 'text'
     }
 }
+
+inventory_product_sub = {
+    'combined_id': {
+        'column_id': 'combined_id',
+        'type': 'text'
+    },
+    'colour': {
+        'column_id': 'colour',
+        'type': 'status'
+    },
+    'device': {
+        'column_id': 'device',
+        'type': 'text'
+    },
+    'device_id': {
+        'column_id': 'device_id',
+        'type': 'text'
+    },
+    'repair_id': {
+        'column_id': 'repair_id',
+        'type': 'text'
+    },
+    'colour_id': {
+        'column_id': 'colour_id',
+        'type': 'text'
+    },
+    'device_label': {
+        'column_id': 'device_label',
+        'type': 'text'
+    },
+    'repair_label': {
+        'column_id': 'repair_label',
+        'type': 'text'
+    },
+    'colour_label': {
+        'column_id': 'colour_label',
+        'type': 'text'
+    },
+    'parent_id': {
+        'column_id': 'parent_id',
+        'type': 'text'
+    }
+}
+
+
+inventory_log = {
+    'combined_id': {
+        'column_id': 'combined_id',
+        'type': 'text'
+    },
+    'colour': {
+        'column_id': 'colour',
+        'type': 'status'
+    },
+    'device': {
+        'column_id': 'device',
+        'type': 'text'
+    },
+    'device_id': {
+        'column_id': 'device_id',
+        'type': 'text'
+    },
+    'repair_id': {
+        'column_id': 'repair_id',
+        'type': 'text'
+    },
+    'colour_id': {
+        'column_id': 'colour_id',
+        'type': 'text'
+    },
+    'device_label': {
+        'column_id': 'device_label',
+        'type': 'text'
+    },
+    'repair_label': {
+        'column_id': 'repair_label',
+        'type': 'text'
+    },
+    'colour_label': {
+        'column_id': 'colour_label',
+        'type': 'text'
+    }
+}
+
+
+# inventory_stock = {
+#     'sku': {
+#         'column_id': 'better_sku',
+#         'type': 'text'
+#     },
+#     'model': {
+#         'column_id': 'type',
+#         'type': 'text'
+#     },
+#     'category': {
+#         'column_id': 'status',
+#         'type': 'status'
+#     },
+#     'type': {
+#         'column_id': 'status6',
+#         'type': 'status'
+#     },
+#     'stock_level': {
+#         'column_id': 'inventory_oc_walk_in',
+#         'type': 'number'
+#     },
+#     'tracking': {
+#         'column_id': 'text',
+#         'type': 'text'
+#     },
+#     'vend_product_id': {
+#         'column_id': 'id',
+#         'type': 'text'
+#     },
+#     'stock_status': {
+#         'column_id': 'status5',
+#         'type': 'status'
+#     }
+# }
 
 inventory_mapping = {
     'device_id': {

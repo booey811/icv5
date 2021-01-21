@@ -84,6 +84,62 @@ def test_route_monday():
 #
 #     return 'Refurb Get Phonecheck Data Route Complete'
 #
+# MONDAY ROUTES == Main Board
+# Zenlink -> Create Connection
+@app.route('/monday/main/zenlink/create', methods=['POST'])
+def zenlink_creation():
+    """Creates a ticket on Zendesk and links them'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    main_item = boardItems_main.MainBoardItem(data["event"]["pulseId"])
+    if not main_item.zendesk_id.easy:
+        my_ticket = ticket.ZendeskTicket()
+        my_ticket.main_id.change_value(str(main_item.id))
+        my_ticket.ticket.requester = ticket.ZendeskSearch().search_or_create_user(main_item)
+        new_ticket = my_ticket.client.tickets.create(my_ticket.ticket)
+        main_item.zendesk_id.change_value(str(new_ticket.ticket.id))
+        main_item.zendesk_url.change_value(str(new_ticket.ticket.id))
+        if not main_item.phone.easy:
+            main_item.phone.change_value(str(new_ticket.ticket.requester.phone))
+        elif main_item.phone.easy and not new_ticket.ticket.requester.phone:
+            new_ticket.ticket.requester.phone = main_item.phone.easy
+            my_ticket.client.users.update(new_ticket.ticket.requester)
+    main_item.zenlink.change_value('Active')
+    main_item.apply_column_changes()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Main Board Zendesk Link Creation Complete'
+
+
+# MONDAY ROUTES == Repaired | Inventory Builder | Stock Controller
+# ** -> Item Creation
+@app.route('/monday/eod/do-now', methods=["POST"])
+def check_out_stock():
+    """This route is for checking stock out, and will also build inventory as time goes on'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    main_item = boardItems_main.MainBoardItem(data["event"]["pulseId"])
+
+    main_item.create_inventory_log()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Zendesk Query Creation Complete'
 
 
 # MONDAY ROUTES == Enquiries Board
@@ -135,5 +191,3 @@ def update_enquiry_board_with_destination():
 
 if __name__ == "__main__":
     app.run(load_dotenv=True)
-
-
