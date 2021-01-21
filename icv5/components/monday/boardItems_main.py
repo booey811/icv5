@@ -75,7 +75,7 @@ class MainBoardItem(MainBoardWrapper):
 
         name = name.replace('"', ' Inch')
 
-        new_product_item = boardItems_inventory.InventoryProductItem()
+        new_product_item = boardItems_inventory.InventoryRepairItem()
 
         id_split = part_id.split('-')
 
@@ -135,7 +135,7 @@ class MainBoardItem(MainBoardWrapper):
             results = manage.Manager().search_board(
                 board_id='984924063',
                 column_type='text',
-                column_id=boardItems_inventory.InventoryProductItem.column_dictionary['combined_id']['column_id'],
+                column_id=boardItems_inventory.InventoryRepairItem.column_dictionary['combined_id']['column_id'],
                 value=str(part_id)
             )
 
