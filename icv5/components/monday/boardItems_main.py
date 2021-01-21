@@ -140,12 +140,13 @@ class MainBoardItem(MainBoardWrapper):
             )
 
             if len(results) == 0:
-
                 new_product = self.create_product_item(part_id, info['names'][count], count)
 
             elif len(results) == 1:
-                pass
-
+                for pulse in results:
+                    repairboard_item = boardItems_inventory.InventoryRepairItem(pulse.id)
+                repairboard_item.complete.change_value('Trigger')
+                repairboard_item.apply_column_changes()
             else:
                 print('MainBoardItem.create_inventory_log else route')
                 return False

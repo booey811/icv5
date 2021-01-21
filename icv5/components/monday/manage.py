@@ -46,8 +46,8 @@ class Manager:
         'refurb_returns': '925663428',
         'backmarket_refs': '928091586',
         'inventory_products': '984924063',
-        'inventory_logging': '984943727',
-        'subtest': '985337895'
+        'inventory_parts': '985177480',
+        'inventory_logging': '989177614'
     }
 
     def __init__(self):

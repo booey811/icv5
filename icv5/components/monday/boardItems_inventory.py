@@ -23,8 +23,8 @@ class InventoryWrapper(boardItem.MondayWrapper):
         return self
 
 
-class InventoryProductItem(InventoryWrapper):
-    column_dictionary = column_keys.inventory_product
+class InventoryRepairItem(InventoryWrapper):
+    column_dictionary = column_keys.inventory_repair
 
     def __init__(self, item_id=None, blank_item=True):
         if item_id:
@@ -32,23 +32,9 @@ class InventoryProductItem(InventoryWrapper):
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
-class InventoryProductSubItem(InventoryWrapper):
 
-    column_dictionary = column_keys.inventory_product_sub
-
-    def __init__(self, item_id=None, blank_item=True):
-        if item_id:
-            super().__init__(item_id, self)
-        elif blank_item:
-            super().__init__(None, self, blank_item=blank_item)
-
-    def get_parent_item(self):
-        for pulse in self.cli_client.get_items(ids=[self.parent_id.easy], limit=1):
-            return pulse
-
-
-class InventoryLogItem(InventoryWrapper):
-    column_dictionary = column_keys.inventory_log
+class InventoryPartItem(InventoryWrapper):
+    column_dictionary = column_keys.inventory_part
 
     def __init__(self, item_id=None, blank_item=True):
         if item_id:

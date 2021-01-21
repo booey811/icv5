@@ -91,13 +91,36 @@ class TextValue(ColumnWrapper):
         return {self.id: text}
 
 
+class ReadOnlyValue(ColumnWrapper):
+
+    def __init__(self, repair_object, attribute, column_value):
+        super().__init__(repair_object, attribute, column_value)
+
+        if isinstance(column_value, str):
+            self.text = None
+        else:
+            self.text = column_value.text
+
+        self.easy = self.text
+
+    def __str__(self):
+        return 'Text Custom Column Value'
+
+    def __repr__(self):
+        return 'TextValue(ID: {}, attribute: {}, column_val: {})'.format(
+            self.repair_object.id,
+            self.attribute,
+            self.moncli_val
+        )
+
+
 class NumberValue(ColumnWrapper):
 
     def __init__(self, repair_object, attribute, column_value):
         super().__init__(repair_object, attribute, column_value)
 
         if isinstance(column_value, str):
-            self.number = None
+            self.number = 0
             self.text = None
         else:
             self.number = column_value.number

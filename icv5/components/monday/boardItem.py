@@ -17,7 +17,8 @@ class MondayWrapper:
         'check': columns.CheckboxValue,
         'link': columns.LinkValue,
         'connect': columns.ConnectValue,
-        'subitem': columns.SubitemValue
+        'subitem': columns.SubitemValue,
+        'readonly': columns.ReadOnlyValue
     }
 
     def __init__(self):
