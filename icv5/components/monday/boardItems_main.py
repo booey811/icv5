@@ -39,6 +39,7 @@ class MainBoardItem(MainBoardWrapper):
         self.product_codes = {}
 
     def create_inventory_info(self):
+
         ids = []
         names = []
         colours = {
@@ -51,6 +52,7 @@ class MainBoardItem(MainBoardWrapper):
             'Front Screen (LG)',
             'Front Screen (Tosh)'
         }
+
         id_count = 0
         for repair in self.repairs.ids:
             if self.repairs.labels[id_count] in colours:
@@ -65,7 +67,7 @@ class MainBoardItem(MainBoardWrapper):
                 names.append('{} {} {}'.format(self.device.easy[0], repair, self.colour.easy))
             else:
                 names.append('{} {}'.format(self.device.easy[0], repair))
-
+            name_count += 1
 
         return {'ids': ids, 'names': names}
 
@@ -84,7 +86,6 @@ class MainBoardItem(MainBoardWrapper):
             new_product_item.colour.change_value(str(self.colour.easy))
         new_product_item.device_label.change_value(str(self.device.easy[0]))
         new_product_item.repair_label.change_value(str(self.repairs.easy[count]))
-
 
         created_item = manage.Manager().get_board('inventory_products').add_item(
             item_name=name,
@@ -146,6 +147,7 @@ class MainBoardItem(MainBoardWrapper):
             else:
                 print('MainBoardItem.create_inventory_log else route')
                 return False
-
-
             count += 1
+
+        self.eod.change_value('Complete')
+        self.apply_column_changes()

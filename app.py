@@ -142,7 +142,6 @@ def check_out_stock():
     return 'Zendesk Query Creation Complete'
 
 
-
 # MONDAY ROUTES == Enquiries Board
 # ** -> Item Creation
 @app.route('/monday/enquiry/received', methods=["POST"])
@@ -192,5 +191,3 @@ def update_enquiry_board_with_destination():
 
 if __name__ == "__main__":
     app.run(load_dotenv=True)
-
-
