@@ -135,7 +135,7 @@ class MainBoardItem(MainBoardWrapper):
             results = manage.Manager().search_board(
                 board_id='984924063',
                 column_type='text',
-                column_id=boardItems_inventory.InventoryRepairItem.column_dictionary['combined_id']['column_id'],
+                column_id=boardItems_inventory.InventoryWrapper.new_column_dictionary['combined_id']['column_id'],
                 value=str(part_id)
             )
 

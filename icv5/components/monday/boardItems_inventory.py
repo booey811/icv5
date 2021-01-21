@@ -3,16 +3,16 @@ from icv5.components.monday import boardItem, column_keys, manage
 
 class InventoryWrapper(boardItem.MondayWrapper):
 
-    def __init__(self, item_id, parent_obj, blank_item=False):
+    new_column_dictionary = column_keys.inventory_wrapper
 
-        new_column_dictionary = column_keys.inventory_wrapper
+    def __init__(self, item_id, parent_obj, blank_item=False):
 
         super().__init__()
 
         if not blank_item:
             self.set_client_and_item(self, item_id)
 
-        column_dictionary = {**new_column_dictionary, **parent_obj.column_dictionary}
+        column_dictionary = {**self.new_column_dictionary, **parent_obj.column_dictionary}
         self.set_attributes(self, column_dictionary)
 
         if blank_item:
