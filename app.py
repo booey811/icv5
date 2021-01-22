@@ -132,7 +132,6 @@ def add_products_to_repair():
         data = data[1]
 
     reporting = boardItems_reporting.InventoryMovementItem(data["event"]["pulseId"])
-
     reporting.remove_stock()
 
     print("--- %s seconds ---" % (time.time() - start_time))
