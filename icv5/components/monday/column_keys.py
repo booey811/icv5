@@ -144,7 +144,7 @@ main_wrapper = {
         'column_id': 'status_111',
         'type': 'status'
     },
-    'test_status_column': {
+    'add_to_finance': {
         'column_id': 'add_to_finance',
         'type': 'status'
     }
