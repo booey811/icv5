@@ -31,7 +31,10 @@ class StatusValue(ColumnWrapper):
             self.index = None
         else:
             self.text = column_value.text
-            self.index = column_value.index
+            if json.loads(self.moncli_val.value):
+                self.index = column_value.index
+            else:
+                self.index = 0
 
         self.easy = self.text
 
@@ -98,8 +101,10 @@ class ReadOnlyValue(ColumnWrapper):
 
         if isinstance(column_value, str):
             self.text = None
-        else:
+        elif column_value.text:
             self.text = column_value.text
+        else:
+            self.text = 0
 
         self.easy = self.text
 
@@ -313,18 +318,18 @@ class LinkValue(ColumnWrapper):
 
         self.easy = self.text
 
-    def change_value(self, text):
+    def change_value(self, text, url='https://icorrect.zendesk.com/agent/tickets/{}'):
         """Will change the value for a Link column, however the url for this column is currently
         set to https://icorrect.zendesk.com/{TICKET NUMBER}, so will only work for the Ticket Column"""
 
         text = str(text)
         self.repair_object.adjusted_values[self.id] = {
-            'url': 'https://icorrect.zendesk.com/agent/tickets/{}'.format(text),
+            'url': url.format(text),
             'text': text
         }
         return {
             self.id: {
-                'url': 'https://icorrect.zendesk.com/agent/tickets/{}'.format(text),
+                'url': url.format(text),
                 'text': text
             }
         }

@@ -188,6 +188,22 @@ inventory_repair = {
     'complete': {
         'column_id': 'complete',
         'type': 'status'
+    },
+    'sale_price': {
+        'column_id': 'sale_price',
+        'type': 'readonly'
+    },
+    'supply_price': {
+        'column_id': 'supply_price',
+        'type': 'readonly'
+    },
+    'partboard_id': {
+        'column_id': 'partboard_id',
+        'type': 'readonly'
+    },
+    'quantity': {
+        'column_id': 'quantity',
+        'type': 'readonly'
     }
 }
 
@@ -195,46 +211,50 @@ inventory_part = {
     'quantity': {
         'column_id': 'quantity',
         'type': 'number'
+    },
+    'sale_price': {
+        'column_id': 'sale_price',
+        'type': 'number'
+    },
+    'supply_price': {
+        'column_id': 'supply_price',
+        'type': 'number'
     }
 }
 
-# Reporting Dictionaries
 
+# Reporting Dictionaries
 reporting_wrapper = {
 
 }
 
 reporting_financial = {
-    'device': {
-        'column_id': 'device',
-        'type': 'dropdown'
-    },
-    'repairs': {
-        'column_id': 'repairs',
-        'type': 'dropdown'
+    'mainboard_id': {
+        'column_id': 'mainboard_id',
+        'type': 'readonly'
     }
 }
 
 reporting_financial_sub = {
-    'quantity_after': {
-        'column_id': 'quantity_after',
-        'type': 'number'
-    },
-    'quantity_before': {
-        'column_id': 'quantity_before',
-        'type': 'number'
-    },
     'sale_price': {
-        'column_id': 'repairs',
+        'column_id': 'sale_price',
         'type': 'number'
     },
     'supply_price': {
-        'column_id': 'repairs',
+        'column_id': 'supply_price',
         'type': 'number'
     },
     'quantity_used': {
         'column_id': 'quantity_used',
         'type': 'number'
+    },
+    'discounted_price': {
+        'column_id': 'discounted_price',
+        'type': 'number'
+    },
+    'part_url': {
+        'column_id': 'part_url',
+        'type': 'link'
     }
 }
 
@@ -259,7 +279,6 @@ inventory_movement = {
 
 
 # Screen Refurb Dictionaries
-
 screen_refurb_wrapper = {
 
 }
@@ -322,6 +341,7 @@ screen_refurb_sub_item = {
     },
 
 }
+
 
 # Unit Refurbishment Dictionaries
 refurb_wrapper = {}

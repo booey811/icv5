@@ -1,4 +1,4 @@
-from icv5.components.monday import boardItem, column_keys, boardItems_inventory
+from icv5.components.monday import boardItem, column_keys, boardItems_inventory, boardItems_main
 
 
 class ReportingWrapper(boardItem.MondayWrapper):
@@ -64,4 +64,20 @@ class FinancialCreationItem(ReportingWrapper):
 
 
     def add_repair_subitems(self):
-        pass
+
+        main_item = boardItems_main.MainBoardItem(self.mainboard_id.easy)
+
+        main_item.create_inventory_log('financial', financial_object=self)
+
+
+
+class FinancialCreationSubItem(ReportingWrapper):
+
+    column_dictionary = column_keys.reporting_financial_sub
+
+    def __init__(self, item_id=None, blank_item=True):
+        if item_id:
+            super().__init__(item_id, self)
+
+        elif blank_item:
+            super().__init__(None, self, blank_item=blank_item)

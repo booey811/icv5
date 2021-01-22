@@ -65,6 +65,18 @@ class MondayWrapper:
                         )
                         )
 
+    def change_multiple_attributes(self, list_of_attributevalues, verbose=False, return_only=False):
+
+        for pair in list_of_attributevalues:
+
+            obj_att = getattr(self, pair[0])
+            obj_att.change_value(pair[1])
+
+        if return_only:
+            return
+
+        self.apply_column_changes(verbose)
+
     def apply_column_changes(self, verbose=False):
         if not self.adjusted_values:
             print('No changes detected')
@@ -77,4 +89,11 @@ class MondayWrapper:
                 print(thing)
                 self.item.change_multiple_column_values(thing)
         else:
-            print('repair object has no item (has been created from within program)')
+            raise ItemDoesNotExist
+
+
+class ItemDoesNotExist(Exception):
+
+    def __init__(self):
+
+        print('repair object has no item (has been created from within program as a blank item)')

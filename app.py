@@ -181,11 +181,7 @@ def process_financial_data():
 
     finance = boardItems_reporting.FinancialCreationItem(data["event"]["pulseId"])
 
-
-
-
-
-
+    finance.add_repair_subitems()
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Financial Reporting Route Complete'
