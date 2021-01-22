@@ -3,16 +3,16 @@ from icv5.components.monday import boardItem, column_keys, manage
 
 class InventoryWrapper(boardItem.MondayWrapper):
 
-    def __init__(self, item_id, parent_obj, blank_item=False):
+    new_column_dictionary = column_keys.inventory_wrapper
 
-        new_column_dictionary = column_keys.inventory_wrapper
+    def __init__(self, item_id, parent_obj, blank_item=False):
 
         super().__init__()
 
         if not blank_item:
             self.set_client_and_item(self, item_id)
 
-        column_dictionary = {**new_column_dictionary, **parent_obj.column_dictionary}
+        column_dictionary = {**self.new_column_dictionary, **parent_obj.column_dictionary}
         self.set_attributes(self, column_dictionary)
 
         if blank_item:
@@ -23,8 +23,8 @@ class InventoryWrapper(boardItem.MondayWrapper):
         return self
 
 
-class InventoryProductItem(InventoryWrapper):
-    column_dictionary = column_keys.inventory_product
+class InventoryRepairItem(InventoryWrapper):
+    column_dictionary = column_keys.inventory_repair
 
     def __init__(self, item_id=None, blank_item=True):
         if item_id:
@@ -32,23 +32,9 @@ class InventoryProductItem(InventoryWrapper):
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
-class InventoryProductSubItem(InventoryWrapper):
 
-    column_dictionary = column_keys.inventory_product_sub
-
-    def __init__(self, item_id=None, blank_item=True):
-        if item_id:
-            super().__init__(item_id, self)
-        elif blank_item:
-            super().__init__(None, self, blank_item=blank_item)
-
-    def get_parent_item(self):
-        for pulse in self.cli_client.get_items(ids=[self.parent_id.easy], limit=1):
-            return pulse
-
-
-class InventoryLogItem(InventoryWrapper):
-    column_dictionary = column_keys.inventory_log
+class InventoryPartItem(InventoryWrapper):
+    column_dictionary = column_keys.inventory_part
 
     def __init__(self, item_id=None, blank_item=True):
         if item_id:

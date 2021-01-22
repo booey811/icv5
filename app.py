@@ -4,7 +4,7 @@ import time
 import flask
 
 from icv5.components import unify
-from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage, boardItems_misc
+from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage, boardItems_misc, boardItems_reporting
 from icv5.components.phonecheck import phonecheck
 from icv5.components.zendesk import ticket
 
@@ -140,6 +140,51 @@ def check_out_stock():
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Zendesk Query Creation Complete'
+
+# MONDAY ROUTES == Inventory Movements Board
+# ** -> Item Creation
+@app.route('/monday/inventory/reporting/stock', methods=["POST"])
+def add_products_to_repair():
+    """This Route will add to the inventory movements board'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    reporting = boardItems_reporting.InventoryMovementItem(data["event"]["pulseId"])
+
+    reporting.remove_stock()
+
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Inventory Reporting Route Complete'
+
+# MONDAY ROUTES == Financial Board
+# ** -> Item Creation
+@app.route('/monday/financial/creation', methods=["POST"])
+def process_financial_data():
+    """This Route processes financial board creations'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    finance = boardItems_reporting.FinancialCreationItem(data["event"]["pulseId"])
+
+    finance.add_repair_subitems()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Financial Reporting Route Complete'
 
 
 # MONDAY ROUTES == Enquiries Board

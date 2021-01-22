@@ -1,6 +1,6 @@
 import moncli
 
-from icv5.components.monday import boardItem, exceptions, column_keys, manage, boardItems_inventory
+from icv5.components.monday import boardItem, exceptions, column_keys, manage, boardItems_inventory, boardItems_reporting
 
 
 class MainBoardWrapper(boardItem.MondayWrapper):
@@ -75,7 +75,7 @@ class MainBoardItem(MainBoardWrapper):
 
         name = name.replace('"', ' Inch')
 
-        new_product_item = boardItems_inventory.InventoryProductItem()
+        new_product_item = boardItems_inventory.InventoryRepairItem()
 
         id_split = part_id.split('-')
 
@@ -126,7 +126,7 @@ class MainBoardItem(MainBoardWrapper):
 
         return created_item
 
-    def create_inventory_log(self):
+    def create_inventory_log(self, log_type='main', financial_object=False):
         count = 0
         info = self.create_inventory_info()
 
@@ -135,21 +135,49 @@ class MainBoardItem(MainBoardWrapper):
             results = manage.Manager().search_board(
                 board_id='984924063',
                 column_type='text',
-                column_id=boardItems_inventory.InventoryProductItem.column_dictionary['combined_id']['column_id'],
+                column_id=boardItems_inventory.InventoryWrapper.new_column_dictionary['combined_id']['column_id'],
                 value=str(part_id)
             )
 
             if len(results) == 0:
-
                 new_product = self.create_product_item(part_id, info['names'][count], count)
 
             elif len(results) == 1:
-                pass
-
+                for pulse in results:
+                    repairboard_item = boardItems_inventory.InventoryRepairItem(pulse.id)
+                    if log_type == 'financial' and financial_object:
+                        subitem = boardItems_reporting.FinancialCreationSubItem()
+                        if count > 0:
+                            discounted = int(repairboard_item.sale_price.easy) - 10
+                        else:
+                            discounted = repairboard_item.sale_price.easy
+                        subitem.change_multiple_attributes(
+                            [
+                                ['sale_price', repairboard_item.sale_price.easy],
+                                ['supply_price', repairboard_item.supply_price.easy],
+                                ['discounted_price', discounted],
+                                ['quantity_used', 1]
+                            ],
+                            return_only=True
+                        )
+                        subitem.part_url.change_value(
+                            text=repairboard_item.partboard_id.easy,
+                            url='https://icorrect.monday.com/boards/985177480/pulses/{}'
+                        )
+                        new_subitem = financial_object.item.create_subitem(
+                            item_name=repairboard_item.name,
+                            column_values=subitem.adjusted_values
+                        )
+                    else:
+                        repairboard_item.complete.change_value('Trigger')
+                        repairboard_item.apply_column_changes()
             else:
                 print('MainBoardItem.create_inventory_log else route')
                 return False
             count += 1
+
+        if type == 'financial':
+            return
 
         self.eod.change_value('Complete')
         self.apply_column_changes()

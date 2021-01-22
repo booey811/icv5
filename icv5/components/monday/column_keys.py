@@ -148,11 +148,8 @@ main_wrapper = {
 
 main_item = {}
 
-
 # Inventory Dictionaries
-inventory_wrapper = {}
-
-inventory_product = {
+inventory_wrapper = {
     'combined_id': {
         'column_id': 'combined_id',
         'type': 'text'
@@ -160,61 +157,6 @@ inventory_product = {
     'colour': {
         'column_id': 'colour',
         'type': 'status'
-    },
-    'device': {
-        'column_id': 'device',
-        'type': 'text'
-    },
-    'device_id': {
-        'column_id': 'device_id',
-        'type': 'text'
-    },
-    'repair_id': {
-        'column_id': 'repair_id',
-        'type': 'text'
-    },
-    'colour_id': {
-        'column_id': 'colour_id',
-        'type': 'text'
-    },
-    'device_label': {
-        'column_id': 'device_label',
-        'type': 'text'
-    },
-    'repair_label': {
-        'column_id': 'repair_label',
-        'type': 'text'
-    },
-    'colour_label': {
-        'column_id': 'colour_label',
-        'type': 'text'
-    }
-}
-
-inventory_product_sub = {
-    'combined_id': {
-        'column_id': 'combined_id',
-        'type': 'text'
-    },
-    'colour': {
-        'column_id': 'colour',
-        'type': 'status'
-    },
-    'device': {
-        'column_id': 'device',
-        'type': 'text'
-    },
-    'device_id': {
-        'column_id': 'device_id',
-        'type': 'text'
-    },
-    'repair_id': {
-        'column_id': 'repair_id',
-        'type': 'text'
-    },
-    'colour_id': {
-        'column_id': 'colour_id',
-        'type': 'text'
     },
     'device_label': {
         'column_id': 'device_label',
@@ -228,26 +170,6 @@ inventory_product_sub = {
         'column_id': 'colour_label',
         'type': 'text'
     },
-    'parent_id': {
-        'column_id': 'parent_id',
-        'type': 'text'
-    }
-}
-
-
-inventory_log = {
-    'combined_id': {
-        'column_id': 'combined_id',
-        'type': 'text'
-    },
-    'colour': {
-        'column_id': 'colour',
-        'type': 'status'
-    },
-    'device': {
-        'column_id': 'device',
-        'type': 'text'
-    },
     'device_id': {
         'column_id': 'device_id',
         'type': 'text'
@@ -259,141 +181,104 @@ inventory_log = {
     'colour_id': {
         'column_id': 'colour_id',
         'type': 'text'
+    }
+}
+
+inventory_repair = {
+    'complete': {
+        'column_id': 'complete',
+        'type': 'status'
     },
-    'device_label': {
-        'column_id': 'device_label',
-        'type': 'text'
+    'sale_price': {
+        'column_id': 'sale_price',
+        'type': 'readonly'
     },
-    'repair_label': {
-        'column_id': 'repair_label',
-        'type': 'text'
+    'supply_price': {
+        'column_id': 'supply_price',
+        'type': 'readonly'
     },
-    'colour_label': {
-        'column_id': 'colour_label',
-        'type': 'text'
+    'partboard_id': {
+        'column_id': 'partboard_id',
+        'type': 'readonly'
+    },
+    'quantity': {
+        'column_id': 'quantity',
+        'type': 'readonly'
+    }
+}
+
+inventory_part = {
+    'quantity': {
+        'column_id': 'quantity',
+        'type': 'number'
+    },
+    'sale_price': {
+        'column_id': 'sale_price',
+        'type': 'number'
+    },
+    'supply_price': {
+        'column_id': 'supply_price',
+        'type': 'number'
     }
 }
 
 
-# inventory_stock = {
-#     'sku': {
-#         'column_id': 'better_sku',
-#         'type': 'text'
-#     },
-#     'model': {
-#         'column_id': 'type',
-#         'type': 'text'
-#     },
-#     'category': {
-#         'column_id': 'status',
-#         'type': 'status'
-#     },
-#     'type': {
-#         'column_id': 'status6',
-#         'type': 'status'
-#     },
-#     'stock_level': {
-#         'column_id': 'inventory_oc_walk_in',
-#         'type': 'number'
-#     },
-#     'tracking': {
-#         'column_id': 'text',
-#         'type': 'text'
-#     },
-#     'vend_product_id': {
-#         'column_id': 'id',
-#         'type': 'text'
-#     },
-#     'stock_status': {
-#         'column_id': 'status5',
-#         'type': 'status'
-#     }
-# }
+# Reporting Dictionaries
+reporting_wrapper = {
 
-inventory_mapping = {
-    'device_id': {
-        'column_id': 'numbers3',
-        'type': 'number'
-    },
-    'repair_id': {
-        'column_id': 'device',
-        'type': 'number'
-    },
-    'colour_id': {
-        'column_id': 'numbers44',
-        'type': 'number'
-    },
-    'vend_product_id': {
-        'column_id': 'text',
-        'type': 'text'
-    },
-    'sku': {
-        'column_id': 'text0',
-        'type': 'text'
-    },
-    'category': {
-        'column_id': 'status43',
-        'type': 'status'
-    },
-    'model': {
-        'column_id': 'type',
-        'type': 'text'
-    },
-    'type': {
-        'column_id': 'status_11',
-        'type': 'status'
-    },
-    'retail_price': {
-        'column_id': 'retail_price',
+}
+
+reporting_financial = {
+    'mainboard_id': {
+        'column_id': 'mainboard_id',
+        'type': 'readonly'
+    }
+}
+
+reporting_financial_sub = {
+    'sale_price': {
+        'column_id': 'sale_price',
         'type': 'number'
     },
     'supply_price': {
         'column_id': 'supply_price',
         'type': 'number'
     },
-    'supply_glass_only': {
-        'column_id': 'numbers7',
+    'quantity_used': {
+        'column_id': 'quantity_used',
         'type': 'number'
     },
-    'supply_glass_touch': {
-        'column_id': 'numbers1',
+    'discounted_price': {
+        'column_id': 'discounted_price',
         'type': 'number'
     },
-    'supply_glass_touch_lcd': {
-        'column_id': 'numbers_17',
-        'type': 'number'
-    },
-    'parent_item': {
-        'column_id': 'text1',
-        'type': 'text'
+    'part_url': {
+        'column_id': 'part_url',
+        'type': 'link'
     }
 }
 
-inventory_order = {
-    'parent_item': {
-        'column_id': 'parent_item__stock__1',
-        'type': 'connect'
+inventory_movement = {
+    'quantity': {
+        'column_id': 'quantity',
+        'type': 'readonly'
     },
-    'status': {
-        'column_id': 'status5',
-        'type': 'status'
-    }
-}
-
-inventory_screenrefurb = {
-    'sku': {
-        'column_id': 'text',
-        'type': 'text'
-    },
-    'refurb_quantity': {
-        'column_id': 'numbers',
+    'quantity_before': {
+        'column_id': 'quantity_before',
         'type': 'number'
     },
+    'quantity_after': {
+        'column_id': 'quantity_after',
+        'type': 'number'
+    },
+    'partboard_id': {
+        'column_id': 'partboard_id',
+        'type': 'readonly'
+    }
 }
 
 
 # Screen Refurb Dictionaries
-
 screen_refurb_wrapper = {
 
 }
@@ -456,6 +341,7 @@ screen_refurb_sub_item = {
     },
 
 }
+
 
 # Unit Refurbishment Dictionaries
 refurb_wrapper = {}
