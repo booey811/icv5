@@ -205,11 +205,37 @@ reporting_wrapper = {
 }
 
 reporting_financial = {
-
+    'device': {
+        'column_id': 'device',
+        'type': 'dropdown'
+    },
+    'repairs': {
+        'column_id': 'repairs',
+        'type': 'dropdown'
+    }
 }
 
 reporting_financial_sub = {
-
+    'quantity_after': {
+        'column_id': 'quantity_after',
+        'type': 'number'
+    },
+    'quantity_before': {
+        'column_id': 'quantity_before',
+        'type': 'number'
+    },
+    'sale_price': {
+        'column_id': 'repairs',
+        'type': 'number'
+    },
+    'supply_price': {
+        'column_id': 'repairs',
+        'type': 'number'
+    },
+    'quantity_used': {
+        'column_id': 'quantity_used',
+        'type': 'number'
+    }
 }
 
 inventory_movement = {

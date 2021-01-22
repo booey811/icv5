@@ -35,25 +35,33 @@ class InventoryMovementItem(ReportingWrapper):
             super().__init__(None, self, blank_item=blank_item)
 
     def remove_stock(self):
-
         try:
             quantity = int(self.quantity.easy)
         except ValueError:
             quantity = 0
-
         new_quantity = quantity - 1
-
         self.quantity_before.change_value(quantity)
         self.quantity_after.change_value(new_quantity)
-
         self.adjust_parts_item(new_quantity)
-
         self.apply_column_changes()
 
     def adjust_parts_item(self, new_quantity):
-
         parts_item = boardItems_inventory.InventoryPartItem(self.partboard_id.easy)
-
         parts_item.quantity.change_value(new_quantity)
-
         parts_item.apply_column_changes()
+
+
+class FinancialCreationItem(ReportingWrapper):
+
+    column_dictionary = column_keys.reporting_financial
+
+    def __init__(self, item_id=None, blank_item=True):
+        if item_id:
+            super().__init__(item_id, self)
+
+        elif blank_item:
+            super().__init__(None, self, blank_item=blank_item)
+
+
+    def add_repair_subitems(self):
+        pass

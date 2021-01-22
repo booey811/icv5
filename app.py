@@ -141,7 +141,7 @@ def check_out_stock():
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Zendesk Query Creation Complete'
 
-# MONDAY ROUTES == INventory Movements Board
+# MONDAY ROUTES == Inventory Movements Board
 # ** -> Item Creation
 @app.route('/monday/inventory/reporting/stock', methods=["POST"])
 def add_products_to_repair():
@@ -162,7 +162,33 @@ def add_products_to_repair():
 
 
     print("--- %s seconds ---" % (time.time() - start_time))
-    return 'Inventory Reporting Reoute Complete'
+    return 'Inventory Reporting Route Complete'
+
+# MONDAY ROUTES == Financial Board
+# ** -> Item Creation
+@app.route('/monday/financial/creation', methods=["POST"])
+def process_financial_data():
+    """This Route processes financial board creations'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    finance = boardItems_reporting.FinancialCreationItem(data["event"]["pulseId"])
+
+
+
+
+
+
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Financial Reporting Route Complete'
 
 
 # MONDAY ROUTES == Enquiries Board
