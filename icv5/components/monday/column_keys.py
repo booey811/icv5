@@ -200,7 +200,15 @@ inventory_part = {
 
 # Reporting Dictionaries
 
-reporting_wrapper ={
+reporting_wrapper = {
+
+}
+
+reporting_financial = {
+
+}
+
+reporting_financial_sub = {
 
 }
 
@@ -223,121 +231,6 @@ inventory_movement = {
     }
 }
 
-# inventory_stock = {
-#     'sku': {
-#         'column_id': 'better_sku',
-#         'type': 'text'
-#     },
-#     'model': {
-#         'column_id': 'type',
-#         'type': 'text'
-#     },
-#     'category': {
-#         'column_id': 'status',
-#         'type': 'status'
-#     },
-#     'type': {
-#         'column_id': 'status6',
-#         'type': 'status'
-#     },
-#     'stock_level': {
-#         'column_id': 'inventory_oc_walk_in',
-#         'type': 'number'
-#     },
-#     'tracking': {
-#         'column_id': 'text',
-#         'type': 'text'
-#     },
-#     'vend_product_id': {
-#         'column_id': 'id',
-#         'type': 'text'
-#     },
-#     'stock_status': {
-#         'column_id': 'status5',
-#         'type': 'status'
-#     }
-# }
-
-inventory_mapping = {
-    'device_id': {
-        'column_id': 'numbers3',
-        'type': 'number'
-    },
-    'repair_id': {
-        'column_id': 'device',
-        'type': 'number'
-    },
-    'colour_id': {
-        'column_id': 'numbers44',
-        'type': 'number'
-    },
-    'vend_product_id': {
-        'column_id': 'text',
-        'type': 'text'
-    },
-    'sku': {
-        'column_id': 'text0',
-        'type': 'text'
-    },
-    'category': {
-        'column_id': 'status43',
-        'type': 'status'
-    },
-    'model': {
-        'column_id': 'type',
-        'type': 'text'
-    },
-    'type': {
-        'column_id': 'status_11',
-        'type': 'status'
-    },
-    'retail_price': {
-        'column_id': 'retail_price',
-        'type': 'number'
-    },
-    'supply_price': {
-        'column_id': 'supply_price',
-        'type': 'number'
-    },
-    'supply_glass_only': {
-        'column_id': 'numbers7',
-        'type': 'number'
-    },
-    'supply_glass_touch': {
-        'column_id': 'numbers1',
-        'type': 'number'
-    },
-    'supply_glass_touch_lcd': {
-        'column_id': 'numbers_17',
-        'type': 'number'
-    },
-    'parent_item': {
-        'column_id': 'text1',
-        'type': 'text'
-    }
-}
-
-inventory_order = {
-    'parent_item': {
-        'column_id': 'parent_item__stock__1',
-        'type': 'connect'
-    },
-    'status': {
-        'column_id': 'status5',
-        'type': 'status'
-    }
-}
-
-inventory_screenrefurb = {
-    'sku': {
-        'column_id': 'text',
-        'type': 'text'
-    },
-    'refurb_quantity': {
-        'column_id': 'numbers',
-        'type': 'number'
-    },
-}
 
 # Screen Refurb Dictionaries
 
