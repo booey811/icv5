@@ -140,8 +140,12 @@ main_wrapper = {
         'column_id': 'link1',
         'type': 'link'
     },
+    'test_trigger': {
+        'column_id': 'status_111',
+        'type': 'status'
+    },
     'test_status_column': {
-        'column_id': 'status_10',
+        'column_id': 'add_to_finance',
         'type': 'status'
     }
 }
