@@ -24,7 +24,6 @@ class ReportingWrapper(boardItem.MondayWrapper):
 
 
 class InventoryMovementItem(ReportingWrapper):
-
     column_dictionary = column_keys.inventory_movement
 
     def __init__(self, item_id=None, blank_item=True):
@@ -52,7 +51,6 @@ class InventoryMovementItem(ReportingWrapper):
 
 
 class FinancialCreationItem(ReportingWrapper):
-
     column_dictionary = column_keys.reporting_financial
 
     def __init__(self, item_id=None, blank_item=True):
@@ -62,17 +60,12 @@ class FinancialCreationItem(ReportingWrapper):
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
-
     def add_repair_subitems(self):
-
         main_item = boardItems_main.MainBoardItem(self.mainboard_id.easy)
-
         main_item.create_inventory_log('financial', financial_object=self)
 
 
-
 class FinancialCreationSubItem(ReportingWrapper):
-
     column_dictionary = column_keys.reporting_financial_sub
 
     def __init__(self, item_id=None, blank_item=True):

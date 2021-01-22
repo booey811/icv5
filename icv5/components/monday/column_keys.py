@@ -232,6 +232,14 @@ reporting_financial = {
     'mainboard_id': {
         'column_id': 'mainboard_id',
         'type': 'readonly'
+    },
+    'parts_status': {
+        'column_id': 'parts_status',
+        'type': 'readonly'
+    },
+    'subitems': {
+        'column_id': 'subitems',
+        'type': 'subitem'
     }
 }
 
@@ -624,7 +632,6 @@ refurb_return = {}
 refurb_backlog = {}
 
 # Misc Dictionaries
-
 enquiries_general = {
     'email': {
         'column_id': 'text',
