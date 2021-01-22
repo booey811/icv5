@@ -239,7 +239,7 @@ reporting_financial = {
     },
     'parts_status': {
         'column_id': 'parts_status',
-        'type': 'readonly'
+        'type': 'status'
     },
     'subitems': {
         'column_id': 'subitems',

@@ -95,7 +95,7 @@ class MainBoardItem(MainBoardWrapper):
         )
         return created_item
 
-    def create_inventory_log(self, log_type='main', financial_object=False):
+    def create_inventory_log(self, log_type='main', financial_object=False, retry=False):
 
         count = 0
         info = self.create_inventory_info()
@@ -123,7 +123,7 @@ class MainBoardItem(MainBoardWrapper):
                 elif log_type == 'financial' and financial_object:
                     financial_object.parts_status.change_value('Failed')
                     financial_object.subitems.delete_all_subitems()
-                    return
+                    raise exceptions.ProductBeingCreated(info['names'][count])
 
             # 1 Results - Check Out Stock
             elif len(results) == 1:
@@ -163,7 +163,7 @@ class MainBoardItem(MainBoardWrapper):
 
             count += 1
 
-        if type == 'financial':
+        if log_type == 'financial':
             return
 
         self.eod.change_value('Complete')

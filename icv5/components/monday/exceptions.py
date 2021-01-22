@@ -85,7 +85,8 @@ class NoItemsFoundFromMondayClientSearch(Exception):
         print('Unable to find item with ID {}'.format(search_value))
 
 
-class ProductNeedsToBeCreated(Exception):
+class ProductBeingCreated(Exception):
 
-    def __init__(self):
-        print('This product has not yet been created {}.')
+    def __init__(self, name):
+
+        print('This Product-Repair is Being Created: {}'.format(name))
