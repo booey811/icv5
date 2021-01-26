@@ -140,8 +140,12 @@ main_wrapper = {
         'column_id': 'link1',
         'type': 'link'
     },
-    'test_status_column': {
-        'column_id': 'status_10',
+    'test_trigger': {
+        'column_id': 'status_111',
+        'type': 'status'
+    },
+    'add_to_finance': {
+        'column_id': 'add_to_finance',
         'type': 'status'
     }
 }
@@ -232,6 +236,14 @@ reporting_financial = {
     'mainboard_id': {
         'column_id': 'mainboard_id',
         'type': 'readonly'
+    },
+    'parts_status': {
+        'column_id': 'parts_status',
+        'type': 'status'
+    },
+    'subitems': {
+        'column_id': 'subitems',
+        'type': 'subitem'
     }
 }
 
@@ -624,7 +636,6 @@ refurb_return = {}
 refurb_backlog = {}
 
 # Misc Dictionaries
-
 enquiries_general = {
     'email': {
         'column_id': 'text',

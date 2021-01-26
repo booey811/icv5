@@ -4,7 +4,8 @@ import time
 import flask
 
 from icv5.components import unify
-from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage, boardItems_misc, boardItems_reporting
+from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage, boardItems_misc, \
+    boardItems_reporting
 from icv5.components.phonecheck import phonecheck
 from icv5.components.zendesk import ticket
 
@@ -58,32 +59,6 @@ def test_route_monday():
     return "MONDAY TEST COMPLETE"
 
 
-# ROUTES // ++++++++++++ MONDAY ++++++++++++ \\
-# MONDAY ROUTES == Refurbishment Boards
-# Refurbs [Received -> Tested]
-# @app.route('/monday/refurb-phones/phonecheck', methods=["POST"])
-# def get_phonecheck_details_and_transfer():
-#     """This route is for getting data from Phonecheck's database (grabbed with info from the 'Received' board),
-#     and creating a pulse with corresponding statuses on 'Repairing'"""
-#
-#     start_time = time.time()
-#     webhook = flask.request.get_data()
-#     # Authenticate & Create Object
-#     data = monday_handshake(webhook)
-#     if data[0] is False:
-#         return data[1]
-#     else:
-#         data = data[1]
-#
-#     refurb = unify.UnifiedObject(data)
-#     refurb.received = refurb.create_monday_object(data['event']['pulseId'], 'refurb_received')
-#     checks = phonecheck.PhoneCheckResult(refurb.received.imei)
-#     refurb.received.process_phonecheck_results(checks)
-#
-#     print("--- %s seconds ---" % (time.time() - start_time))
-#
-#     return 'Refurb Get Phonecheck Data Route Complete'
-#
 # MONDAY ROUTES == Main Board
 # Zenlink -> Create Connection
 @app.route('/monday/main/zenlink/create', methods=['POST'])
@@ -135,11 +110,11 @@ def check_out_stock():
         data = data[1]
 
     main_item = boardItems_main.MainBoardItem(data["event"]["pulseId"])
-
     main_item.create_inventory_log()
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Zendesk Query Creation Complete'
+
 
 # MONDAY ROUTES == Inventory Movements Board
 # ** -> Item Creation
@@ -157,12 +132,11 @@ def add_products_to_repair():
         data = data[1]
 
     reporting = boardItems_reporting.InventoryMovementItem(data["event"]["pulseId"])
-
     reporting.remove_stock()
-
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Inventory Reporting Route Complete'
+
 
 # MONDAY ROUTES == Financial Board
 # ** -> Item Creation
@@ -180,7 +154,28 @@ def process_financial_data():
         data = data[1]
 
     finance = boardItems_reporting.FinancialCreationItem(data["event"]["pulseId"])
+    finance.add_repair_subitems()
 
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Financial Reporting Creation Route Complete'
+
+
+# MONDAY ROUTES == Financial Board
+# Parts Status ==> Do Now!
+@app.route('/monday/reporting/financial/get-parts', methods=["POST"])
+def get_parts_for_finance_board():
+    """This Route processes financial board creations'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    finance = boardItems_reporting.FinancialCreationItem(data["event"]["pulseId"])
     finance.add_repair_subitems()
 
     print("--- %s seconds ---" % (time.time() - start_time))

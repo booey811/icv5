@@ -1,6 +1,6 @@
 import json
 
-from icv5.components.monday import exceptions
+from icv5.components.monday import exceptions, manage
 
 
 class ColumnWrapper:
@@ -402,3 +402,10 @@ class SubitemValue(ColumnWrapper):
             self.attribute,
             self.moncli_val
         )
+
+    def delete_all_subitems(self):
+        client = manage.Manager().create_client()
+        if self.ids:
+            for m_id in self.ids:
+                for result in client.get_items(ids=[m_id], limit=1):
+                    result.delete()

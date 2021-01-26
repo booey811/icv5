@@ -1,6 +1,9 @@
+import time
+
 import moncli
 
-from icv5.components.monday import boardItem, exceptions, column_keys, manage, boardItems_inventory, boardItems_reporting
+from icv5.components.monday import boardItem, exceptions, column_keys, manage, boardItems_inventory, \
+    boardItems_reporting
 
 
 class MainBoardWrapper(boardItem.MondayWrapper):
@@ -74,11 +77,8 @@ class MainBoardItem(MainBoardWrapper):
     def create_product_item(self, part_id, name, count):
 
         name = name.replace('"', ' Inch')
-
         new_product_item = boardItems_inventory.InventoryRepairItem()
-
         id_split = part_id.split('-')
-
         new_product_item.combined_id.change_value(part_id)
         new_product_item.device_id.change_value(str(id_split[0]))
         new_product_item.repair_id.change_value(str(id_split[1]))
@@ -93,45 +93,14 @@ class MainBoardItem(MainBoardWrapper):
             item_name=name,
             column_values=new_product_item.adjusted_values
         )
-
         return created_item
 
-    def create_log_item(self, product_item):
+    def create_inventory_log(self, log_type='main', financial_object=False, retry=False):
 
-        # new_log_item = boardItems_inventory.InventoryLogItem()
-        # new_log_item.combined_id.change_value(str(product_item.combined_id))
-        # new_log_item.device_id.change_value(str(product_item.device_id))
-        # new_log_item.repair_id.change_value(str(product_item.repair_id))
-        # new_log_item.colour_id.change_value(str(product_item.colour_id))
-        # new_log_item.colour.change_value(str(product_item.colour))
-        # new_log_item.device_label.change_value(str(product_item.device_label))
-        # new_log_item.repair_label.change_value(str(product_item.repair_label))
-        # new_log_item.colour_label.change_value(str(product_item.colour_label))
-
-        created_item = manage.Manager().get_board('inventory_logging').add_item(
-            item_name=product_item.name
-        )
-
-        tester = boardItems_inventory.InventoryLogItem(created_item.id)
-        tester.combined_id.change_value(str(product_item.combined_id.easy))
-        tester.device_id.change_value(str(product_item.device_id.easy))
-        tester.repair_id.change_value(str(product_item.repair_id.easy))
-        tester.colour_id.change_value(str(product_item.colour_id.easy))
-        # tester.colour.change_value(str(product_item.colour.easy))
-        tester.device_label.change_value(str(product_item.device_label.easy))
-        tester.repair_label.change_value(str(product_item.repair_label.easy))
-        tester.colour_label.change_value(str(product_item.colour_label.easy))
-
-        tester.apply_column_changes(verbose=True)
-
-        return created_item
-
-    def create_inventory_log(self, log_type='main', financial_object=False):
         count = 0
         info = self.create_inventory_info()
 
         for part_id in info['ids']:
-
             results = manage.Manager().search_board(
                 board_id='984924063',
                 column_type='text',
@@ -139,9 +108,24 @@ class MainBoardItem(MainBoardWrapper):
                 value=str(part_id)
             )
 
+            # No Results - Create A Product
             if len(results) == 0:
-                new_product = self.create_product_item(part_id, info['names'][count], count)
+                new_product = boardItems_inventory.InventoryRepairItem(
+                    self.create_product_item(part_id, info['names'][count], count).id
+                )
+                if log_type == 'main':
+                    time.sleep(5)
+                    repairboard_item = boardItems_inventory.InventoryRepairItem(new_product.id)
+                    repairboard_item.complete.change_value('Trigger')
+                    repairboard_item.apply_column_changes()
+                    count += 1
+                    continue
+                elif log_type == 'financial' and financial_object:
+                    financial_object.parts_status.change_value('Failed')
+                    financial_object.subitems.delete_all_subitems()
+                    raise exceptions.ProductBeingCreated(info['names'][count])
 
+            # 1 Results - Check Out Stock
             elif len(results) == 1:
                 for pulse in results:
                     repairboard_item = boardItems_inventory.InventoryRepairItem(pulse.id)
@@ -168,16 +152,20 @@ class MainBoardItem(MainBoardWrapper):
                             item_name=repairboard_item.name,
                             column_values=subitem.adjusted_values
                         )
+                        financial_object.parts_status.change_value('Complete')
+
                     else:
                         repairboard_item.complete.change_value('Trigger')
                         repairboard_item.apply_column_changes()
+
             else:
                 print('MainBoardItem.create_inventory_log else route')
-                return False
+
             count += 1
 
-        if type == 'financial':
+        if log_type == 'financial':
             return
 
         self.eod.change_value('Complete')
+        self.add_to_finance.change_value('Do Now!')
         self.apply_column_changes()

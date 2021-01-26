@@ -1,4 +1,4 @@
-from icv5.components.monday import boardItem, column_keys, boardItems_inventory, boardItems_main
+from icv5.components.monday import boardItem, column_keys, boardItems_inventory, boardItems_main, exceptions
 
 
 class ReportingWrapper(boardItem.MondayWrapper):
@@ -24,7 +24,6 @@ class ReportingWrapper(boardItem.MondayWrapper):
 
 
 class InventoryMovementItem(ReportingWrapper):
-
     column_dictionary = column_keys.inventory_movement
 
     def __init__(self, item_id=None, blank_item=True):
@@ -52,27 +51,36 @@ class InventoryMovementItem(ReportingWrapper):
 
 
 class FinancialCreationItem(ReportingWrapper):
-
     column_dictionary = column_keys.reporting_financial
 
     def __init__(self, item_id=None, blank_item=True):
+        self.mainboard_id = None
         if item_id:
             super().__init__(item_id, self)
 
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
-
     def add_repair_subitems(self):
-
         main_item = boardItems_main.MainBoardItem(self.mainboard_id.easy)
+        try:
+            main_item.create_inventory_log('financial', financial_object=self)
+        except exceptions.ProductBeingCreated:
+            self.parts_status.change_value('Failed')
+            self.subitems.delete_all_subitems()
+        finally:
+            self.adjust_main_board_for_finance()
+            self.apply_column_changes()
 
-        main_item.create_inventory_log('financial', financial_object=self)
-
+    def adjust_main_board_for_finance(self):
+        for item in self.cli_client.get_items(ids=[int(self.mainboard_id.easy)], limit=1):
+            print(item.name)
+            item.change_multiple_column_values({
+                'add_to_finance': {'label': 'Complete'}
+            })
 
 
 class FinancialCreationSubItem(ReportingWrapper):
-
     column_dictionary = column_keys.reporting_financial_sub
 
     def __init__(self, item_id=None, blank_item=True):
