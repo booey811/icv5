@@ -35,7 +35,7 @@ class MondayWrapper:
 
         if webhook_payload:
             self.webhook_payload = webhook_payload
-            self.user_id = webhook_payload['event']['userID']
+            self.user_id = webhook_payload['event']['userId']
 
     def set_client_and_item(self, board_item_object, item_id):
         for pulse in self.cli_client.get_items(ids=[item_id], limit=1):
