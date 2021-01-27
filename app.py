@@ -74,21 +74,25 @@ def zenlink_creation():
     else:
         data = data[1]
 
-    main_item = boardItems_main.MainBoardItem(data["event"]["pulseId"])
+    main_item = boardItems_main.MainBoardItem(item_id=data['event']['pulseId'], webhook_payload=data)
     if not main_item.zendesk_id.easy:
         my_ticket = ticket.ZendeskTicket()
         my_ticket.main_id.change_value(str(main_item.id))
-        my_ticket.ticket.requester = ticket.ZendeskSearch().search_or_create_user(main_item)
-        new_ticket = my_ticket.client.tickets.create(my_ticket.ticket)
-        main_item.zendesk_id.change_value(str(new_ticket.ticket.id))
-        main_item.zendesk_url.change_value(str(new_ticket.ticket.id))
-        if not main_item.phone.easy:
-            main_item.phone.change_value(str(new_ticket.ticket.requester.phone))
-        elif main_item.phone.easy and not new_ticket.ticket.requester.phone:
-            new_ticket.ticket.requester.phone = main_item.phone.easy
-            my_ticket.client.users.update(new_ticket.ticket.requester)
-    main_item.zenlink.change_value('Active')
-    main_item.apply_column_changes()
+        user_search = ticket.ZendeskSearch().search_or_create_user(main_item)
+        if user_search:
+            my_ticket.ticket.requester_id = user_search.id
+            new_ticket = my_ticket.client.tickets.create(my_ticket.ticket)
+            main_item.zendesk_id.change_value(str(new_ticket.ticket.id))
+            main_item.zendesk_url.change_value(str(new_ticket.ticket.id))
+            if not main_item.phone.easy:
+                main_item.phone.change_value(str(new_ticket.ticket.requester.phone))
+            elif main_item.phone.easy and not new_ticket.ticket.requester.phone:
+                new_ticket.ticket.requester.phone = main_item.phone.easy
+                my_ticket.client.users.update(new_ticket.ticket.requester)
+            main_item.zenlink.change_value('Active')
+            main_item.apply_column_changes()
+        else:
+            print('Cannot Create User')
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Main Board Zendesk Link Creation Complete'

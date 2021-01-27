@@ -156,7 +156,8 @@ class Manager:
 
         return result
 
-    def add_update(self, item_object, user_id=False, client=False, update=False, status=False, notify=False):
+    def add_update(self, item_object, client=False, update=False, status=False, notify=False):
+
         # Select Client (Which User Will be posting updates/notifications)
         """Adds updates or notifies monday users, with options to adjust statuses
 
@@ -171,18 +172,14 @@ class Manager:
         Returns:
             False: No item could be found for the provided ID
         """
+
         client = self.create_client(client)
+
         # Post Update, if provided
         if update:
-            item_object.add_update(body=update)
-        # Change Status, if provided
-        # if status:
-        #     # Ensure 'status' is a 2 length list
-        #     if len(status) == 2:
-        #         item.change_column_value(column_id=status[0], column_value={"label": status[1]})
-        #     else:
-        #         print("status list has not been provided correctly")
-        # Send Notification, if requested
+            item_object.item.add_update(body=update)
+
+        # Notify, if provided
         if notify:
             # Check 'notify' is a 2 length list
             if len(notify) == 2:

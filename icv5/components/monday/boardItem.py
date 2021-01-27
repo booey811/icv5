@@ -21,7 +21,7 @@ class MondayWrapper:
         'readonly': columns.ReadOnlyValue
     }
 
-    def __init__(self):
+    def __init__(self, webhook_payload=False):
         self.cli_client = manager.create_client()
         self.id = None
         self.item = None
@@ -32,6 +32,10 @@ class MondayWrapper:
 
         if os.environ['DEBUG'] == 'console':
             self.debug = True
+
+        if webhook_payload:
+            self.webhook_payload = webhook_payload
+            self.user_id = webhook_payload['event']['userId']
 
     def set_client_and_item(self, board_item_object, item_id):
         for pulse in self.cli_client.get_items(ids=[item_id], limit=1):

@@ -1,6 +1,7 @@
 from icv5.components.monday import boardItem, column_keys, exceptions
 
 
+
 class EnquiryWrapper(boardItem.MondayWrapper):
 
     def __init__(self, item_id, parent_obj, blank_item=False):
