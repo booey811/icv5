@@ -78,7 +78,7 @@ class ZendeskSearch(ZendeskWrapper):
                 return item
 
         elif len(search) > 1:
-            raise exceptions.TooManyResultsFromUserEmail(query_object.email.easy)
+            raise exceptions.TooManyResultsFromUserEmail(query_object, query_object.email.easy)
 
         elif len(search) < 1:
             raise exceptions.ZeroResultsFromUserEmail(query_object.email.easy)
