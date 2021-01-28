@@ -69,15 +69,7 @@ class FinancialCreationItem(ReportingWrapper):
             self.parts_status.change_value('Failed')
             self.subitems.delete_all_subitems()
         finally:
-            self.adjust_main_board_for_finance()
             self.apply_column_changes()
-
-    def adjust_main_board_for_finance(self):
-        for item in self.cli_client.get_items(ids=[int(self.mainboard_id.easy)], limit=1):
-            print(item.name)
-            item.change_multiple_column_values({
-                'add_to_finance': {'label': 'Complete'}
-            })
 
 
 class FinancialCreationSubItem(ReportingWrapper):
