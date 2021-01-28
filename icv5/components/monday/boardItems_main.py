@@ -167,5 +167,4 @@ class MainBoardItem(MainBoardWrapper):
             return
 
         self.eod.change_value('Complete')
-        self.add_to_finance.change_value('Do Now!')
         self.apply_column_changes()
