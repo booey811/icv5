@@ -87,7 +87,6 @@ class InventoryStockCountItem(InventoryWrapper):
                         ['quantity_before', int(item.current_quantity.easy)],
                         ['quantity_after', int(item.current_quantity.easy) + int(item.count_quantity.easy)]
                     ],
-                    verbose=True
                 )
 
         else:
