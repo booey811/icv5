@@ -1,13 +1,12 @@
-from icv5.components.monday import boardItem, column_keys, manage
+from icv5.components.monday import boardItem, column_keys, manage, boardItems_reporting
 
 
 class InventoryWrapper(boardItem.MondayWrapper):
-
     new_column_dictionary = column_keys.inventory_wrapper
 
-    def __init__(self, item_id, parent_obj, blank_item=False):
+    def __init__(self, item_id, parent_obj, blank_item=False, webhook_payload=None):
 
-        super().__init__()
+        super().__init__(webhook_payload=webhook_payload)
 
         if not blank_item:
             self.set_client_and_item(self, item_id)
@@ -42,48 +41,54 @@ class InventoryPartItem(InventoryWrapper):
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
-# class InventoryStockItem(InventoryWrapper):
-#
-#     column_dictionary = column_keys.inventory_stock
-#
-#     def __init__(self, item_id=False, blank_item=False):
-#         if item_id:
-#             super().__init__(item_id, self)
-#         elif blank_item:
-#             super().__init__(None, self, blank_item=blank_item)
-#
-#
-# class InventoryMappingItem(InventoryWrapper):
-#
-#     column_dictionary = column_keys.inventory_mapping
-#
-#     def __init__(self, item_id=False, blank_item=False):
-#         if item_id:
-#             super().__init__(item_id, self)
-#         elif blank_item:
-#             super().__init__(None, self, blank_item=blank_item)
-#
-#
-# class InventoryOrderItem(InventoryWrapper):
-#
-#     column_dictionary = column_keys.inventory_order
-#
-#     def __init__(self, item_id=None, blank_item=False):
-#         if item_id:
-#             super().__init__(item_id, self)
-#
-#         elif blank_item:
-#             super().__init__(None, self, blank_item=blank_item)
-#
-#
-# class InventoryScreenRefurbItem(InventoryWrapper):
-#
-#     column_dictionary = column_keys.inventory_screenrefurb
-#
-#     def __init__(self, item_id=False, blank_item=False):
-#         if item_id:
-#             super().__init__(item_id, self)
-#         elif blank_item:
-#             super().__init__(None, self, blank_item=blank_item)
-#
 
+class InventoryStockCountItem(InventoryWrapper):
+    column_dictionary = column_keys.inventory_stock_count
+
+    def __init__(self, item_id=None, webhook_payload=None, blank_item=True):
+        if item_id:
+            super().__init__(item_id, self, webhook_payload=webhook_payload)
+        elif blank_item:
+            super().__init__(None, self, blank_item=blank_item)
+
+    def process_stock_count(self):
+
+        # Get pulses in group & Create List of Objects For Them
+        if self.webhook_payload['event']['groupId'] == 'new_group26476':
+            count_items = []
+            for item in manage.Manager().get_board('inventory_stock_counts').get_group('new_group26476').get_items():
+                count_items.append(InventoryStockCountItem(item.id))
+
+            # Check to see if any duplicate part IDs
+            parts_dict = {}
+            for item in count_items:
+                if item.parts_id.easy in parts_dict:
+                    parts_dict[item.parts_id.easy]['count'] += int(item.count_quantity.easy)
+                else:
+                    parts_dict[item.parts_id.easy] = {
+                        'count': int(item.count_quantity.easy),
+                        'current': int(item.current_quantity.easy)
+                    }
+
+            # Add quantities to inventory
+            for count_item in parts_dict:
+                for result in self.cli_client.get_items(ids=[count_item], limit=1):
+                    result.change_multiple_column_values(
+                        {
+                            'quantity': int(parts_dict[count_item]['count']) + int(parts_dict[count_item]['current'])
+                        }
+                    )
+
+            # Adjust Stock Counts status & values to desired value
+            for item in count_items:
+                item.change_multiple_attributes(
+                    [
+                        ['count_status', 'Added to Stock'],
+                        ['quantity_before', int(item.current_quantity.easy)],
+                        ['quantity_after', int(item.current_quantity.easy) + int(item.count_quantity.easy)]
+                    ],
+                    verbose=True
+                )
+
+        else:
+            print('"Count Status" Status adjusted outside of "New Count Group"')

@@ -226,6 +226,33 @@ inventory_part = {
     }
 }
 
+inventory_stock_count = {
+    'count_quantity': {
+        'column_id': 'count_quantity',
+        'type': 'number'
+    },
+    'count_status': {
+        'column_id': 'count_status',
+        'type': 'status'
+    },
+    'parts_id': {
+        'column_id': 'parts_id',
+        'type': 'text'
+    },
+    'quantity_before': {
+        'column_id': 'quantity_before',
+        'type': 'number'
+    },
+    'quantity_after': {
+        'column_id': 'quantity_after',
+        'type': 'number'
+    },
+    'current_quantity': {
+        'column_id': 'current_quantity',
+        'type': 'readonly'
+    }
+}
+
 
 # Reporting Dictionaries
 reporting_wrapper = {
