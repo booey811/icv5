@@ -75,7 +75,7 @@ class InventoryStockCountItem(InventoryWrapper):
                 for result in self.cli_client.get_items(ids=[count_item], limit=1):
                     result.change_multiple_column_values(
                         {
-                            'quantity': int(parts_dict[count_item]['count']) + int(parts_dict[count_item]['current'])
+                            'quantity': int(parts_dict[count_item]['count'])
                         }
                     )
 
@@ -84,9 +84,8 @@ class InventoryStockCountItem(InventoryWrapper):
                 item.change_multiple_attributes(
                     [
                         ['count_status', 'Added to Stock'],
-                        ['quantity_before', int(item.current_quantity.easy)],
-                        ['quantity_after', int(item.current_quantity.easy) + int(item.count_quantity.easy)]
-                    ],
+                        ['quantity_before', int(item.current_quantity.easy)]
+                    ]
                 )
 
         else:

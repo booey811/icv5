@@ -243,10 +243,6 @@ inventory_stock_count = {
         'column_id': 'quantity_before',
         'type': 'number'
     },
-    'quantity_after': {
-        'column_id': 'quantity_after',
-        'type': 'number'
-    },
     'current_quantity': {
         'column_id': 'current_quantity',
         'type': 'readonly'
