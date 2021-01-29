@@ -246,6 +246,10 @@ inventory_stock_count = {
     'current_quantity': {
         'column_id': 'current_quantity',
         'type': 'readonly'
+    },
+    'supply_price': {
+        'column_id': 'supply_price3',
+        'type': 'number'
     }
 }
 
