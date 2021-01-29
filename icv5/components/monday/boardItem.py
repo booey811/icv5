@@ -21,7 +21,7 @@ class MondayWrapper:
         'readonly': columns.ReadOnlyValue
     }
 
-    def __init__(self, webhook_payload=False):
+    def __init__(self, webhook_payload=None):
         self.cli_client = manager.create_client()
         self.id = None
         self.item = None

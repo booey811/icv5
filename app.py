@@ -99,7 +99,7 @@ def zenlink_creation():
 
 
 # MONDAY ROUTES == Repaired | Inventory Builder | Stock Controller
-# ** -> Item Creation
+# EOD -> Do Now!
 @app.route('/monday/eod/do-now', methods=["POST"])
 def check_out_stock():
     """This route is for checking stock out, and will also build inventory as time goes on'"""
@@ -121,10 +121,10 @@ def check_out_stock():
 
 
 # MONDAY ROUTES == Inventory Movements Board
-# ** -> Item Creation
+#
 @app.route('/monday/inventory/reporting/stock', methods=["POST"])
 def add_products_to_repair():
-    """This Route will add to the inventory movements board'"""
+    """This Route will add to the inventory movements board"""
 
     start_time = time.time()
     webhook = flask.request.get_data()
@@ -141,6 +141,31 @@ def add_products_to_repair():
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Inventory Reporting Route Complete'
 
+
+# MONDAY ROUTES == Stock Counts Board
+# Count Status -> Complete
+@app.route('/monday/inventory/stock-count', methods=["POST"])
+def add_stock_count_to_inventory():
+    """This Route will add to the inventory levels when a stock count is complete"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    count_item_master = boardItems_inventory.InventoryStockCountItem(
+        webhook_payload=data,
+        item_id=data["event"]["pulseId"]
+    )
+
+    count_item_master.process_stock_count()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Stock Count Route Complete'
 
 # MONDAY ROUTES == Financial Board
 # ** -> Item Creation
