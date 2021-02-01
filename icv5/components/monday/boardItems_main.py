@@ -53,7 +53,8 @@ class MainBoardItem(MainBoardWrapper):
             'Front Screen Universal',
             'Rear Glass',
             'Front Screen (LG)',
-            'Front Screen (Tosh)'
+            'Front Screen (Tosh)',
+            'Face ID'
         }
 
         id_count = 0
