@@ -147,6 +147,14 @@ main_wrapper = {
     'add_to_finance': {
         'column_id': 'add_to_finance',
         'type': 'status'
+    },
+    'be_courier_collection': {
+        'column_id': 'be_courier_collection',
+        'type': 'status'
+    },
+    'company': {
+        'column_id': 'company',
+        'type': 'text'
     }
 }
 
