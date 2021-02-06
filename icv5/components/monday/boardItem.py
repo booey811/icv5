@@ -18,7 +18,8 @@ class MondayWrapper:
         'link': columns.LinkValue,
         'connect': columns.ConnectValue,
         'subitem': columns.SubitemValue,
-        'readonly': columns.ReadOnlyValue
+        'readonly': columns.ReadOnlyValue,
+        'hour': columns.HourValue
     }
 
     def __init__(self, webhook_payload=None):

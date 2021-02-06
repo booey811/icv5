@@ -2,12 +2,13 @@ import os
 import json
 import requests
 from pprint import pprint as p
+import datetime
 
 import pycurl
 from io import BytesIO
 
 import settings
-from icv5.components.monday import manage
+from icv5.components.monday import manage, boardItems_misc
 
 
 class StuartClient:
@@ -88,7 +89,7 @@ class StuartClient:
 
         payload = {
             'job': {
-                'assignment_code': 'TESTCODE',  # Will Need to Be Generated
+                'assignment_code': self.generate_assignment_code(direction),  # Will Need to Be Generated
                 'pickup_at': None,  # Will Be Used for Future Bookings
                 'pickups': [],
                 'dropoffs': []
@@ -105,6 +106,18 @@ class StuartClient:
         payload['job']['dropoffs'][0]['package_type'] = 'small'
 
         return payload
+
+    def generate_assignment_code(self, direction):
+
+        item_id = self.main_item.id
+        if direction == 'collection':
+            direct = 'COL'
+        else:
+            direct = 'RTN'
+        time = '{}{}'.format(str(datetime.datetime.now().hour), str(datetime.datetime.now().minute))
+
+        return '{} {} {}'.format(item_id, direct, time)
+
 
     def authenticate(self):
         if self.production:
@@ -185,6 +198,67 @@ class StuartClient:
         }
 
         response = requests.request('POST', url=url, data=payload, headers=headers)
+
+        self.process_successful_booking(response)
+
+    def process_successful_booking(self, response):
+
+        res_dict = json.loads(response.text)
+
+        if response.status_code == 201:
+
+            info = {
+                'assignment_code': res_dict['assignment_code'],
+                'delivery_postcode': res_dict['deliveries'][0]['dropoff']['address']['postcode'],
+                'dropoff_id': res_dict['deliveries'][0]['dropoff']['id'],
+                'delivery_id': res_dict['deliveries'][0]['id'],
+                'collection_postcode': res_dict['deliveries'][0]['pickup']['address']['postcode'],
+                'pickup_id': res_dict['deliveries'][0]['pickup']['id'],
+                'tracking_url': res_dict['deliveries'][0]['tracking_url'],
+                'distance': res_dict['distance'],
+                'stuart_id': res_dict['id'],
+                'cost_ex': res_dict['pricing']['price_tax_excluded'],
+                'tax': res_dict['pricing']['tax_amount'],
+                'estimated_time': res_dict['duration']
+            }
+
+            data = boardItems_misc.StuartDataItem(blank_item=True)
+
+            if info['delivery_postcode'] == 'W1W 8JQ':
+                name = '{} COLLECTION'.format(self.main_item.name)
+            else:
+                name = '{} RETURN'.format(self.main_item.name)
+
+            new_id = manage.Manager().get_board('stuart_data_new').add_item(
+                item_name=name,
+                column_values=data.adjusted_values
+            ).id
+
+            new = boardItems_misc.StuartDataItem(item_id=new_id)
+
+            new.change_multiple_attributes(
+                [
+                    ['assignment_code', str(info['assignment_code'])],
+                    ['stuart_job_id', str(info['stuart_id'])],
+                    ['booking_time', [int(datetime.datetime.now().hour), int(datetime.datetime.now().minute)]],
+                    ['ex_vat', int(info['cost_ex'])],
+                    ['vat', int(info['tax'])],
+                    ['delivery_postcode', str(info['delivery_postcode'])],
+                    ['collection_postcode', str(info['collection_postcode'])],
+                    ['tracking_url', [str('Tracking'), str(info['tracking_url'])]],
+                    ['estimated_time', int(res_dict['duration'])]
+                ],
+            )
+
+            update = ['{}: {}'.format(item, info[item]) for item in info]
+
+            self.main_item.item.add_update(
+                '\n'.join(update)
+            )
+
+            self.main_item.status.change_value('Courier Booked')
+            self.main_item.be_courier_collection.change_value('Booking Complete')
+            self.main_item.apply_column_changes()
 
 
 class PhoneNumberInvalid(Exception):

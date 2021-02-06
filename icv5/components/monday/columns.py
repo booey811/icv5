@@ -94,6 +94,39 @@ class TextValue(ColumnWrapper):
         return {self.id: text}
 
 
+class HourValue(ColumnWrapper):
+
+    def __init__(self, repair_object, attribute, column_value):
+        super().__init__(repair_object, attribute, column_value)
+
+        if isinstance(column_value, str):
+            self.hour = None
+            self.minute = None
+        else:
+            self.hour = column_value.hour
+            self.minute = column_value.minute
+
+        self.easy = '{}:{}'.format(self.hour, self.minute)
+
+    def __str__(self):
+        return 'Hour Custom Column Value'
+
+    def __repr__(self):
+        return 'HourValue(ID: {}, attribute: {}, column_val: {})'.format(
+            self.repair_object.id,
+            self.attribute,
+            self.moncli_val
+        )
+
+    def change_value(self, hour_minute: list):
+        """Changes this column value and adds it to the 'adjusted_columns' attribute of repair
+        keep_original allows the creation of a new value while maintaining the original object
+        but may not work in some cases"""
+
+        self.repair_object.adjusted_values[self.id] = {'hour': hour_minute[0], 'minute': hour_minute[1]}
+        return {self.id: {'hour': hour_minute[0], 'minute': hour_minute[1]}}
+
+
 class ReadOnlyValue(ColumnWrapper):
 
     def __init__(self, repair_object, attribute, column_value):
@@ -318,18 +351,19 @@ class LinkValue(ColumnWrapper):
 
         self.easy = self.text
 
-    def change_value(self, text, url='https://icorrect.zendesk.com/agent/tickets/{}'):
+    def change_value(self, text_url: list):
         """Will change the value for a Link column, however the url for this column is currently
         set to https://icorrect.zendesk.com/{TICKET NUMBER}, so will only work for the Ticket Column"""
 
-        text = str(text)
+        text = str(text_url[0])
+        url = str(text_url[1])
         self.repair_object.adjusted_values[self.id] = {
-            'url': url.format(text),
+            'url': url,
             'text': text
         }
         return {
             self.id: {
-                'url': url.format(text),
+                'url': url,
                 'text': text
             }
         }
@@ -382,7 +416,7 @@ class SubitemValue(ColumnWrapper):
         super().__init__(repair_object, attribute, column_value)
 
         if isinstance(column_value, str):
-            self.ids =None
+            self.ids = None
 
         else:
             convert = json.loads(column_value.value)

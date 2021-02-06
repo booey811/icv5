@@ -84,7 +84,12 @@ def zenlink_creation():
             my_ticket.ticket.requester_id = user_search.id
             new_ticket = my_ticket.client.tickets.create(my_ticket.ticket)
             main_item.zendesk_id.change_value(str(new_ticket.ticket.id))
-            main_item.zendesk_url.change_value(str(new_ticket.ticket.id))
+            main_item.zendesk_url.change_value(
+                [
+                    str(new_ticket.ticket.id),
+                    str('https://icorrect.zendesk.com/agent/tickets/{}'.format(new_ticket.ticket.id))
+                ]
+            )
             if not main_item.phone.easy:
                 main_item.phone.change_value(str(new_ticket.ticket.requester.phone))
             elif main_item.phone.easy and not new_ticket.ticket.requester.phone:
@@ -145,8 +150,6 @@ def book_courier_collection():
     except (stuart.DistanceTooGreat or stuart.EmailInvalid or stuart.CannotGeocodeAddress or
             stuart.UnknownValidationError or stuart.CourierDetailsMissing or stuart.PhoneNumberInvalid):
         pass
-
-    print('PAST ALL THE EXCEPTIONS')
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Courier Collection Booking Route Complete'

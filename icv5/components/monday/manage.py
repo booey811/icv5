@@ -48,7 +48,8 @@ class Manager:
         'inventory_products': '984924063',
         'inventory_parts': '985177480',
         'inventory_logging': '989177614',
-        'inventory_stock_counts': '1008986497'
+        'inventory_stock_counts': '1008986497',
+        'stuart_data_new': '1031579094'
     }
 
     def __init__(self):
