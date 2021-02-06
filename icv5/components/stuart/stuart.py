@@ -256,7 +256,6 @@ class StuartClient:
                 '\n'.join(update)
             )
 
-            self.main_item.status.change_value('Courier Booked')
             self.main_item.be_courier_collection.change_value('Booking Complete')
             self.main_item.apply_column_changes()
 
