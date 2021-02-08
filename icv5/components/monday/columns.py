@@ -284,14 +284,24 @@ class DateValue(ColumnWrapper):
             self.moncli_val
         )
 
-    def change_value(self, date, time):
+    def change_value(self, date=None, time=None):
         """Changes this column value and adds it to the 'adjusted_columns' attribute of repair
         keep_original allows the creation of a new value while maintaining the original object
         but may not work in some cases"""
 
-        raise exceptions.NotDevelopedError('Date')
-        # self.repair_object.adjusted_values[self.id] = {'date': date, 'time': time}
-        # return {self.id: {'date': date, 'time': time}}
+        if date and time:
+            result = {self.id: {'date': date, 'time': time}}
+        elif date and not time:
+            result = {self.id: {'date': date, 'time': self.time}}
+        elif time and not date:
+            result = {self.id: {'date': self.date, 'time': time}}
+        else:
+            result = None
+            print('DateValue change_value else route')
+
+        self.repair_object.adjusted_values[self.id] = {'date': result[self.id]['date'], 'time': result[self.id]['time']}
+        return result
+
 
 
 class CheckboxValue(ColumnWrapper):
