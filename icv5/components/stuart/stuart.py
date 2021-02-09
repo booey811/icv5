@@ -9,6 +9,7 @@ from io import BytesIO
 
 import settings
 from icv5.components.monday import manage, boardItems_misc
+from icv5.components.zendesk import ticket
 
 
 class StuartClient:
@@ -90,7 +91,6 @@ class StuartClient:
         payload = {
             'job': {
                 'assignment_code': self.generate_assignment_code(direction),  # Will Need to Be Generated
-                'pickup_at': None,  # Will Be Used for Future Bookings
                 'pickups': [],
                 'dropoffs': []
             }
@@ -99,6 +99,10 @@ class StuartClient:
         if direction == 'collection':
             payload['job']['pickups'].append(client_address)
             payload['job']['dropoffs'].append(icorrect_address)
+            date_time = self.set_collection_datetime()
+            if date_time:
+                print('future booking')
+                payload['job']['pickup_at'] = date_time
         elif direction == 'delivery':
             payload['job']['pickups'].append(icorrect_address)
             payload['job']['dropoffs'].append(client_address)
@@ -107,8 +111,15 @@ class StuartClient:
 
         return payload
 
-    def generate_assignment_code(self, direction):
+    def set_collection_datetime(self):
+        main_time = self.main_item.booking_date.time
+        main_date = self.main_item.booking_date.date
+        if not main_time or not main_date:
+            return False
+        formatted = '{}T{}'.format(main_date, main_time)
+        return formatted
 
+    def generate_assignment_code(self, direction):
         item_id = self.main_item.id
         if direction == 'collection':
             direct = 'COL'
@@ -117,7 +128,6 @@ class StuartClient:
         time = '{}{}'.format(str(datetime.datetime.now().hour), str(datetime.datetime.now().minute))
 
         return '{} {} {}'.format(item_id, direct, time)
-
 
     def authenticate(self):
         if self.production:
@@ -140,26 +150,19 @@ class StuartClient:
         self.token = info["access_token"]
 
     def validate_job_details(self, direction):
-
         if not self.token:
             self.authenticate()
-
         if self.production:
             url = 'https://api.stuart.com/v2/jobs/validate'
         else:
             url = 'https://api.sandbox.stuart.com/v2/jobs/validate'
-
         job_payload = self.create_job_payload(direction)
-
         payload = json.dumps(job_payload)
-
         headers = {
             'content-type': "application/json",
             'Authorization': 'Bearer {}'.format(self.token)
         }
-
         response = requests.request('POST', url=url, data=payload, headers=headers)
-
         try:
             self.process_job_validation_response(response)
             return job_payload
@@ -180,7 +183,7 @@ class StuartClient:
         elif response_info['error'] == 'JOB_DISTANCE_NOT_ALLOWED':
             raise DistanceTooGreat(self.main_item)
         else:
-            raise UnknownValidationError(self.main_item)
+            raise UnknownValidationError(self.main_item, response)
 
     def book_courier_job(self, job_payload):
         if not self.token:
@@ -191,28 +194,24 @@ class StuartClient:
             url = 'https://api.sandbox.stuart.com/v2/jobs'
 
         payload = json.dumps(job_payload)
-
         headers = {
             'content-type': "application/json",
             'Authorization': 'Bearer {}'.format(self.token)
         }
-
         response = requests.request('POST', url=url, data=payload, headers=headers)
-
         self.process_successful_booking(response)
 
     def process_successful_booking(self, response):
-
         res_dict = json.loads(response.text)
-
         if response.status_code == 201:
-
             info = {
                 'assignment_code': res_dict['assignment_code'],
                 'delivery_postcode': res_dict['deliveries'][0]['dropoff']['address']['postcode'],
+                'delivery_address': res_dict['deliveries'][0]['dropoff']['address']['street'],
                 'dropoff_id': res_dict['deliveries'][0]['dropoff']['id'],
                 'delivery_id': res_dict['deliveries'][0]['id'],
                 'collection_postcode': res_dict['deliveries'][0]['pickup']['address']['postcode'],
+                'collection_address': res_dict['deliveries'][0]['pickup']['address']['street'],
                 'pickup_id': res_dict['deliveries'][0]['pickup']['id'],
                 'tracking_url': res_dict['deliveries'][0]['tracking_url'],
                 'distance': res_dict['distance'],
@@ -221,21 +220,16 @@ class StuartClient:
                 'tax': res_dict['pricing']['tax_amount'],
                 'estimated_time': res_dict['duration']
             }
-
             data = boardItems_misc.StuartDataItem(blank_item=True)
-
             if info['delivery_postcode'] == 'W1W 8JQ':
                 name = '{} COLLECTION'.format(self.main_item.name)
             else:
                 name = '{} RETURN'.format(self.main_item.name)
-
             new_id = manage.Manager().get_board('stuart_data_new').add_item(
                 item_name=name,
                 column_values=data.adjusted_values
             ).id
-
             new = boardItems_misc.StuartDataItem(item_id=new_id)
-
             new.change_multiple_attributes(
                 [
                     ['assignment_code', str(info['assignment_code'])],
@@ -249,8 +243,9 @@ class StuartClient:
                     ['estimated_time', int(res_dict['duration'])]
                 ],
             )
-
             update = ['{}: {}'.format(item, info[item]) for item in info]
+
+            self.add_tracking_to_zendesk(update, info['tracking_url'])
 
             self.main_item.item.add_update(
                 '\n'.join(update)
@@ -258,6 +253,14 @@ class StuartClient:
 
             self.main_item.be_courier_collection.change_value('Booking Complete')
             self.main_item.apply_column_changes()
+
+    def add_tracking_to_zendesk(self, update, tracking_url):
+        if not self.main_item.zendesk_id.easy:
+            update.append('\n\nTHERE IS NO ZENDESK TICKET ASSOCIATED WITH THIS REPAIR - NO TRACKING LINK HAS BEEN SENT TO THE CUSTOMER')
+        else:
+            zendesk = ticket.ZendeskTicket(str(self.main_item.zendesk_id.easy))
+            zendesk.tracking_url.change_value(tracking_url)
+            zendesk.client.tickets.update(zendesk.ticket)
 
 
 class PhoneNumberInvalid(Exception):
@@ -394,13 +397,16 @@ class DistanceTooGreat(Exception):
 
 
 class UnknownValidationError(Exception):
-    def __init__(self, main_item):
+    def __init__(self, main_item, response):
         print('During Job Validation with Stuart an Unknown Error Has Occurred')
+        print(response.text)
         manage.Manager().add_update(
             main_item,
             client_account='error',
-            update='During Job Validation with Stuart for {} an Unknown Error Has Occurred'.format(
+            update='During Job Validation with Stuart for {} an Unknown Error Has Occurred\n\n{}\n{}'.format(
                 main_item.name,
+                response,
+                response.text.replace('"', '')
             ),
             notify=[
                 'During Job Validation with Stuart for {} an Unknown Error Has Occurred'.format(

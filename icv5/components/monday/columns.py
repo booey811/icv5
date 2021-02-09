@@ -263,6 +263,8 @@ class DateValue(ColumnWrapper):
         self.date = None
         self.time = None
         self.text = None
+        self.easy = None
+
 
         if self.moncli_val:
             values_raw = json.loads(self.moncli_val.value)

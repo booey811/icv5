@@ -5,7 +5,18 @@ from icv5.components.monday import boardItems_main
 from icv5.components.stuart import stuart
 
 
-test = boardItems_main.MainBoardItem(1002886137)
-
-test.booking_date.change_value(date='2025-12-25', time='13:00:00')
-test.apply_column_changes()
+# main_item = boardItems_main.MainBoardItem(item_id=1002886137, webhook_payload={
+#     'event': {
+#         'userId': 4251271
+#     }
+# })
+#
+# courier = stuart.StuartClient(main_item=main_item)
+#
+# try:
+#     job_payload = courier.validate_job_details('collection')
+#     courier.book_courier_job(job_payload)
+# except (stuart.DistanceTooGreat or stuart.EmailInvalid or stuart.CannotGeocodeAddress or
+#         stuart.UnknownValidationError or stuart.CourierDetailsMissing or stuart.PhoneNumberInvalid):
+#     pass
+#

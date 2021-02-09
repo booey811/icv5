@@ -15,11 +15,11 @@ class ZendeskCustomTextField(ZendeskCustomFieldWrapper):
 
         self.ticket_object = ticket_object
         self.custom_field = custom_field
-        self.value = custom_field.value
+        self.value = custom_field['value']
 
     def change_value(self, text_to_add):
         self.ticket_object.ticket.custom_fields.append(CustomField(
-            id=self.custom_field.id,
+            id=self.custom_field['id'],
             value=str(text_to_add)
         ))
 
@@ -32,7 +32,7 @@ class ZendeskCustomDropdownField(ZendeskCustomFieldWrapper):
         self.ticket_object = ticket_object
         self.custom_field = custom_field
 
-        self.associated_tag = custom_field.value
+        self.associated_tag = custom_field['value']
 
     def change_value(self, tag_to_add=None, remove=False):
 
@@ -52,13 +52,13 @@ class ZendeskCustomCheckboxField(ZendeskCustomFieldWrapper):
         self.ticket_object = ticket_object
         self.custom_field = custom_field
 
-        self.value = self.custom_field.value
+        self.value = self.custom_field['value']
 
     def change_value(self, settings_option):
         if not settings_option:
-            self.custom_field.value = False
+            self.custom_field['value'] = False
         elif settings_option:
-            self.custom_field.value = True
+            self.custom_field['value'] = True
 
 
 ids_to_attributes = {
@@ -91,7 +91,7 @@ ids_to_attributes = {
         'type': ZendeskCustomTextField
     },
     360006704157: {
-        'attribute': 'tracking_link',
+        'attribute': 'tracking_url',
         'type': ZendeskCustomTextField
     },
     360008818998: {
