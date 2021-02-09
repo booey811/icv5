@@ -191,16 +191,12 @@ def add_stock_count_to_inventory():
     else:
         data = data[1]
 
-    count_item_master = boardItems_inventory.InventoryStockCountItem(
-        webhook_payload=data,
-        item_id=data["event"]["pulseId"]
-    )
+    count_item = boardItems_inventory.InventoryStockCountItem(item_id=data["event"]["pulseId"], webhook_payload=data)
 
-    count_item_master.process_stock_count()
+    count_item.process_stock_count()
 
     print("--- %s seconds ---" % (time.time() - start_time))
-    return 'Stock Count Route Complete'
-
+    return 'Stock Count Item Route Complete'
 
 # MONDAY ROUTES == Financial Board
 # ** -> Item Creation

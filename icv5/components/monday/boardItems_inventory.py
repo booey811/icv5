@@ -51,7 +51,7 @@ class InventoryStockCountItem(InventoryWrapper):
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
-    def process_stock_count(self):
+    def process_stock_count_deprecated(self):
 
         # Get pulses in group & Create List of Objects For Them
         if self.webhook_payload['event']['groupId'] == 'new_group26476':
@@ -90,3 +90,25 @@ class InventoryStockCountItem(InventoryWrapper):
 
         else:
             print('"Count Status" Status adjusted outside of "New Count Group"')
+
+
+    def process_stock_count(self):
+
+        # Currently does not account for one part being counted multiple times,
+        # the last value entered would be the one used to set stock
+
+        # Create stock object
+        stock_object = InventoryPartItem(self.parts_id.easy)
+        quantity_before = stock_object.quantity.easy
+        # Adjust Stock level
+        stock_object.quantity.change_value(int(self.count_quantity.easy))
+        # Adjust Stock Count Board Item
+
+        self.quantity_before.change_value(quantity_before)
+
+        self.count_status.change_value('Added to Stock')
+
+        stock_object.apply_column_changes(verbose=True)
+        self.apply_column_changes(verbose=True)
+
+
