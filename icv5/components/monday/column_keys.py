@@ -160,6 +160,7 @@ main_wrapper = {
 
 main_item = {}
 
+
 # Inventory Dictionaries
 inventory_wrapper = {
     'combined_id': {
@@ -323,7 +324,6 @@ inventory_movement = {
         'type': 'readonly'
     }
 }
-
 
 
 # Screen Refurb Dictionaries
@@ -670,6 +670,7 @@ refurb_final = {}
 refurb_return = {}
 
 refurb_backlog = {}
+
 
 # Misc Dictionaries
 enquiries_general = {
