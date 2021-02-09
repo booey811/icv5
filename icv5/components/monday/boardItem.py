@@ -3,7 +3,7 @@ from pprint import pprint
 
 from icv5.components.monday import columns
 from icv5.components.monday import exceptions
-from icv5.components.monday.manage import manager
+from icv5.components.monday.manage import Manager
 import settings
 
 
@@ -18,11 +18,12 @@ class MondayWrapper:
         'link': columns.LinkValue,
         'connect': columns.ConnectValue,
         'subitem': columns.SubitemValue,
-        'readonly': columns.ReadOnlyValue
+        'readonly': columns.ReadOnlyValue,
+        'hour': columns.HourValue
     }
 
     def __init__(self, webhook_payload=None):
-        self.cli_client = manager.create_client()
+        self.cli_client = Manager().create_client()
         self.id = None
         self.item = None
         self.name = None

@@ -38,6 +38,26 @@ class GeneralEnquiryItem(EnquiryWrapper):
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
+class StuartDataItem(boardItem.MondayWrapper):
+
+    column_dictionary = column_keys.stuart_data
+
+    def __init__(self, item_id=None, blank_item=False):
+
+        super().__init__()
+
+        if not blank_item:
+            self.set_client_and_item(self, item_id)
+
+        self.set_attributes(self, self.column_dictionary)
+
+        if blank_item:
+            self.create_blank_item()
+
+    def create_blank_item(self):
+
+        return self
+
 
 class NoEmailOnMonday(Exception):
 

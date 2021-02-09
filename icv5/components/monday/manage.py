@@ -48,7 +48,8 @@ class Manager:
         'inventory_products': '984924063',
         'inventory_parts': '985177480',
         'inventory_logging': '989177614',
-        'inventory_stock_counts': '1008986497'
+        'inventory_stock_counts': '1008986497',
+        'stuart_data_new': '1031579094'
     }
 
     def __init__(self):
@@ -157,7 +158,7 @@ class Manager:
 
         return result
 
-    def add_update(self, item_object, client=False, update=False, status=False, notify=False):
+    def add_update(self, item_object, client_account=False, update=False, status=False, notify=False):
 
         # Select Client (Which User Will be posting updates/notifications)
         """Adds updates or notifies monday users, with options to adjust statuses
@@ -174,7 +175,7 @@ class Manager:
             False: No item could be found for the provided ID
         """
 
-        client = self.create_client(client)
+        client = self.create_client(client_account)
 
         # Post Update, if provided
         if update:
@@ -193,6 +194,3 @@ class Manager:
             else:
                 print("notify list has not been provided correctly")
 
-
-
-manager = Manager()

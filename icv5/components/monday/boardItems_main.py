@@ -145,8 +145,10 @@ class MainBoardItem(MainBoardWrapper):
                             return_only=True
                         )
                         subitem.part_url.change_value(
-                            text=repairboard_item.partboard_id.easy,
-                            url='https://icorrect.monday.com/boards/985177480/pulses/{}'
+                            [
+                                repairboard_item.partboard_id.easy,
+                                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(repairboard_item.id))
+                            ]
                         )
                         new_subitem = financial_object.item.create_subitem(
                             item_name=repairboard_item.name,

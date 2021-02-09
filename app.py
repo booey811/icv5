@@ -3,11 +3,12 @@ import time
 
 import flask
 
-from icv5.components import unify
+from icv5.components import unify, stuart
 from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage, boardItems_misc, \
     boardItems_reporting
 from icv5.components.phonecheck import phonecheck
 from icv5.components.zendesk import ticket
+from icv5.components.stuart import stuart
 
 # APP SET UP
 app = flask.Flask(__name__)
@@ -83,7 +84,12 @@ def zenlink_creation():
             my_ticket.ticket.requester_id = user_search.id
             new_ticket = my_ticket.client.tickets.create(my_ticket.ticket)
             main_item.zendesk_id.change_value(str(new_ticket.ticket.id))
-            main_item.zendesk_url.change_value(str(new_ticket.ticket.id))
+            main_item.zendesk_url.change_value(
+                [
+                    str(new_ticket.ticket.id),
+                    str('https://icorrect.zendesk.com/agent/tickets/{}'.format(new_ticket.ticket.id))
+                ]
+            )
             if not main_item.phone.easy:
                 main_item.phone.change_value(str(new_ticket.ticket.requester.phone))
             elif main_item.phone.easy and not new_ticket.ticket.requester.phone:
@@ -120,8 +126,36 @@ def check_out_stock():
     return 'Zendesk Query Creation Complete'
 
 
+# MONDAY ROUTES == Book Collection
+# be_courier_collection ==> Attempting Booking
+@app.route('/monday/couriers/collect', methods=["POST"])
+def book_courier_collection():
+    """This route is for booking a stuart courier collection'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    main_item = boardItems_main.MainBoardItem(item_id=data["event"]["pulseId"], webhook_payload=data)
+    courier = stuart.StuartClient(main_item=main_item)
+
+    try:
+        job_payload = courier.validate_job_details('collection')
+        courier.book_courier_job(job_payload)
+    except (stuart.DistanceTooGreat or stuart.EmailInvalid or stuart.CannotGeocodeAddress or
+            stuart.UnknownValidationError or stuart.CourierDetailsMissing or stuart.PhoneNumberInvalid):
+        pass
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Courier Collection Booking Route Complete'
+
+
 # MONDAY ROUTES == Inventory Movements Board
-#
 @app.route('/monday/inventory/reporting/stock', methods=["POST"])
 def add_products_to_repair():
     """This Route will add to the inventory movements board"""
@@ -166,6 +200,7 @@ def add_stock_count_to_inventory():
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Stock Count Route Complete'
+
 
 # MONDAY ROUTES == Financial Board
 # ** -> Item Creation

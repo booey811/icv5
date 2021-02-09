@@ -147,6 +147,14 @@ main_wrapper = {
     'add_to_finance': {
         'column_id': 'add_to_finance',
         'type': 'status'
+    },
+    'be_courier_collection': {
+        'column_id': 'be_courier_collection',
+        'type': 'status'
+    },
+    'company': {
+        'column_id': 'company',
+        'type': 'text'
     }
 }
 
@@ -315,6 +323,7 @@ inventory_movement = {
         'type': 'readonly'
     }
 }
+
 
 
 # Screen Refurb Dictionaries
@@ -686,6 +695,73 @@ enquiries_general = {
     },
     'zendesk_id': {
         'column_id': 'zendesk_id',
+        'type': 'text'
+    }
+}
+
+stuart_data = {
+    'stuart_job_id': {
+        'column_id': 'stuart_job_id',
+        'type': 'text'
+    },
+    'booking_time': {
+        'column_id': 'booking_time6',
+        'type': 'hour'
+    },
+    'collection_time': {
+        'column_id': 'collection_time4',
+        'type': 'hour'
+    },
+    'delivery_time': {
+        'column_id': 'delivery_time',
+        'type': 'hour'
+    },
+    'ex_vat': {
+        'column_id': 'cost__ex_vat_',
+        'type': 'number'
+    },
+    'vat': {
+        'column_id': 'vat',
+        'type': 'number'
+    },
+    'collection_postcode': {
+        'column_id': 'collection_postcode5',
+        'type': 'text'
+    },
+    'delivery_postcode': {
+        'column_id': 'delivery_postcode',
+        'type': 'text'
+    },
+    'distance': {
+        'column_id': 'distance',
+        'type': 'number'
+    },
+    'estimated_time': {
+        'column_id': 'estimated_time__mins_',
+        'type': 'number'
+    },
+    'date': {
+        'column_id': 'date',
+        'type': 'date'
+    },
+    'collection_to_delivery': {
+        'column_id': 'collection____delivery',
+        'type': 'text'
+    },
+    'booking_to_delivery': {
+        'column_id': 'booking____delivery',
+        'type': 'text'
+    },
+    'booking_to_collection': {
+        'column_id': 'booking____collection',
+        'type': 'text'
+    },
+    'tracking_url': {
+        'column_id': 'tracking_url',
+        'type': 'link'
+    },
+    'assignment_code': {
+        'column_id': 'assignment_code',
         'type': 'text'
     }
 }
