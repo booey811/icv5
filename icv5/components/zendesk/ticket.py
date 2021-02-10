@@ -103,7 +103,6 @@ class ZendeskSearch(ZendeskWrapper):
                 pass
 
     def search_or_create_user(self, query_object):
-
         try:
             user = self.search_user_by_email(query_object)
             self.check_user_details(user, query_object)
@@ -151,11 +150,11 @@ class ZendeskTicket(ZendeskWrapper):
                 })
 
         for item in self.ticket.custom_fields:
-            if item.id in custom_fields.ids_to_attributes:
+            if item['id'] in custom_fields.ids_to_attributes:
                 setattr(
                     self,
-                    custom_fields.ids_to_attributes[item.id]['attribute'],
-                    custom_fields.ids_to_attributes[item.id]['type'](self, item)
+                    custom_fields.ids_to_attributes[item['id']]['attribute'],
+                    custom_fields.ids_to_attributes[item['id']]['type'](self, item)
                 )
 
     def add_tag(self, tag):
