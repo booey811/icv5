@@ -64,7 +64,6 @@ class FinancialCreationItem(ReportingWrapper):
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
-
     def add_repair_subitems(self):
         main_item = boardItems_main.MainBoardItem(self.mainboard_id.easy)
         try:
@@ -74,6 +73,7 @@ class FinancialCreationItem(ReportingWrapper):
             self.subitems.delete_all_subitems()
         finally:
             self.apply_column_changes()
+
 
 class FinancialItem(ReportingWrapper):
     column_dictionary = column_keys.reporting_financial
@@ -86,7 +86,6 @@ class FinancialItem(ReportingWrapper):
 
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
-
 
     def process_repair_data(self):
 
@@ -114,39 +113,33 @@ class FinancialItem(ReportingWrapper):
             else:
                 raise exceptions.TooManyItemsFoundInProducts(info['names'][count], part_id, self)
 
+            self.add_repair_subitem(product)
 
+    def add_repair_subitem(self, product):
+        # Add Subitem
+        subitem = FinancialSubItem()
 
-            # Add to Movements Board
+        subitem.change_multiple_attributes(
+            [
+                ['sale_price', product.sale_price.easy],
+                ['supply_price', product.supply_price.easy],
+                ['quantity_used', 1]
+            ],
+            return_only=True
+        )
+        subitem.part_url.change_value(
+            [
+                product.partboard_id.easy,
+                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(product.id))
+            ]
+        )
 
+        new_subitem = self.item.create_subitem(
+            item_name=product.name,
+            column_values=subitem.adjusted_values
+        )
 
-            # Add Subitem
-            subitem = FinancialSubItem()
-
-            subitem.change_multiple_attributes(
-                [
-                    ['sale_price', product.sale_price.easy],
-                    ['supply_price', product.supply_price.easy],
-                    ['quantity_used', 1]
-                ],
-                return_only=True
-            )
-            subitem.part_url.change_value(
-                [
-                    product.partboard_id.easy,
-                    'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(product.id))
-                ]
-            )
-
-            new_subitem = self.item.create_subitem(
-                item_name=product.name,
-                column_values=subitem.adjusted_values
-            )
-
-
-
-
-
-
+        return new_subitem
 
     def create_inventory_log(self, log_type='main', financial_object=False, retry=False):
 
@@ -202,7 +195,8 @@ class FinancialItem(ReportingWrapper):
                         subitem.part_url.change_value(
                             [
                                 repairboard_item.partboard_id.easy,
-                                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(repairboard_item.id))
+                                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(
+                                    str(repairboard_item.id))
                             ]
                         )
                         new_subitem = financial_object.item.create_subitem(
@@ -247,7 +241,6 @@ class FinancialItem(ReportingWrapper):
         )
         return created_item
 
-
     @staticmethod
     def create_inventory_info(main_item):
 
@@ -283,6 +276,7 @@ class FinancialItem(ReportingWrapper):
 
         return {'ids': ids, 'names': names}
 
+
 class FinancialSubItem(ReportingWrapper):
     column_dictionary = column_keys.reporting_financial_sub
 
@@ -303,4 +297,3 @@ class FinancialCreationSubItem(ReportingWrapper):
 
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
-
