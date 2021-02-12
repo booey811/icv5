@@ -115,6 +115,8 @@ class FinancialItem(ReportingWrapper):
 
             self.add_repair_subitem(product)
 
+        self.parts_status.change_value('Complete')
+
     def add_repair_subitem(self, product):
         # Add Subitem
         subitem = FinancialSubItem()
@@ -130,7 +132,7 @@ class FinancialItem(ReportingWrapper):
         subitem.part_url.change_value(
             [
                 product.partboard_id.easy,
-                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(product.id))
+                [str(product.name), 'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(product.id))]
             ]
         )
 
