@@ -270,8 +270,8 @@ reporting_wrapper = {
 
 reporting_financial = {
     'mainboard_id': {
-        'column_id': 'mainboard_id',
-        'type': 'readonly'
+        'column_id': 'mainboard_id6',
+        'type': 'text'
     },
     'parts_status': {
         'column_id': 'parts_status',
