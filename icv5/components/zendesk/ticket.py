@@ -144,17 +144,16 @@ class ZendeskTicket(ZendeskWrapper):
         if not self.ticket.custom_fields:
             self.ticket.custom_fields = []
             for field in custom_fields.ids_to_attributes:
-                self.ticket.custom_fields.append({
-                    'id': field,
-                    'value': ''
-                })
+                self.ticket.custom_fields.append(
+                    CustomField(id=field, value='')
+                )
 
         for item in self.ticket.custom_fields:
-            if item['id'] in custom_fields.ids_to_attributes:
+            if item.id in custom_fields.ids_to_attributes:
                 setattr(
                     self,
-                    custom_fields.ids_to_attributes[item['id']]['attribute'],
-                    custom_fields.ids_to_attributes[item['id']]['type'](self, item)
+                    custom_fields.ids_to_attributes[item.id]['attribute'],
+                    custom_fields.ids_to_attributes[item.id]['type'](self, item)
                 )
 
     def add_tag(self, tag):

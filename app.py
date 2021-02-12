@@ -236,7 +236,8 @@ def get_parts_for_finance_board():
         data = data[1]
 
     finance = boardItems_reporting.FinancialCreationItem(data["event"]["pulseId"])
-    finance.add_repair_subitems()
+    main_item = boardItems_main.MainBoardItem(finance.mainboard_id.easy)
+    finance.add_repair_subitems(main_item)
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Financial Reporting Route Complete'

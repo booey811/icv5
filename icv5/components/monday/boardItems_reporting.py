@@ -61,8 +61,7 @@ class FinancialCreationItem(ReportingWrapper):
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
-    def add_repair_subitems(self):
-        main_item = boardItems_main.MainBoardItem(self.mainboard_id.easy)
+    def add_repair_subitems(self, main_item):
         try:
             main_item.create_inventory_log('financial', financial_object=self)
         except exceptions.ProductBeingCreated:
