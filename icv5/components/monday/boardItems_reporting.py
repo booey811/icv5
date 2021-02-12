@@ -126,6 +126,8 @@ class FinancialItem(ReportingWrapper):
 
             self.add_repair_subitem(product, log_item)
 
+            product.adjust_stock(subtract=1)
+
         self.parts_status.change_value('Complete')
         self.apply_column_changes()
 

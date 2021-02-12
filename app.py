@@ -155,28 +155,7 @@ def book_courier_collection():
     return 'Courier Collection Booking Route Complete'
 
 
-# MONDAY ROUTES == Inventory Movements Board
-@app.route('/monday/inventory/reporting/stock', methods=["POST"])
-def add_products_to_repair():
-    """This Route will add to the inventory movements board"""
-
-    start_time = time.time()
-    webhook = flask.request.get_data()
-    # Authenticate & Create Object
-    data = monday_handshake(webhook)
-    if data[0] is False:
-        return data[1]
-    else:
-        data = data[1]
-
-    reporting = boardItems_reporting.InventoryMovementItem(data["event"]["pulseId"])
-    reporting.remove_stock()
-
-    print("--- %s seconds ---" % (time.time() - start_time))
-    return 'Inventory Reporting Route Complete'
-
-
-# MONDAY ROUTES == Stock Counts Board
+ # MONDAY ROUTES == Stock Counts Board
 # Count Status -> Complete
 @app.route('/monday/inventory/stock-count', methods=["POST"])
 def add_stock_count_to_inventory():
