@@ -199,28 +199,6 @@ def add_stock_count_to_inventory():
     return 'Stock Count Item Route Complete'
 
 # MONDAY ROUTES == Financial Board
-# ** -> Item Creation
-@app.route('/monday/financial/creation', methods=["POST"])
-def process_financial_data():
-    """This Route processes financial board creations'"""
-
-    start_time = time.time()
-    webhook = flask.request.get_data()
-    # Authenticate & Create Object
-    data = monday_handshake(webhook)
-    if data[0] is False:
-        return data[1]
-    else:
-        data = data[1]
-
-    finance = boardItems_reporting.FinancialCreationItem(data["event"]["pulseId"])
-    finance.add_repair_subitems()
-
-    print("--- %s seconds ---" % (time.time() - start_time))
-    return 'Financial Reporting Creation Route Complete'
-
-
-# MONDAY ROUTES == Financial Board
 # Parts Status ==> Do Now!
 @app.route('/monday/reporting/financial/get-parts', methods=["POST"])
 def get_parts_for_finance_board():

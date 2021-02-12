@@ -1,5 +1,6 @@
 from pprint import pprint as p
 import time
+import datetime
 
 from icv5.components.monday import boardItem, column_keys, boardItems_inventory, boardItems_main, exceptions, manage
 
@@ -30,6 +31,11 @@ class InventoryMovementItem(ReportingWrapper):
     column_dictionary = column_keys.inventory_movement
 
     def __init__(self, item_id=None, blank_item=True):
+        self.partboard_id = None
+        self.quantity_after = None
+        self.quantity_before = None
+        self.quantity = None
+        self.date = None
         if item_id:
             super().__init__(item_id, self)
 
@@ -57,6 +63,8 @@ class FinancialCreationItem(ReportingWrapper):
     column_dictionary = column_keys.reporting_financial
 
     def __init__(self, item_id=None, blank_item=True):
+        self.subitems = None
+        self.parts_status = None
         self.mainboard_id = None
         if item_id:
             super().__init__(item_id, self)
@@ -79,6 +87,7 @@ class FinancialItem(ReportingWrapper):
     column_dictionary = column_keys.reporting_financial
 
     def __init__(self, item_id=None, main_item=None, blank_item=True):
+        self.parts_status = None
         self.mainboard_id = None
         self.main_item = main_item
         if item_id:
@@ -113,20 +122,23 @@ class FinancialItem(ReportingWrapper):
             else:
                 raise exceptions.TooManyItemsFoundInProducts(info['names'][count], part_id, self)
 
-            self.add_repair_subitem(product)
+            log_item = self.log_to_movements_board(product)
+
+            self.add_repair_subitem(product, log_item)
 
         self.parts_status.change_value('Complete')
         self.apply_column_changes()
 
-    def add_repair_subitem(self, product):
-        # Add Subitem
+    def add_repair_subitem(self, product, movement_log):
         subitem = FinancialSubItem()
 
         subitem.change_multiple_attributes(
             [
                 ['sale_price', product.sale_price.easy],
                 ['supply_price', product.supply_price.easy],
-                ['quantity_used', 1]
+                ['quantity_used', 1],
+                ['partboard_id', product.id],
+                ['movementboard_id', movement_log.id]
             ],
             return_only=True
         )
@@ -144,84 +156,29 @@ class FinancialItem(ReportingWrapper):
 
         return new_subitem
 
-    def create_inventory_log(self, log_type='main', financial_object=False, retry=False):
+    def log_to_movements_board(self, product):
 
-        self.main_item = boardItems_main.MainBoardItem(str(self.mainboard_id))
+        log = InventoryMovementItem()
+        log.change_multiple_attributes(
+            [
+                ['quantity_before', int(product.quantity.easy)],
+                ['quantity_after', int(product.quantity.easy) - 1],
+                ['mainboard_name', str(self.main_item.name)],
+                ['mainboard_id', str(self.main_item.id)],
+                ['product_id', str(product.id)]
+            ],
+            return_only=True
+        )
 
-        count = 0
-        info = self.create_inventory_info(self.main_item)
+        today = datetime.datetime.now().date()
+        log.date.change_value(str(today))
 
-        for part_id in info['ids']:
-            results = manage.Manager().search_board(
-                board_id='984924063',
-                column_type='text',
-                column_id=boardItems_inventory.InventoryWrapper.new_column_dictionary['combined_id']['column_id'],
-                value=str(part_id)
-            )
+        new_item = manage.Manager().get_board('inventory_logging').add_item(
+            item_name=product.name.replace('"', ''),
+            column_values=log.adjusted_values
+        )
 
-            # No Results - Create A Product
-            if len(results) == 0:
-                new_product = boardItems_inventory.InventoryRepairItem(
-                    self.create_product_item(self.main_item, part_id, info['names'][count], count).id
-                )
-                if log_type == 'main':
-                    time.sleep(5)
-                    repairboard_item = boardItems_inventory.InventoryRepairItem(new_product.id)
-                    repairboard_item.complete.change_value('Trigger')
-                    repairboard_item.apply_column_changes()
-                    count += 1
-                    continue
-                elif log_type == 'financial' and financial_object:
-                    financial_object.parts_status.change_value('Failed')
-                    financial_object.subitems.delete_all_subitems()
-                    raise exceptions.ProductBeingCreated(info['names'][count])
-
-            # 1 Results - Check Out Stock
-            elif len(results) == 1:
-                for pulse in results:
-                    repairboard_item = boardItems_inventory.InventoryRepairItem(pulse.id)
-                    if log_type == 'financial' and financial_object:
-                        subitem = FinancialSubItem()
-                        if count > 0:
-                            discounted = int(repairboard_item.sale_price.easy) - 10
-                        else:
-                            discounted = repairboard_item.sale_price.easy
-                        subitem.change_multiple_attributes(
-                            [
-                                ['sale_price', repairboard_item.sale_price.easy],
-                                ['supply_price', repairboard_item.supply_price.easy],
-                                ['discounted_price', discounted],
-                                ['quantity_used', 1]
-                            ],
-                            return_only=True
-                        )
-                        subitem.part_url.change_value(
-                            [
-                                repairboard_item.partboard_id.easy,
-                                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(
-                                    str(repairboard_item.id))
-                            ]
-                        )
-                        new_subitem = financial_object.item.create_subitem(
-                            item_name=repairboard_item.name,
-                            column_values=subitem.adjusted_values
-                        )
-                        financial_object.parts_status.change_value('Complete')
-
-                    else:
-                        repairboard_item.complete.change_value('Trigger')
-                        repairboard_item.apply_column_changes()
-
-            else:
-                print('MainBoardItem.create_inventory_log else route')
-
-            count += 1
-
-        if log_type == 'financial':
-            return
-
-        self.eod.change_value('Complete')
-        self.apply_column_changes()
+        return new_item
 
     @staticmethod
     def create_product_item(main_item, part_id, name, count):
@@ -284,6 +241,7 @@ class FinancialSubItem(ReportingWrapper):
     column_dictionary = column_keys.reporting_financial_sub
 
     def __init__(self, item_id=None, blank_item=True):
+        self.part_url = None
         if item_id:
             super().__init__(item_id, self)
 
