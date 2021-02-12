@@ -116,6 +116,7 @@ class FinancialItem(ReportingWrapper):
             self.add_repair_subitem(product)
 
         self.parts_status.change_value('Complete')
+        self.apply_column_changes()
 
     def add_repair_subitem(self, product):
         # Add Subitem
