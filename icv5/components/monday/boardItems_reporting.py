@@ -84,6 +84,7 @@ class FinancialCreationItem(ReportingWrapper):
 
 
 class FinancialItem(ReportingWrapper):
+
     column_dictionary = column_keys.reporting_financial
 
     def __init__(self, item_id=None, main_item=None, blank_item=True):
@@ -95,92 +96,6 @@ class FinancialItem(ReportingWrapper):
 
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
-
-    def process_repair_data(self):
-
-        self.main_item = boardItems_main.MainBoardItem(item_id=str(self.mainboard_id.easy))
-
-        count = 0
-        info = self.create_inventory_info(self.main_item)
-
-        for part_id in info['ids']:
-            results = manage.Manager().search_board(
-                board_id='984924063',
-                column_type='text',
-                column_id=boardItems_inventory.InventoryWrapper.new_column_dictionary['combined_id']['column_id'],
-                value=str(part_id)
-            )
-
-            if len(results) == 0:
-                new_item = self.create_product_item(self.main_item, part_id, info['names'][count], count)
-                product = boardItems_inventory.InventoryRepairItem(new_item.id)
-
-            elif len(results) == 1:
-                for item in results:
-                    product = boardItems_inventory.InventoryRepairItem(item.id)
-
-            else:
-                raise exceptions.TooManyItemsFoundInProducts(info['names'][count], part_id, self)
-
-            log_item = self.log_to_movements_board(product)
-
-            self.add_repair_subitem(product, log_item)
-
-            product.adjust_stock(subtract=1)
-
-        self.parts_status.change_value('Complete')
-        self.apply_column_changes()
-
-    def add_repair_subitem(self, product, movement_log):
-        subitem = FinancialSubItem()
-
-        subitem.change_multiple_attributes(
-            [
-                ['sale_price', product.sale_price.easy],
-                ['supply_price', product.supply_price.easy],
-                ['quantity_used', 1],
-                ['partboard_id', product.id],
-                ['movementboard_id', movement_log.id]
-            ],
-            return_only=True
-        )
-        subitem.part_url.change_value(
-            [
-                str(product.partboard_id.easy),
-                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(product.id))
-            ]
-        )
-
-        new_subitem = self.item.create_subitem(
-            item_name=product.name.replace('"', ''),
-            column_values=subitem.adjusted_values
-        )
-
-        return new_subitem
-
-    def log_to_movements_board(self, product):
-
-        log = InventoryMovementItem()
-        log.change_multiple_attributes(
-            [
-                ['quantity_before', int(product.quantity.easy)],
-                ['quantity_after', int(product.quantity.easy) - 1],
-                ['mainboard_name', str(self.main_item.name)],
-                ['mainboard_id', str(self.main_item.id)],
-                ['product_id', str(product.id)]
-            ],
-            return_only=True
-        )
-
-        today = datetime.datetime.now().date()
-        log.date.change_value(str(today))
-
-        new_item = manage.Manager().get_board('inventory_logging').add_item(
-            item_name=product.name.replace('"', ''),
-            column_values=log.adjusted_values
-        )
-
-        return new_item
 
     @staticmethod
     def create_product_item(main_item, part_id, name, count):
@@ -238,17 +153,129 @@ class FinancialItem(ReportingWrapper):
 
         return {'ids': ids, 'names': names}
 
+    def process_repair_data(self):
+
+        self.main_item = boardItems_main.MainBoardItem(item_id=str(self.mainboard_id.easy))
+
+        count = 0
+        info = self.create_inventory_info(self.main_item)
+
+        for part_id in info['ids']:
+            results = manage.Manager().search_board(
+                board_id='984924063',
+                column_type='text',
+                column_id=boardItems_inventory.InventoryWrapper.new_column_dictionary['combined_id']['column_id'],
+                value=str(part_id)
+            )
+
+            if len(results) == 0:
+                new_item = self.create_product_item(self.main_item, part_id, info['names'][count], count)
+                product = boardItems_inventory.InventoryRepairItem(new_item.id)
+
+            elif len(results) == 1:
+                for item in results:
+                    product = boardItems_inventory.InventoryRepairItem(item.id)
+
+            else:
+                raise exceptions.TooManyItemsFoundInProducts(info['names'][count], part_id, self)
+
+            log_item = self.log_to_movements_board(product)
+
+            self.add_repair_subitem(product, log_item)
+
+            product.adjust_stock(subtract=1)
+
+        self.parts_status.change_value('Complete')
+        self.apply_column_changes()
+
+    def add_repair_subitem(self, product, movement_log):
+
+        subitem = FinancialSubItem()
+
+        subitem.change_multiple_attributes(
+            [
+                ['sale_price', product.sale_price.easy],
+                ['supply_price', product.supply_price.easy],
+                ['quantity_used', 1],
+                ['partboard_id', str(product.partboard_id.easy)],
+                ['movementboard_id', movement_log.id]
+            ],
+            return_only=True
+        )
+        subitem.part_url.change_value(
+            [
+                str(product.partboard_id.easy),
+                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(product.id))
+            ]
+        )
+
+        new_subitem = self.item.create_subitem(
+            item_name=product.name.replace('"', ''),
+            column_values=subitem.adjusted_values
+        )
+
+        return new_subitem
+
+    def log_to_movements_board(self, product):
+
+        log = InventoryMovementItem()
+        log.change_multiple_attributes(
+            [
+                ['quantity_before', int(product.quantity.easy)],
+                ['quantity_after', int(product.quantity.easy) - 1],
+                ['mainboard_name', str(self.main_item.name)],
+                ['mainboard_id', str(self.main_item.id)],
+                ['product_id', str(product.id)]
+            ],
+            return_only=True
+        )
+
+        today = datetime.datetime.now().date()
+        log.date.change_value(str(today))
+
+        new_item = manage.Manager().get_board('inventory_logging').add_item(
+            item_name=product.name.replace('"', ''),
+            column_values=log.adjusted_values
+        )
+
+        return new_item
+
+    def void_entry(self):
+
+        for subitem_id in self.subitems.ids:
+
+            subitem = FinancialSubItem(subitem_id)
+
+            subitem.void_entry()
+
+            subitem.item.delete()
 
 class FinancialSubItem(ReportingWrapper):
+
     column_dictionary = column_keys.reporting_financial_sub
 
     def __init__(self, item_id=None, blank_item=True):
+
+        self.movementboard_id = None
+        self.quantity_used = None
+        self.partboard_id = None
         self.part_url = None
+
         if item_id:
             super().__init__(item_id, self)
 
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
+
+    def void_entry(self):
+
+        stock = boardItems_inventory.InventoryPartItem(item_id=self.partboard_id.easy, blank_item=False)
+        stock.quantity.change_value(int(self.quantity_used.easy))
+        stock.apply_column_changes()
+
+        for item in self.cli_client.get_items(ids=[int(self.movementboard_id.easy)], limit=1):
+            item.delete()
+            return
 
 
 class FinancialCreationSubItem(ReportingWrapper):

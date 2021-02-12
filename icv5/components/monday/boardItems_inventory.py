@@ -57,12 +57,13 @@ class InventoryRepairItem(InventoryWrapper):
 
 
 class InventoryPartItem(InventoryWrapper):
+
     column_dictionary = column_keys.inventory_part
 
     def __init__(self, item_id=None, blank_item=True):
         self.quantity = None
         if item_id:
-            super().__init__(item_id, self)
+            super().__init__(item_id, self, blank_item=False)
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 

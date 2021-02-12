@@ -104,28 +104,6 @@ def zenlink_creation():
     return 'Main Board Zendesk Link Creation Complete'
 
 
-# MONDAY ROUTES == Repaired | Inventory Builder | Stock Controller
-# EOD -> Do Now!
-@app.route('/monday/eod/do-now', methods=["POST"])
-def check_out_stock():
-    """This route is for checking stock out, and will also build inventory as time goes on'"""
-
-    start_time = time.time()
-    webhook = flask.request.get_data()
-    # Authenticate & Create Object
-    data = monday_handshake(webhook)
-    if data[0] is False:
-        return data[1]
-    else:
-        data = data[1]
-
-    main_item = boardItems_main.MainBoardItem(data["event"]["pulseId"])
-    main_item.create_inventory_log()
-
-    print("--- %s seconds ---" % (time.time() - start_time))
-    return 'Zendesk Query Creation Complete'
-
-
 # MONDAY ROUTES == Book Collection
 # be_courier_collection ==> Attempting Booking
 @app.route('/monday/couriers/collect', methods=["POST"])
@@ -198,6 +176,28 @@ def get_parts_for_finance_board():
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Financial Reporting Route Complete'
 
+
+# MONDAY ROUTES == Financial Board
+# Parts Status ==> Void
+@app.route('/monday/reporting/financial/void', methods=["POST"])
+def void_financial_entry():
+    """This Route processes financial board creations'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    finance = boardItems_reporting.FinancialItem(item_id=data["event"]["pulseId"])
+
+    finance.void_entry()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Financial Void Route Complete'
 
 # MONDAY ROUTES == Enquiries Board
 # ** -> Item Creation

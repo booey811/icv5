@@ -9,4 +9,4 @@ from icv5.components.monday import boardItems_main, boardItems_inventory, manage
 from icv5.components.stuart import stuart
 
 finance = boardItems_reporting.FinancialItem(item_id=1048897492)
-finance.process_repair_data()
+finance.void_entry()
