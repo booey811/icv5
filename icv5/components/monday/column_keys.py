@@ -303,6 +303,14 @@ reporting_financial_sub = {
     'part_url': {
         'column_id': 'part_url',
         'type': 'link'
+    },
+    'movementboard_id': {
+        'column_id': 'movementboard_id',
+        'type': 'text'
+    },
+    'partboard_id': {
+        'column_id': 'partboard_id',
+        'type': 'text'
     }
 }
 
@@ -322,6 +330,22 @@ inventory_movement = {
     'partboard_id': {
         'column_id': 'partboard_id',
         'type': 'readonly'
+    },
+    'date': {
+        'column_id': 'date',
+        'type': 'date'
+    },
+    'mainboard_name': {
+        'column_id': 'mainboard_name',
+        'type': 'text'
+    },
+    'mainboard_id': {
+        'column_id': 'mainboard_id',
+        'type': 'text'
+    },
+    'product_id': {
+        'column_id': 'product_id',
+        'type': 'text'
     }
 }
 
