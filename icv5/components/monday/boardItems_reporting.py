@@ -131,13 +131,13 @@ class FinancialItem(ReportingWrapper):
         )
         subitem.part_url.change_value(
             [
-                product.partboard_id.easy,
-                [str(product.name), 'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(product.id))]
+                str(product.partboard_id.easy),
+                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(product.id))
             ]
         )
 
         new_subitem = self.item.create_subitem(
-            item_name=product.name,
+            item_name=product.name.replace('"', ''),
             column_values=subitem.adjusted_values
         )
 
