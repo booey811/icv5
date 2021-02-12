@@ -26,6 +26,8 @@ class InventoryRepairItem(InventoryWrapper):
     column_dictionary = column_keys.inventory_repair
 
     def __init__(self, item_id=None, blank_item=True):
+        self.partboard_id = None
+        self.quantity = None
         self.complete = None
         self.repair_label = None
         self.device_label = None
@@ -39,6 +41,19 @@ class InventoryRepairItem(InventoryWrapper):
             super().__init__(item_id, self)
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
+
+    def adjust_stock(self, add=None, subtract=None):
+
+        part = InventoryPartItem(str(self.partboard_id.easy))
+
+        if add and subtract:
+            raise CannotAddAndSubtract
+        elif add:
+            part.quantity.change_value(int(part.quantity.easy) + int(add))
+        elif subtract:
+            part.quantity.change_value(int(part.quantity.easy) - int(subtract))
+
+        part.apply_column_changes()
 
 
 class InventoryPartItem(InventoryWrapper):
@@ -124,3 +139,9 @@ class InventoryStockCountItem(InventoryWrapper):
 
         stock_object.apply_column_changes(verbose=True)
         self.apply_column_changes(verbose=True)
+
+
+class CannotAddAndSubtract(Exception):
+
+    def __init__(self):
+        print('You have tried to ad and subtract from a stock item simultaneously')
