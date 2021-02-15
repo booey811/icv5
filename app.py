@@ -133,6 +133,56 @@ def book_courier_collection():
     return 'Courier Collection Booking Route Complete'
 
 
+# MONDAY ROUTES == Book Return
+# be_courier_return ==> Attempting Booking
+@app.route('/monday/couriers/deliver', methods=["POST"])
+def book_courier_return():
+    """This route is for booking a stuart courier collection'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    main_item = boardItems_main.MainBoardItem(item_id=data["event"]["pulseId"], webhook_payload=data)
+    courier = stuart.StuartClient(main_item=main_item)
+
+    try:
+        job_payload = courier.validate_job_details('delivery')
+        courier.book_courier_job(job_payload)
+    except (stuart.DistanceTooGreat or stuart.EmailInvalid or stuart.CannotGeocodeAddress or
+            stuart.UnknownValidationError or stuart.CourierDetailsMissing or stuart.PhoneNumberInvalid):
+        pass
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Courier Delivery Booking Route Complete'
+
+
+# MONDAY ROUTES == Inventory Movements Board
+@app.route('/monday/inventory/reporting/stock', methods=["POST"])
+def add_products_to_repair():
+    """This Route will add to the inventory movements board"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    reporting = boardItems_reporting.InventoryMovementItem(data["event"]["pulseId"])
+    reporting.remove_stock()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Inventory Reporting Route Complete'
+
+
 # MONDAY ROUTES == Stock Counts Board
 # Count Status -> Complete
 @app.route('/monday/inventory/stock-count', methods=["POST"])
@@ -194,7 +244,6 @@ def void_financial_entry():
         data = data[1]
 
     finance = boardItems_reporting.FinancialItem(item_id=data["event"]["pulseId"])
-
     finance.void_entry()
 
     print("--- %s seconds ---" % (time.time() - start_time))
