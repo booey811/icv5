@@ -46,12 +46,17 @@ class InventoryRepairItem(InventoryWrapper):
 
         part = InventoryPartItem(str(self.partboard_id.easy))
 
+        if not part.quantity.easy:
+            quantity = 0
+        else:
+            quantity = int(part.quantity.easy)
+
         if add and subtract:
             raise CannotAddAndSubtract
         elif add:
-            part.quantity.change_value(int(part.quantity.easy) + int(add))
+            part.quantity.change_value(int(quantity) + int(add))
         elif subtract:
-            part.quantity.change_value(int(part.quantity.easy) - int(subtract))
+            part.quantity.change_value(int(quantity) - int(subtract))
 
         part.apply_column_changes()
 

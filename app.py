@@ -133,7 +133,7 @@ def book_courier_collection():
     return 'Courier Collection Booking Route Complete'
 
 
- # MONDAY ROUTES == Stock Counts Board
+# MONDAY ROUTES == Stock Counts Board
 # Count Status -> Complete
 @app.route('/monday/inventory/stock-count', methods=["POST"])
 def add_stock_count_to_inventory():
@@ -154,6 +154,7 @@ def add_stock_count_to_inventory():
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Stock Count Item Route Complete'
+
 
 # MONDAY ROUTES == Financial Board
 # Parts Status ==> Do Now!
@@ -198,6 +199,7 @@ def void_financial_entry():
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Financial Void Route Complete'
+
 
 # MONDAY ROUTES == Enquiries Board
 # ** -> Item Creation
