@@ -1,4 +1,4 @@
-from icv5.components.monday import boardItem, column_keys, manage, boardItems_reporting
+from icv5.components.monday import boardItem, column_keys, manage
 
 
 class InventoryWrapper(boardItem.MondayWrapper):
@@ -26,18 +26,49 @@ class InventoryRepairItem(InventoryWrapper):
     column_dictionary = column_keys.inventory_repair
 
     def __init__(self, item_id=None, blank_item=True):
+        self.partboard_id = None
+        self.quantity = None
+        self.complete = None
+        self.repair_label = None
+        self.device_label = None
+        self.colour = None
+        self.colour_label = None
+        self.colour_id = None
+        self.repair_id = None
+        self.device_id = None
+        self.combined_id = None
         if item_id:
             super().__init__(item_id, self)
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
+    def adjust_stock(self, add=None, subtract=None):
+
+        part = InventoryPartItem(str(self.partboard_id.easy))
+
+        if not part.quantity.easy:
+            quantity = 0
+        else:
+            quantity = int(part.quantity.easy)
+
+        if add and subtract:
+            raise CannotAddAndSubtract
+        elif add:
+            part.quantity.change_value(int(quantity) + int(add))
+        elif subtract:
+            part.quantity.change_value(int(quantity) - int(subtract))
+
+        part.apply_column_changes()
+
 
 class InventoryPartItem(InventoryWrapper):
+
     column_dictionary = column_keys.inventory_part
 
     def __init__(self, item_id=None, blank_item=True):
+        self.quantity = None
         if item_id:
-            super().__init__(item_id, self)
+            super().__init__(item_id, self, blank_item=False)
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
@@ -46,6 +77,11 @@ class InventoryStockCountItem(InventoryWrapper):
     column_dictionary = column_keys.inventory_stock_count
 
     def __init__(self, item_id=None, webhook_payload=None, blank_item=True):
+        self.count_status = None
+        self.quantity_before = None
+        self.current_quantity = None
+        self.count_quantity = None
+        self.parts_id = None
         if item_id:
             super().__init__(item_id, self, webhook_payload=webhook_payload)
         elif blank_item:
@@ -91,7 +127,6 @@ class InventoryStockCountItem(InventoryWrapper):
         else:
             print('"Count Status" Status adjusted outside of "New Count Group"')
 
-
     def process_stock_count(self):
 
         # Currently does not account for one part being counted multiple times,
@@ -112,3 +147,7 @@ class InventoryStockCountItem(InventoryWrapper):
         self.apply_column_changes(verbose=True)
 
 
+class CannotAddAndSubtract(Exception):
+
+    def __init__(self):
+        print('You have tried to ad and subtract from a stock item simultaneously')

@@ -104,28 +104,6 @@ def zenlink_creation():
     return 'Main Board Zendesk Link Creation Complete'
 
 
-# MONDAY ROUTES == Repaired | Inventory Builder | Stock Controller
-# EOD -> Do Now!
-@app.route('/monday/eod/do-now', methods=["POST"])
-def check_out_stock():
-    """This route is for checking stock out, and will also build inventory as time goes on'"""
-
-    start_time = time.time()
-    webhook = flask.request.get_data()
-    # Authenticate & Create Object
-    data = monday_handshake(webhook)
-    if data[0] is False:
-        return data[1]
-    else:
-        data = data[1]
-
-    main_item = boardItems_main.MainBoardItem(data["event"]["pulseId"])
-    main_item.create_inventory_log()
-
-    print("--- %s seconds ---" % (time.time() - start_time))
-    return 'Zendesk Query Creation Complete'
-
-
 # MONDAY ROUTES == Book Collection
 # be_courier_collection ==> Attempting Booking
 @app.route('/monday/couriers/collect', methods=["POST"])
@@ -227,27 +205,6 @@ def add_stock_count_to_inventory():
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Stock Count Item Route Complete'
 
-# MONDAY ROUTES == Financial Board
-# ** -> Item Creation
-@app.route('/monday/financial/creation', methods=["POST"])
-def process_financial_data():
-    """This Route processes financial board creations'"""
-
-    start_time = time.time()
-    webhook = flask.request.get_data()
-    # Authenticate & Create Object
-    data = monday_handshake(webhook)
-    if data[0] is False:
-        return data[1]
-    else:
-        data = data[1]
-
-    finance = boardItems_reporting.FinancialCreationItem(data["event"]["pulseId"])
-    finance.add_repair_subitems()
-
-    print("--- %s seconds ---" % (time.time() - start_time))
-    return 'Financial Reporting Creation Route Complete'
-
 
 # MONDAY ROUTES == Financial Board
 # Parts Status ==> Do Now!
@@ -264,12 +221,33 @@ def get_parts_for_finance_board():
     else:
         data = data[1]
 
-    finance = boardItems_reporting.FinancialCreationItem(data["event"]["pulseId"])
-    main_item = boardItems_main.MainBoardItem(finance.mainboard_id.easy)
-    finance.add_repair_subitems(main_item)
+    finance = boardItems_reporting.FinancialItem(item_id=data["event"]["pulseId"])
+    finance.process_repair_data()
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Financial Reporting Route Complete'
+
+
+# MONDAY ROUTES == Financial Board
+# Parts Status ==> Void
+@app.route('/monday/reporting/financial/void', methods=["POST"])
+def void_financial_entry():
+    """This Route processes financial board creations'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    finance = boardItems_reporting.FinancialItem(item_id=data["event"]["pulseId"])
+    finance.void_entry()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Financial Void Route Complete'
 
 
 # MONDAY ROUTES == Enquiries Board

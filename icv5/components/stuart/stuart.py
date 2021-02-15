@@ -16,10 +16,12 @@ class StuartClient:
 
     def __init__(self, main_item=None):
         self.main_item = main_item
+
         if os.environ['STUARTPROD'] == 'True':
             self.production = True
         else:
             self.production = False
+
         self.token = None
 
     @staticmethod

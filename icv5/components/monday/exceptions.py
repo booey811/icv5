@@ -90,3 +90,11 @@ class ProductBeingCreated(Exception):
     def __init__(self, name):
 
         print('This Product-Repair is Being Created: {}'.format(name))
+
+
+class TooManyItemsFoundInProducts(Exception):
+
+    def __init__(self, name, part_id, finance_item):
+        print('Too Many Products Found for {}\n\nPart ID: {}'.format(name, part_id))
+        finance_item.parts_status.change_value('Failed')
+        finance_item.item.add_update('Too Many Products Found for {}\n\nPart ID: {}'.format(name, part_id))

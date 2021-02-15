@@ -27,7 +27,6 @@ class MainBoardWrapper(boardItem.MondayWrapper):
         return self
 
 
-# noinspection PyUnresolvedReferences
 class MainBoardItem(MainBoardWrapper):
     column_dictionary = column_keys.main_item
 
@@ -54,6 +53,7 @@ class MainBoardItem(MainBoardWrapper):
             'Rear Glass',
             'Front Screen (LG)',
             'Front Screen (Tosh)',
+            'Rear Housing'
         }
 
         id_count = 0

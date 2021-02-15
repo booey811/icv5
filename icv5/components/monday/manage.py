@@ -47,7 +47,7 @@ class Manager:
         'backmarket_refs': '928091586',
         'inventory_products': '984924063',
         'inventory_parts': '985177480',
-        'inventory_logging': '989177614',
+        'inventory_logging': '989490856',
         'inventory_stock_counts': '1008986497',
         'stuart_data_new': '1031579094'
     }
