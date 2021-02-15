@@ -152,6 +152,10 @@ main_wrapper = {
         'column_id': 'be_courier_collection',
         'type': 'status'
     },
+    'be_courier_return': {
+        'column_id': 'be_courier_return',
+        'type': 'status'
+    },
     'company': {
         'column_id': 'company',
         'type': 'text'
