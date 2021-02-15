@@ -14,9 +14,12 @@ from icv5.components.zendesk import ticket
 
 class StuartClient:
 
-    def __init__(self, production=False, main_item=None):
+    def __init__(self, main_item=None):
         self.main_item = main_item
-        self.production = production
+        if os.environ['STUARTPROD'] == 'True':
+            self.production = True
+        else:
+            self.production = False
         self.token = None
 
     @staticmethod
