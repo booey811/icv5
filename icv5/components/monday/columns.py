@@ -164,6 +164,10 @@ class NumberValue(ColumnWrapper):
             self.number = column_value.number
             self.text = str(column_value.number)
 
+        if self.number is None:
+            self.number = 0
+            self.text = str(0)
+
         self.easy = self.number
 
     def __str__(self):
