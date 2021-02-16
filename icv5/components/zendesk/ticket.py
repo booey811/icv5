@@ -14,6 +14,7 @@ class ZendeskWrapper:
 
     def __init__(self, ticket_number=None):
         self.client = self.create_client()
+        self.ticket_number = ticket_number
 
     @staticmethod
     def create_client():
@@ -119,7 +120,6 @@ class ZendeskTicket(ZendeskWrapper):
     def __init__(self, ticket_number=None):
         super().__init__(ticket_number)
 
-        self.client = self.create_client()
 
         if ticket_number:
             self.ticket_number = ticket_number
@@ -148,13 +148,13 @@ class ZendeskTicket(ZendeskWrapper):
                     CustomField(id=field, value='')
                 )
 
-        for item in self.ticket.custom_fields:
-            if item.id in custom_fields.ids_to_attributes:
-                setattr(
-                    self,
-                    custom_fields.ids_to_attributes[item.id]['attribute'],
-                    custom_fields.ids_to_attributes[item.id]['type'](self, item)
-                )
+        # for item in self.ticket.custom_fields:
+        #     if item.id in custom_fields.ids_to_attributes:
+        #         setattr(
+        #             self,
+        #             custom_fields.ids_to_attributes[item.id]['attribute'],
+        #             custom_fields.ids_to_attributes[item.id]['type'](self, item)
+        #         )
 
     def add_tag(self, tag):
         if isinstance(tag, list):
@@ -174,5 +174,10 @@ class ZendeskTicket(ZendeskWrapper):
                 self.ticket.tags.remove(tag)
         else:
             print('ZendeskCustomFieldWrapper.remove_tag else route')
+
+
+    def adjust_custom_field(self, field_id, field_value):
+        self.ticket.custom_fields.append(CustomField(id=field_id, value=field_value))
+
 
 
