@@ -206,6 +206,29 @@ def add_stock_count_to_inventory():
     return 'Stock Count Item Route Complete'
 
 
+# MONDAY ROUTES == Stock Orders Board
+# BUTTON: Add to Stock
+@app.route('/monday/inventory/order/received', methods=["POST"])
+def add_order_to_stock():
+    """This route adds to the necessary stock levels and adjusts the supply price accordingly"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    order_item = boardItems_inventory.InventoryOrderItem(item_id=data["event"]["pulseId"])
+
+    order_item.add_received_items_to_stock()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Stock Order Received Route Complete'
+
+
 # MONDAY ROUTES == Financial Board
 # Parts Status ==> Do Now!
 @app.route('/monday/reporting/financial/get-parts', methods=["POST"])
