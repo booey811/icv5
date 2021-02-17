@@ -62,7 +62,6 @@ class InventoryRepairItem(InventoryWrapper):
 
 
 class InventoryPartItem(InventoryWrapper):
-
     column_dictionary = column_keys.inventory_part
 
     def __init__(self, item_id=None, blank_item=True):
@@ -145,6 +144,57 @@ class InventoryStockCountItem(InventoryWrapper):
 
         stock_object.apply_column_changes(verbose=True)
         self.apply_column_changes(verbose=True)
+
+
+class InventoryOrderItem(InventoryWrapper):
+    column_dictionary = column_keys.inventory_order
+
+    def __init__(self, item_id=None, blank_item=True, webhook_payload=None):
+
+        self.order_quantity = None
+        self.order_status = None
+        self.quantity_after = None
+        self.quantity_received = None
+        self.unit_cost = None
+        self.parts_id = None
+
+        if item_id:
+            super().__init__(item_id, self, blank_item=False, webhook_payload=webhook_payload)
+        elif blank_item:
+            super().__init__(None, self, blank_item=blank_item)
+
+    def add_received_items_to_stock(self):
+
+        # Get Stock Item
+        stock = InventoryPartItem(self.parts_id.easy)
+
+        # Add Order Quantity to Stock Levels
+        total_stock = int(stock.quantity.easy) + int(self.quantity_received.easy)
+        stock.quantity.change_value(total_stock)
+        stock.supply_price.change_value(self.calculate_new_supply_price(stock, total_stock))
+        stock.apply_column_changes()
+
+        # Add final Stock Level to Orders Board
+        self.quantity_after.change_value(total_stock)
+        self.order_status.change_value('Added to Stock')
+        self.apply_column_changes()
+
+        # Add Change to Inventory Movement Board
+
+    def calculate_new_supply_price(self, stock_item, total_stock):
+
+        # Check to see if no supply price has been set, if not then use price from current order
+        if int(stock_item.quantity.easy) == 0:
+            supply_price = int(self.unit_cost.easy)
+
+        # Calculate Supply Price
+        else:
+            agg_stock_cost = int(stock_item.supply_price.easy) * int(stock_item.quantity.easy)
+            agg_order_cost = int(self.unit_cost.easy) * int(self.order_quantity.easy)
+
+            supply_price = (agg_order_cost + agg_stock_cost) / total_stock
+
+        return supply_price
 
 
 class CannotAddAndSubtract(Exception):
