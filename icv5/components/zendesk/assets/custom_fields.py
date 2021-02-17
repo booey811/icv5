@@ -3,19 +3,31 @@ from zenpy.lib.api_objects import CustomField
 
 class ZendeskCustomFieldWrapper:
 
-    def __init__(self):
-        self.ticket_object = None
-        pass
+    def __init__(self, ticket_object, custom_field_dict):
+        self.ticket_object = ticket_object
+        self.id = custom_field_dict['id']
+        self.value = custom_field_dict['value']
+
+    def adjust_value(self, value):
+        if isinstance(value, str):
+            value = [value]
+        for item in value:
+            self.ticket_object.ticket.custom_fields.append(
+                CustomField(
+                    id=self.id,
+                    value=item
+                )
+            )
 
 
 class ZendeskCustomTextField(ZendeskCustomFieldWrapper):
 
-    def __init__(self, ticket_object, custom_field):
+    def __init__(self, ticket_object, custom_field_dict):
         super().__init__()
 
         self.ticket_object = ticket_object
-        self.custom_field = custom_field
-        self.value = custom_field.value
+        self.custom_field = custom_field_dict
+        self.value = custom_field_dict['value']
 
     def change_value(self, text_to_add):
         self.ticket_object.ticket.custom_fields.append(CustomField(

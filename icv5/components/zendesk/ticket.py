@@ -14,6 +14,7 @@ class ZendeskWrapper:
 
     def __init__(self, ticket_number=None):
         self.client = self.create_client()
+        self.ticket_number = ticket_number
 
     @staticmethod
     def create_client():
@@ -117,19 +118,28 @@ class ZendeskSearch(ZendeskWrapper):
 class ZendeskTicket(ZendeskWrapper):
 
     def __init__(self, ticket_number=None):
-        super().__init__(ticket_number)
 
-        self.client = self.create_client()
+        self.imei_sn = None
+        self.main_id = None
+        self.passcode = None
+        self.repair_status = None
+        self.postcode = None
+        self.street_address = None
+        self.flat_number = None
+        self.tracking_url = None
+        self.service_type = None
+        self.client_type = None
+
+        super().__init__(ticket_number)
 
         if ticket_number:
             self.ticket_number = ticket_number
             self.ticket = self.client.tickets(id=ticket_number)
             self.requester = self.ticket.requester
+            self.custom_fields_to_attributes()
 
         else:
-            fields = [CustomField(id=item, value='') for item in custom_fields.ids_to_attributes]
             self.ticket = Ticket(
-                custom_fields=fields,
                 description='Your Repair with iCorrect'
             )
             self.ticket.comment = Comment(
@@ -137,23 +147,16 @@ class ZendeskTicket(ZendeskWrapper):
                 public=False
             )
 
-        self.set_custom_fields()
-
-    def set_custom_fields(self):
-
-        if not self.ticket.custom_fields:
-            self.ticket.custom_fields = []
-            for field in custom_fields.ids_to_attributes:
-                self.ticket.custom_fields.append(
-                    CustomField(id=field, value='')
-                )
-
-        for item in self.ticket.custom_fields:
-            if item.id in custom_fields.ids_to_attributes:
+    def custom_fields_to_attributes(self):
+        for field in self.ticket.custom_fields:
+            if field['id'] in custom_fields.ids_to_attributes:
                 setattr(
                     self,
-                    custom_fields.ids_to_attributes[item.id]['attribute'],
-                    custom_fields.ids_to_attributes[item.id]['type'](self, item)
+                    custom_fields.ids_to_attributes[field['id']]['attribute'],
+                    custom_fields.ZendeskCustomFieldWrapper(
+                        self,
+                        field
+                    )
                 )
 
     def add_tag(self, tag):
@@ -175,4 +178,5 @@ class ZendeskTicket(ZendeskWrapper):
         else:
             print('ZendeskCustomFieldWrapper.remove_tag else route')
 
-
+    def adjust_custom_field(self, field_id, field_value):
+        self.ticket.custom_fields.append(CustomField(id=field_id, value=field_value))

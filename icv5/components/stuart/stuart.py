@@ -264,7 +264,7 @@ class StuartClient:
             update.append('\n\nTHERE IS NO ZENDESK TICKET ASSOCIATED WITH THIS REPAIR - NO TRACKING LINK HAS BEEN SENT TO THE CUSTOMER')
         else:
             zendesk = ticket.ZendeskTicket(str(self.main_item.zendesk_id.easy))
-            zendesk.tracking_url.change_value(tracking_url)
+            zendesk.tracking_url.adjust_value(tracking_url)
             zendesk.client.tickets.update(zendesk.ticket)
 
 
