@@ -30,4 +30,4 @@ toml==0.10.2
 urllib3==1.26.2
 Werkzeug==1.0.1
 wrapt==1.12.1
-zenpy==2.0.22
+zenpy==2.0.24
