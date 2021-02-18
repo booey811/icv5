@@ -78,7 +78,7 @@ def zenlink_creation():
     main_item = boardItems_main.MainBoardItem(item_id=data['event']['pulseId'], webhook_payload=data)
     if not main_item.zendesk_id.easy:
         my_ticket = ticket.ZendeskTicket()
-        my_ticket.main_id.change_value(str(main_item.id))
+        my_ticket.adjust_custom_field('main_id', main_item.id)
         user_search = ticket.ZendeskSearch().search_or_create_user(main_item)
         if user_search:
             my_ticket.ticket.requester_id = user_search.id

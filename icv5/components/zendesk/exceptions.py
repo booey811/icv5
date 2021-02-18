@@ -21,5 +21,11 @@ class ZeroResultsFromUserEmail(Exception):
 class UserAlreadyExists(Exception):
 
     def __init__(self, email):
-        print('YOu Are Trying To Create a User That Already Exists with email: {}'.format(email))
+        print('You Are Trying To Create a User That Already Exists with email: {}'.format(email))
 
+
+class CannotConvertAttributeToCustomField(Exception):
+
+    def __init__(self, attribute):
+
+        print('Cannot Find {} attribute in zendesk.custom_fields.ids_to_attributes'.format(attribute))
