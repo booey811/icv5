@@ -140,7 +140,8 @@ class ZendeskTicket(ZendeskWrapper):
 
         else:
             self.ticket = Ticket(
-                description='Your Repair with iCorrect'
+                description='Your Repair with iCorrect',
+                custom_fields=[]
             )
             self.ticket.comment = Comment(
                 body='iCorrect Ltd',
@@ -178,5 +179,16 @@ class ZendeskTicket(ZendeskWrapper):
         else:
             print('ZendeskCustomFieldWrapper.remove_tag else route')
 
-    def adjust_custom_field(self, field_id, field_value):
-        self.ticket.custom_fields.append(CustomField(id=field_id, value=field_value))
+    def adjust_custom_field(self, attribute, field_value):
+
+        field_id = None
+
+        for field in custom_fields.ids_to_attributes:
+            if attribute == custom_fields.ids_to_attributes[field]['attribute']:
+                field_id = field
+
+        if field_id:
+            self.ticket.custom_fields.append(CustomField(id=field_id, value=field_value))
+
+        else:
+            raise exceptions.CannotConvertAttributeToCustomField(attribute)
