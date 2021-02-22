@@ -380,6 +380,69 @@ inventory_movement = {
     }
 }
 
+# FinancialDictionaries
+
+financial_wrapper = {
+
+}
+
+financial_item = {
+    'mainboard_id': {
+        'column_id': 'mainboard_id6',
+        'type': 'text'
+    },
+    'parts_status': {
+        'column_id': 'parts_status',
+        'type': 'status'
+    },
+    'subitems': {
+        'column_id': 'subitems',
+        'type': 'subitem'
+    }
+}
+
+financial_mainlink = {
+    'device': {
+        'column_id': 'device0',
+        'type': 'dropdown'
+    },
+    'repairs': {
+        'column_id': 'repair',
+        'type': 'dropdown'
+    },
+    'colour': {
+        'column_id': 'status8',
+        'type': 'status'
+    }
+}
+
+financial_subitem = {
+    'sale_price': {
+        'column_id': 'sale_price',
+        'type': 'number'
+    },
+    'supply_price': {
+        'column_id': 'supply_price',
+        'type': 'number'
+    },
+    'quantity_used': {
+        'column_id': 'quantity_used',
+        'type': 'number'
+    },
+    'part_url': {
+        'column_id': 'part_url',
+        'type': 'link'
+    },
+    'movementboard_id': {
+        'column_id': 'movementboard_id',
+        'type': 'text'
+    },
+    'partboard_id': {
+        'column_id': 'partboard_id',
+        'type': 'text'
+    }
+}
+
 
 # Screen Refurb Dictionaries
 screen_refurb_wrapper = {
