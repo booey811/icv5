@@ -46,20 +46,21 @@ class FinancialBoardItem(FinancialWrapper):
 
         repairs_dict = self.create_repairs_dict()
 
-        inventory_codes = self.create_inventory_codes(repairs_dict)
+        inventory_dict = self.create_inventory_codes(repairs_dict)
 
-        for code in inventory_codes:
-            print(inventory_codes[code])
+        for code in inventory_dict:
+            print(inventory_dict[code])
             print(code)
 
             try:
                 inv_item = boardItems_inventory.InventoryRepairItem(
-                    self.get_inventory_from_product_board(code, inventory_codes[code]).id
+                    self.get_inventory_from_product_board(code, inventory_dict[code]).id
                 )
 
             except exceptions.NoItemsFoundFromMondayClientSearch:
                 # Create A Product & Halt Process
-                self.parts_status.change_value('Failed')
+                self.create_repair_product(code, inventory_dict)
+                self.parts_status.change_value('Failed - Creation')
                 self.apply_column_changes()
                 return False
 
@@ -90,13 +91,16 @@ class FinancialBoardItem(FinancialWrapper):
 
         return new_subitem
 
-    def get_inventory_from_product_board(self, inventory_code, repair_name):
+    def get_inventory_from_product_board(self, inventory_code, repair_details):
+
+        repair_name = ' '.join([item for item in repair_details.values()])
 
         col_val = create_column_value(
             id='combined_id',
             column_type=ColumnType.text,
             text=str(inventory_code)
         )
+
         col_val.value = '"{}"'.format(str(inventory_code))
 
         results = manage.Manager().get_board('inventory_parts').get_items_by_column_values(col_val)
@@ -133,28 +137,27 @@ class FinancialBoardItem(FinancialWrapper):
 
         for repair in repairs_dict:
 
-            if repairs_dict[repair] in colours:
+            res_dict = {
+                'device': self.main_item.device.labels[0],
+                'repair': repairs_dict[repair],
+            }
+
+            if res_dict['repair'] in colours:
+
                 code = '{}-{}-{}'.format(
                     self.main_item.device.ids[0],
                     repair,
                     self.main_item.colour.index
                 )
-                name = '{} {} {}'.format(
-                    self.main_item.device.labels[0],
-                    repairs_dict[repair],
-                    self.main_item.colour.text
-                )
+                res_dict['colour'] = self.main_item.colour.easy
+
             else:
                 code = '{}-{}'.format(
                     self.main_item.device.ids[0],
                     repair
                 )
-                name = '{} {}'.format(
-                    self.main_item.device.labels[0],
-                    repairs_dict[repair],
-                )
 
-            inventory_codes[code] = name
+            inventory_codes[code] = res_dict
 
         return inventory_codes
 
@@ -174,30 +177,53 @@ class FinancialBoardItem(FinancialWrapper):
         for item in results:
             item.delete()
 
-    def create_repair_product(self, code, inventory_codes):
+    def create_repair_product(self, inventory_code, inventory_dict):
 
         inv_item = boardItems_inventory.InventoryRepairItem(blank_item=True)
 
-        # code_list = code.split('-')
-        #
-        # device = str(code_list[0])
-        # repair = str(code_list[1])
-        # colour = None
-        # if len(code_list) == 3:
-        #     colour = str(code_list[2])
-        #
-        # print(device, repair, colour)
-        #
-        # attributes_to_change = [
-        #     ['device_id', device],
-        #     ['repair_id', repair],
-        #     ['device_label', ]
-        # ]
-        #
-        #
-        # inv_item.change_multiple_attributes(attributes_to_change)
+        inv_code_list = inventory_code.split('-')
 
+        device_id = inv_code_list[0]
+        repair_id = inv_code_list[1]
 
+        atts_to_change = [
+            ['device_id', int(device_id)],
+            ['repair_id', int(repair_id)],
+            ['device_label', str(inventory_dict[inventory_code]['device'])],
+            ['repair_label', str(inventory_dict[inventory_code]['repair'])],
+            ['combined_id', inventory_code]
+        ]
+
+        product_name = '{} {}'.format(
+            inventory_dict[inventory_code]['device'],
+            inventory_dict[inventory_code]['repair']
+        )
+
+        if len(inv_code_list) == 3:
+            atts_to_change.append(['colour_id', inv_code_list[2]])
+            atts_to_change.append(['colour_label', str(inventory_dict[inventory_code]['colour'])])
+            atts_to_change.append(['colour', str(inventory_dict[inventory_code]['colour'])])
+            product_name = '{} {} {}'.format(
+                inventory_dict[inventory_code]['device'],
+                inventory_dict[inventory_code]['repair'],
+                inventory_dict[inventory_code]['colour']
+            )
+
+        inv_item.change_multiple_attributes(
+            atts_to_change,
+            return_only=True
+        )
+
+        new_inventory = manage.Manager().get_board('inventory_products').add_item(
+            item_name=product_name
+            # column_values=inv_item.adjusted_values
+        )
+
+        temp = boardItems_inventory.InventoryRepairItem(new_inventory.id)
+
+        temp.change_multiple_attributes(inv_item.adjusted_values, verbose=True)
+
+        return new_inventory
 
 
 class FinancialBoardSubItem(FinancialWrapper):
@@ -241,13 +267,12 @@ class FinancialMainBoardLinkItem(boardItem.MondayWrapper):
 
 
 def test_module(item_id):
-
     from pprint import pprint as p
 
     start_time = time()
 
     finance = FinancialBoardItem(item_id)
-    finance.create_repair_product('10-20-30', {})
+    finance.construct_repairs_profile()
 
     print("--- %s seconds ---" % (time() - start_time))
 
