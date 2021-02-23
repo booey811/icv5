@@ -439,7 +439,7 @@ class SubitemValue(ColumnWrapper):
             if convert:
                 self.ids = [item['linkedPulseId'] for item in convert['linkedPulseIds']]
             else:
-                self.ids = None
+                self.ids = []
 
         self.easy = self.ids
 

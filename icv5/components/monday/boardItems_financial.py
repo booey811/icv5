@@ -40,6 +40,8 @@ class FinancialBoardItem(FinancialWrapper):
 
     def construct_repairs_profile(self):
 
+        self.disassemble_repairs_profile()
+
         self.get_mainboard_item()
 
         repairs_dict = self.create_repairs_dict()
@@ -166,6 +168,37 @@ class FinancialBoardItem(FinancialWrapper):
         self.main_item = FinancialMainBoardLinkItem(self.mainboard_id.easy)
         return self.main_item
 
+    def disassemble_repairs_profile(self):
+
+        results = self.cli_client.get_items(ids=self.subitems.ids)
+        for item in results:
+            item.delete()
+
+    def create_repair_product(self, code, inventory_codes):
+
+        inv_item = boardItems_inventory.InventoryRepairItem(blank_item=True)
+
+        # code_list = code.split('-')
+        #
+        # device = str(code_list[0])
+        # repair = str(code_list[1])
+        # colour = None
+        # if len(code_list) == 3:
+        #     colour = str(code_list[2])
+        #
+        # print(device, repair, colour)
+        #
+        # attributes_to_change = [
+        #     ['device_id', device],
+        #     ['repair_id', repair],
+        #     ['device_label', ]
+        # ]
+        #
+        #
+        # inv_item.change_multiple_attributes(attributes_to_change)
+
+
+
 
 class FinancialBoardSubItem(FinancialWrapper):
 
@@ -208,16 +241,15 @@ class FinancialMainBoardLinkItem(boardItem.MondayWrapper):
 
 
 def test_module(item_id):
+
     from pprint import pprint as p
 
     start_time = time()
 
     finance = FinancialBoardItem(item_id)
-    finance.construct_repairs_profile()
-
-
+    finance.create_repair_product('10-20-30', {})
 
     print("--- %s seconds ---" % (time() - start_time))
 
 
-test_module(1062544146)
+test_module(1057240560)
