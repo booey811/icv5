@@ -65,6 +65,9 @@ class FinancialBoardItem(FinancialWrapper):
                 return False
 
             self.attach_repair_subitem(inv_item)
+            self.parts_status.change_value('Complete')
+            self.apply_column_changes()
+
 
     def attach_repair_subitem(self, inventory_item):
 
