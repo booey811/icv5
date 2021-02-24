@@ -272,5 +272,3 @@ def test_module(item_id):
 
     print("--- %s seconds ---" % (time() - start_time))
 
-
-test_module(1057240560)
