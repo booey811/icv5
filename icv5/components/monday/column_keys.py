@@ -440,6 +440,10 @@ financial_subitem = {
     'partboard_id': {
         'column_id': 'partboard_id',
         'type': 'text'
+    },
+    'eod_status': {
+        'column_id': 'eod_status',
+        'type': 'status'
     }
 }
 

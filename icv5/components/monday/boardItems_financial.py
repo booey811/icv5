@@ -69,15 +69,11 @@ class FinancialBoardItem(FinancialWrapper):
         self.parts_status.change_value('Complete')
         self.apply_column_changes()
 
-
     def attach_repair_subitem(self, inventory_item):
 
         subitem = FinancialBoardSubItem(blank_item=True)
-
         url = 'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(inventory_item.partboard_id.easy))
-
         subitem.part_url.change_value([str(inventory_item.partboard_id.easy), url])
-
         subitem.change_multiple_attributes(
             [
                 ['sale_price', round(float(inventory_item.sale_price.easy), 2)],
@@ -201,7 +197,7 @@ class FinancialBoardItem(FinancialWrapper):
         product_name = '{} {}'.format(
             inventory_dict[inventory_code]['device'],
             inventory_dict[inventory_code]['repair']
-        ).replace('"', ' inch')
+        )
 
         if len(inv_code_list) == 3:
             atts_to_change.append(['colour_id', str(inv_code_list[2])])
@@ -219,11 +215,19 @@ class FinancialBoardItem(FinancialWrapper):
         )
 
         new_inventory = manage.Manager().get_board('inventory_products').add_item(
-            item_name=product_name,
+            item_name=product_name.replace('"', ' inch'),
             column_values=inv_item.adjusted_values
         )
 
         return new_inventory
+
+    def stock_deductions(self):
+
+        for item_id in self.subitems.ids:
+
+            part_item = FinancialBoardSubItem(item_id=item_id)
+
+
 
 
 class FinancialBoardSubItem(FinancialWrapper):
@@ -275,4 +279,5 @@ def test_module(item_id):
     finance.construct_repairs_profile()
 
     print("--- %s seconds ---" % (time() - start_time))
+
 
