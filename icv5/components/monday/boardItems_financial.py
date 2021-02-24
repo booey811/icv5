@@ -76,8 +76,8 @@ class FinancialBoardItem(FinancialWrapper):
 
         subitem.change_multiple_attributes(
             [
-                ['sale_price', int(inventory_item.sale_price.easy)],
-                ['supply_price', int(inventory_item.supply_price.easy)],
+                ['sale_price', round(float(inventory_item.sale_price.easy), 2)],
+                ['supply_price', round(float(inventory_item.supply_price.easy)), 2],
                 ['quantity_used', 1],
                 ['partboard_id', str(inventory_item.partboard_id.easy)]
             ],

@@ -185,14 +185,14 @@ class InventoryOrderItem(InventoryWrapper):
 
         # Check to see if no supply price has been set, if not then use price from current order
         if int(stock_item.quantity.easy) == 0:
-            supply_price = int(self.unit_cost.easy)
+            supply_price = float(self.unit_cost.easy)
 
         # Calculate Supply Price
         else:
-            agg_stock_cost = int(stock_item.supply_price.easy) * int(stock_item.quantity.easy)
-            agg_order_cost = int(self.unit_cost.easy) * int(self.order_quantity.easy)
+            agg_stock_cost = float(stock_item.supply_price.easy) * int(stock_item.quantity.easy)
+            agg_order_cost = float(self.unit_cost.easy) * int(self.order_quantity.easy)
 
-            supply_price = (agg_order_cost + agg_stock_cost) / total_stock
+            supply_price = round(float((agg_order_cost + agg_stock_cost) / total_stock), 2)
 
         return supply_price
 
