@@ -187,8 +187,8 @@ class FinancialBoardItem(FinancialWrapper):
         repair_id = inv_code_list[1]
 
         atts_to_change = [
-            ['device_id', int(device_id)],
-            ['repair_id', int(repair_id)],
+            ['device_id', str(device_id)],
+            ['repair_id', str(repair_id)],
             ['device_label', str(inventory_dict[inventory_code]['device'])],
             ['repair_label', str(inventory_dict[inventory_code]['repair'])],
             ['combined_id', inventory_code]
@@ -197,10 +197,10 @@ class FinancialBoardItem(FinancialWrapper):
         product_name = '{} {}'.format(
             inventory_dict[inventory_code]['device'],
             inventory_dict[inventory_code]['repair']
-        )
+        ).replace('"', ' inch')
 
         if len(inv_code_list) == 3:
-            atts_to_change.append(['colour_id', inv_code_list[2]])
+            atts_to_change.append(['colour_id', str(inv_code_list[2])])
             atts_to_change.append(['colour_label', str(inventory_dict[inventory_code]['colour'])])
             atts_to_change.append(['colour', str(inventory_dict[inventory_code]['colour'])])
             product_name = '{} {} {}'.format(
@@ -215,13 +215,9 @@ class FinancialBoardItem(FinancialWrapper):
         )
 
         new_inventory = manage.Manager().get_board('inventory_products').add_item(
-            item_name=product_name
-            # column_values=inv_item.adjusted_values
+            item_name=product_name,
+            column_values=inv_item.adjusted_values
         )
-
-        temp = boardItems_inventory.InventoryRepairItem(new_inventory.id)
-
-        temp.change_multiple_attributes(inv_item.adjusted_values, verbose=True)
 
         return new_inventory
 
