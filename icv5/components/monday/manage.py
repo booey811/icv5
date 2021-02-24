@@ -46,14 +46,14 @@ class Manager:
         'refurb_returns': '925663428',
         'backmarket_refs': '928091586',
         'inventory_products': '984924063',
-        'inventory_parts': '985177480',
+        'inventory_parts': '984924063',
         'inventory_logging': '989490856',
         'inventory_stock_counts': '1008986497',
         'stuart_data_new': '1031579094'
     }
 
     def __init__(self):
-        pass
+        self.client = None
 
     def create_client(self, client_name=False):
         if not client_name:
@@ -64,11 +64,15 @@ class Manager:
             api_key_v1=self.client_credentials[client_name]['v1'],
             api_key_v2=self.client_credentials[client_name]['v2']
         )
-
         return client
 
     def get_board(self, board_name=None, board_id=None, client_name=False):
-        client = self.create_client(client_name=client_name)
+
+        if not self.client:
+            self.client = self.create_client(client_name=client_name)
+
+        client = self.client
+
         try:
             if board_name:
                 board = client.get_board(self.board_ids[board_name])

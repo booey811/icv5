@@ -5,7 +5,7 @@ import flask
 
 from icv5.components import unify, stuart
 from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage, boardItems_misc, \
-    boardItems_reporting
+    boardItems_reporting, boardItems_financial
 from icv5.components.phonecheck import phonecheck
 from icv5.components.zendesk import ticket
 from icv5.components.stuart import stuart
@@ -230,9 +230,9 @@ def add_order_to_stock():
 
 
 # MONDAY ROUTES == Financial Board
-# Parts Status ==> Do Now!
+# Repair Profile ==> Do Now!
 @app.route('/monday/reporting/financial/get-parts', methods=["POST"])
-def get_parts_for_finance_board():
+def generate_repair_subitems():
     """This Route processes financial board creations'"""
 
     start_time = time.time()
@@ -244,11 +244,11 @@ def get_parts_for_finance_board():
     else:
         data = data[1]
 
-    finance = boardItems_reporting.FinancialItem(item_id=data["event"]["pulseId"])
-    finance.process_repair_data()
+    finance = boardItems_financial.FinancialBoardItem(item_id=data["event"]["pulseId"], webhook_payload=data)
+    finance.construct_repairs_profile()
 
     print("--- %s seconds ---" % (time.time() - start_time))
-    return 'Financial Reporting Route Complete'
+    return 'Financial Reporting Repairs Profile Route Complete'
 
 
 # MONDAY ROUTES == Financial Board
