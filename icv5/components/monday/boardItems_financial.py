@@ -174,8 +174,11 @@ class FinancialBoardItem(FinancialWrapper):
     def disassemble_repairs_profile(self):
 
         results = self.cli_client.get_items(ids=self.subitems.ids)
-        for item in results:
-            item.delete()
+        for pulse in results:
+
+            subitem = FinancialBoardSubItem(pulse.id)
+
+            subitem.void_financial_entry()
 
     def create_repair_product(self, inventory_code, inventory_dict):
 
@@ -224,7 +227,6 @@ class FinancialBoardItem(FinancialWrapper):
     def stock_deductions_and_recording(self):
 
         for item_id in self.subitems.ids:
-
             subitem = FinancialBoardSubItem(item_id=item_id)
 
             subitem.process_stock_adjustment(self)
@@ -282,7 +284,19 @@ class FinancialBoardSubItem(FinancialWrapper):
 
         self.apply_column_changes()
 
+    def void_financial_entry(self):
 
+        if self.movementboard_id.easy:
+            for item in self.cli_client.get_items(ids=[self.movementboard_id.easy], limit=1):
+                item.delete()
+
+        if not self.quantity_used.easy:
+            pass
+        elif self.partboard_id.easy:
+            part_item = boardItems_inventory.InventoryPartItem(self.partboard_id.easy)
+            part_item.adjust_stock(-int(self.quantity_used.easy))
+
+        self.item.delete()
 
 class FinancialMainBoardLinkItem(boardItem.MondayWrapper):
 
@@ -335,7 +349,7 @@ class FinancialInventoryMovementItem(boardItem.MondayWrapper):
 
         return self
 
-    def generate_inventory_item_fields(self, parent_item, part_item,  old_quantity, new_quantity):
+    def generate_inventory_item_fields(self, parent_item, part_item, old_quantity, new_quantity):
 
         self.change_multiple_attributes(
             [
@@ -357,20 +371,4 @@ class FinancialInventoryMovementItem(boardItem.MondayWrapper):
         self.part_url.change_value(
             [str(part_item.id), 'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(part_item.id))]
         )
-
-
-
-
-
-
-def test_module(item_id):
-    from pprint import pprint as p
-
-    start_time = time()
-
-    finance = FinancialBoardItem(item_id)
-    finance.stock_deductions_and_recording()
-
-    print("--- %s seconds ---" % (time() - start_time))
-
 

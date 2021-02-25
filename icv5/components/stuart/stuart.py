@@ -248,7 +248,7 @@ class StuartClient:
                     ['estimated_time', int(res_dict['duration'])]
                 ],
             )
-            update = ['{}: {}'.format(item, info[item]) for item in info]
+            update = ['{}: {}'.format(item, info[item].replace('"', '')) for item in info]
 
             self.add_tracking_to_zendesk(update, info['tracking_url'])
 
