@@ -71,6 +71,17 @@ class InventoryPartItem(InventoryWrapper):
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
+    def adjust_stock(self, quantity_to_adjust):
+
+        current = int(self.quantity.easy)
+        new = current - int(quantity_to_adjust)
+        self.quantity.change_value(new)
+        self.apply_column_changes()
+
+        return new
+
+
+
 
 class InventoryStockCountItem(InventoryWrapper):
     column_dictionary = column_keys.inventory_stock_count

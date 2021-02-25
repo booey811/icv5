@@ -345,40 +345,6 @@ reporting_financial_sub = {
     }
 }
 
-inventory_movement = {
-    'quantity': {
-        'column_id': 'quantity',
-        'type': 'readonly'
-    },
-    'quantity_before': {
-        'column_id': 'quantity_before',
-        'type': 'number'
-    },
-    'quantity_after': {
-        'column_id': 'quantity_after',
-        'type': 'number'
-    },
-    'partboard_id': {
-        'column_id': 'partboard_id',
-        'type': 'readonly'
-    },
-    'date': {
-        'column_id': 'date',
-        'type': 'date'
-    },
-    'mainboard_name': {
-        'column_id': 'mainboard_name',
-        'type': 'text'
-    },
-    'mainboard_id': {
-        'column_id': 'mainboard_id',
-        'type': 'text'
-    },
-    'product_id': {
-        'column_id': 'product_id',
-        'type': 'text'
-    }
-}
 
 # FinancialDictionaries
 
@@ -442,8 +408,79 @@ financial_subitem = {
         'type': 'text'
     },
     'eod_status': {
-        'column_id': 'eod_status',
+        'column_id': 'status2',
         'type': 'status'
+    },
+    'movement_url': {
+        'column_id': 'movement_url',
+        'type': 'link'
+    }
+}
+
+inventory_movement = {
+    'quantity': {
+        'column_id': 'quantity',
+        'type': 'readonly'
+    },
+    'quantity_before': {
+        'column_id': 'quantity_before',
+        'type': 'number'
+    },
+    'quantity_after': {
+        'column_id': 'quantity_after',
+        'type': 'number'
+    },
+    'partboard_id': {
+        'column_id': 'partboard_id',
+        'type': 'readonly'
+    },
+    'date': {
+        'column_id': 'date',
+        'type': 'date'
+    },
+    'mainboard_name': {
+        'column_id': 'mainboard_name',
+        'type': 'text'
+    },
+    'mainboard_id': {
+        'column_id': 'mainboard_id',
+        'type': 'text'
+    },
+    'product_id': {
+        'column_id': 'product_id',
+        'type': 'text'
+    },
+    'movement_type': {
+        'column_id': 'movement_type',
+        'type': 'status'
+    },
+    'part_url': {
+        'column_id': 'part_url',
+        'type': 'link'
+    },
+    'device_label': {
+        'column_id': 'device_label2',
+        'type': 'text'
+    },
+    'colour_label': {
+        'column_id': 'colour_label6',
+        'type': 'text'
+    },
+    'repair_label': {
+        'column_id': 'repair_label1',
+        'type': 'text'
+    },
+    'device_id': {
+        'column_id': 'device_id4',
+        'type': 'text'
+    },
+    'repair_id': {
+        'column_id': 'repair_id3',
+        'type': 'text'
+    },
+    'colour_id': {
+        'column_id': 'colour_id1',
+        'type': 'text'
     }
 }
 

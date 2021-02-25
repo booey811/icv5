@@ -252,6 +252,27 @@ def generate_repair_subitems():
 
 
 # MONDAY ROUTES == Financial Board
+# Stock Adjustment ==> Do Now!
+@app.route('/monday/reporting/financial/eod', methods=["POST"])
+def process_repair_subitems():
+    """This Route processes financial board creations'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    finance = boardItems_financial.FinancialBoardItem(item_id=data["event"]["pulseId"], webhook_payload=data)
+    finance.stock_deductions_and_recording()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Financial Reporting Repairs Profile Route Complete'
+
+# MONDAY ROUTES == Financial Board
 # Parts Status ==> Void
 @app.route('/monday/reporting/financial/void', methods=["POST"])
 def void_financial_entry():
