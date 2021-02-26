@@ -18,4 +18,4 @@ from pprint import pprint as p
 
 # webhook_payload = {'event': {'userId': 4251271}}
 #
-# item_id = 1086301501
+# item_id = 1002886137
