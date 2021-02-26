@@ -228,8 +228,10 @@ class StuartClient:
             data = boardItems_misc.StuartDataItem(blank_item=True)
             if info['delivery_postcode'] == 'W1W 8JQ':
                 name = '{} COLLECTION'.format(self.main_item.name)
+                self.main_item.be_courier_collection.change_value('Booking Complete')
             else:
                 name = '{} RETURN'.format(self.main_item.name)
+                self.main_item.be_courier_return.change_value('Booking Complete')
             new_id = manage.Manager().get_board('stuart_data_new').add_item(
                 item_name=name,
                 column_values=data.adjusted_values
@@ -256,7 +258,6 @@ class StuartClient:
                 '\n'.join(update)
             )
 
-            self.main_item.be_courier_collection.change_value('Booking Complete')
             self.main_item.apply_column_changes()
 
     def add_tracking_to_zendesk(self, update, tracking_url):
