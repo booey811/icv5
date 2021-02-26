@@ -287,8 +287,8 @@ def void_financial_entry():
     else:
         data = data[1]
 
-    finance = boardItems_reporting.FinancialItem(item_id=data["event"]["pulseId"])
-    finance.void_entry()
+    finance = boardItems_financial.FinancialBoardItem(item_id=data["event"]["pulseId"], webhook_payload=data)
+    finance.disassemble_repairs_profile()
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Financial Void Route Complete'

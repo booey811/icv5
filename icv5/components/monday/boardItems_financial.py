@@ -260,7 +260,7 @@ class FinancialBoardSubItem(FinancialWrapper):
 
         inv = FinancialInventoryMovementItem(blank_item=True)
 
-        inv.generate_inventory_item_fields(parent_item, part_item, quantity_to_change, new_quantity)
+        inv.generate_inventory_item_fields(parent_item, part_item, int(part_item.quantity.easy), new_quantity)
 
         movement = manage.Manager().get_board('inventory_movements').add_item(
             item_name=part_item.name.replace('"', ''),
