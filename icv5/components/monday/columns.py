@@ -161,8 +161,13 @@ class NumberValue(ColumnWrapper):
             self.number = 0
             self.text = None
         else:
-            self.number = column_value.number
-            self.text = str(column_value.number)
+            try:
+                self.number = column_value.number
+                self.text = str(column_value.number)
+            except ValueError:
+                num = getattr(column_value, 'value')
+                self.number = float(num.replace('"', ''))
+                self.text = str(self.number)
 
         if self.number is None:
             self.number = 0

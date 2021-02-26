@@ -174,8 +174,11 @@ class FinancialBoardItem(FinancialWrapper):
     def disassemble_repairs_profile(self):
 
         results = self.cli_client.get_items(ids=self.subitems.ids)
-        for item in results:
-            item.delete()
+        for pulse in results:
+
+            subitem = FinancialBoardSubItem(pulse.id)
+
+            subitem.void_financial_entry()
 
     def create_repair_product(self, inventory_code, inventory_dict):
 
@@ -221,13 +224,12 @@ class FinancialBoardItem(FinancialWrapper):
 
         return new_inventory
 
-    def stock_deductions(self):
+    def stock_deductions_and_recording(self):
 
         for item_id in self.subitems.ids:
+            subitem = FinancialBoardSubItem(item_id=item_id)
 
-            part_item = FinancialBoardSubItem(item_id=item_id)
-
-
+            subitem.process_stock_adjustment(self)
 
 
 class FinancialBoardSubItem(FinancialWrapper):
@@ -243,6 +245,58 @@ class FinancialBoardSubItem(FinancialWrapper):
         else:
             print('FinancialBoardSubItem INIT else route')
 
+    def process_stock_adjustment(self, parent_item):
+
+        part_item = boardItems_inventory.InventoryPartItem(self.partboard_id.easy)
+
+        quantity_to_change = int(self.quantity_used.easy)
+
+        if quantity_to_change == 0 or not quantity_to_change:
+            print('No Parts Used For This Repair')
+            self.item.add_update('No Parts Used in This Repair')
+            return False
+
+        new_quantity = part_item.adjust_stock(quantity_to_change)
+
+        inv = FinancialInventoryMovementItem(blank_item=True)
+
+        inv.generate_inventory_item_fields(parent_item, part_item, int(part_item.quantity.easy), new_quantity)
+
+        movement = manage.Manager().get_board('inventory_movements').add_item(
+            item_name=part_item.name.replace('"', ''),
+            column_values=inv.adjusted_values
+        )
+
+        self.change_multiple_attributes(
+            [
+                ['eod_status', 'Complete'],
+                ['movementboard_id', str(movement.id)]
+            ],
+            return_only=True
+        )
+
+        self.movement_url.change_value(
+            [
+                str(movement.id),
+                'https://icorrect.monday.com/boards/989490856/pulses/{}'.format(str(movement.id))
+            ]
+        )
+
+        self.apply_column_changes()
+
+    def void_financial_entry(self):
+
+        if self.movementboard_id.easy:
+            for item in self.cli_client.get_items(ids=[self.movementboard_id.easy], limit=1):
+                item.delete()
+
+        if not self.quantity_used.easy:
+            pass
+        elif self.partboard_id.easy:
+            part_item = boardItems_inventory.InventoryPartItem(self.partboard_id.easy)
+            part_item.adjust_stock(-int(self.quantity_used.easy))
+
+        self.item.delete()
 
 class FinancialMainBoardLinkItem(boardItem.MondayWrapper):
 
@@ -270,14 +324,51 @@ class FinancialMainBoardLinkItem(boardItem.MondayWrapper):
         return self
 
 
-def test_module(item_id):
-    from pprint import pprint as p
+class FinancialInventoryMovementItem(boardItem.MondayWrapper):
 
-    start_time = time()
+    def __init__(self, item_id=None, webhook_payload=None, blank_item=False):
 
-    finance = FinancialBoardItem(item_id)
-    finance.construct_repairs_profile()
+        self.column_dictionary = column_keys.inventory_movement
 
-    print("--- %s seconds ---" % (time() - start_time))
+        if item_id:
+            super().__init__(webhook_payload=webhook_payload)
+        elif blank_item:
+            super().__init__(webhook_payload)
+        else:
+            print('FinancialBoardItem INIT else route')
 
+        if not blank_item:
+            self.set_client_and_item(self, item_id)
+
+        self.set_attributes(self, self.column_dictionary)
+
+        if blank_item:
+            self.create_blank_item()
+
+    def create_blank_item(self):
+
+        return self
+
+    def generate_inventory_item_fields(self, parent_item, part_item, old_quantity, new_quantity):
+
+        self.change_multiple_attributes(
+            [
+                ['quantity_before', int(old_quantity)],
+                ['quantity_after', int(new_quantity)],
+                ['mainboard_name', str(parent_item.name)],
+                ['mainboard_id', str(parent_item.id)],
+                ['movement_type', str('Out - iCorrect')],
+                ['device_label', str(part_item.device_label.easy)],
+                ['repair_label', str(part_item.repair_label.easy)],
+                ['colour_label', str(part_item.colour_label.easy)],
+                ['device_id', str(part_item.device_id.easy)],
+                ['repair_id', str(part_item.repair_id.easy)],
+                ['colour_id', str(part_item.colour_id.easy)]
+            ],
+            return_only=True
+        )
+
+        self.part_url.change_value(
+            [str(part_item.id), 'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(part_item.id))]
+        )
 
