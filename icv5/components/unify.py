@@ -16,6 +16,9 @@ from icv5.components.zendesk.assets import custom_fields
 
 from pprint import pprint as p
 
-# webhook_payload = {'event': {'userId': 4251271}}
-#
-# item_id = 1002886137
+webhook_payload = {'event': {'userId': 4251271}}
+
+item_id = 1091674291
+
+finance = boardItems_financial.FinancialBoardItem(item_id=item_id, webhook_payload=webhook_payload)
+finance.construct_repairs_profile()
