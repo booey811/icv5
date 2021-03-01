@@ -173,12 +173,15 @@ class FinancialBoardItem(FinancialWrapper):
 
     def disassemble_repairs_profile(self):
 
-        results = self.cli_client.get_items(ids=self.subitems.ids)
-        for pulse in results:
+        if self.subitems.easy:
 
-            subitem = FinancialBoardSubItem(pulse.id)
+            results = self.cli_client.get_items(ids=self.subitems.ids)
 
-            subitem.void_financial_entry()
+            for pulse in results:
+
+                subitem = FinancialBoardSubItem(pulse.id)
+
+                subitem.void_financial_entry()
 
     def create_repair_product(self, inventory_code, inventory_dict):
 
