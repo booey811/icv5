@@ -70,9 +70,6 @@ class FinancialBoardItem(FinancialWrapper):
 
             self.attach_repair_subitem(inv_item)
 
-        if self.be_generator.easy:
-            return False
-
         self.parts_status.change_value('Complete')
         self.apply_column_changes()
 
