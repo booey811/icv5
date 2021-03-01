@@ -56,15 +56,22 @@ class FinancialBoardItem(FinancialWrapper):
                 inv_item = boardItems_inventory.InventoryRepairItem(
                     self.get_inventory_from_product_board(code, inventory_dict[code]).id
                 )
+                if self.be_generator.easy:
+                    continue
 
             except exceptions.NoItemsFoundFromMondayClientSearch:
                 # Create A Product & Halt Process
                 self.create_repair_product(code, inventory_dict)
+                if self.be_generator.easy:
+                    continue
                 self.parts_status.change_value('Failed - Creation')
                 self.apply_column_changes()
                 return False
 
             self.attach_repair_subitem(inv_item)
+
+        if self.be_generator.easy:
+            return False
 
         self.parts_status.change_value('Complete')
         self.apply_column_changes()

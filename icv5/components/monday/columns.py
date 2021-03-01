@@ -274,7 +274,6 @@ class DateValue(ColumnWrapper):
         self.text = None
         self.easy = None
 
-
         if self.moncli_val:
             values_raw = json.loads(self.moncli_val.value)
             if values_raw and self.moncli_val.text:
@@ -312,7 +311,6 @@ class DateValue(ColumnWrapper):
 
         self.repair_object.adjusted_values[self.id] = {'date': result[self.id]['date'], 'time': result[self.id]['time']}
         return result
-
 
 
 class CheckboxValue(ColumnWrapper):
