@@ -357,12 +357,12 @@ def stuart_responses():
 
         if data['data']['currentDelivery']["status"] == 'delivering':
             print('COLLECTION UPDATE')
-            data_item.update_timing('collecting')
+            data_item.update_timings('collecting')
             print("Has Been Picked Up")
 
         elif data['data']['currentDelivery']["status"] == 'delivered':
             print('DELIVERING UPDATE')
-            data_item.update_timing('delivering')
+            data_item.update_timings('delivering')
             print("Has Been Delivered")
 
     return "Stuart Webhook Route Complete"
