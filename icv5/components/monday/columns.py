@@ -106,7 +106,10 @@ class HourValue(ColumnWrapper):
             self.hour = column_value.hour
             self.minute = column_value.minute
 
-        self.easy = '{}:{}'.format(self.hour, self.minute)
+        if self.hour:
+            self.easy = '{}:{}'.format(self.hour, self.minute)
+        else:
+            self.easy = None
 
     def __str__(self):
         return 'Hour Custom Column Value'
