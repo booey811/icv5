@@ -252,7 +252,11 @@ class StuartClient:
             )
 
             if self.main_item.booking_date.easy:
-                new.booking_time.change_value([int(self.main_item.booking_date.hour), int(self.main_item.booking_date.minute)])
+                new.booking_time.change_value(
+                    [int(self.main_item.booking_date.time.split(':')[0]),
+                     int(self.main_item.booking_date.split(':')[1])]
+                )
+
             else:
                 new.booking_time.change_value([int(datetime.datetime.now().hour), int(datetime.datetime.now().minute)])
 

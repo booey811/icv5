@@ -17,6 +17,3 @@ from icv5.components.zendesk.assets import custom_fields
 from pprint import pprint as p
 
 
-test = boardItems_main.MainBoardItem(1002886137)
-
-p(test.booking_date.__dict__)
