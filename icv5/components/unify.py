@@ -16,8 +16,7 @@ from icv5.components.zendesk.assets import custom_fields
 
 from pprint import pprint as p
 
-stuuu = boardItems_misc.StuartDataItem.get_data_item(130609239)
 
-test = boardItems_main.MainBoardItem(stuuu.assignment_code.easy.split()[0])
+test = boardItems_main.MainBoardItem(1002886137)
 
-p(test.__dict__)
+p(test.booking_date.__dict__)
