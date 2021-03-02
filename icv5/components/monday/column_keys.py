@@ -364,6 +364,10 @@ financial_item = {
     'subitems': {
         'column_id': 'subitems',
         'type': 'subitem'
+    },
+    'be_generator': {
+        'column_id': 'be_generator',
+        'type': 'check'
     }
 }
 
