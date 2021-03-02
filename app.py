@@ -341,5 +341,38 @@ def update_enquiry_board_with_destination():
     return 'Zendesk Query Creation Complete'
 
 
+# ROUTES // STUART
+# Callback Function
+@app.route("/stuart/updates", methods=["POST"])
+def stuart_responses():
+
+    data = flask.request.get_data().decode("utf-8")
+
+    data = json.loads(data)
+
+    if data['event'] == 'job' and data['type'] == 'update':
+
+        job_id = data["data"]["id"]
+        data_item = boardItems_misc.StuartDataItem.get_data_item(job_id)
+
+        if data['data']['currentDelivery']["status"] == 'delivering':
+            print('COLLECTION UPDATE')
+            data_item.update_timings('collecting')
+            print("Has Been Picked Up")
+
+        elif data['data']['currentDelivery']["status"] == 'delivered':
+            # Update Data Board
+            print('DELIVERING UPDATE')
+            data_item.update_timings('delivering')
+            print("Has Been Delivered")
+            # Update Main Board Status
+            main_item = boardItems_main.MainBoardItem(data_item.assignment_code.easy.split()[0])
+            if main_item.status.easy == 'Return Booked':
+                main_item.status.change_value('Returned')
+                main_item.apply_column_changes()
+
+    return "Stuart Webhook Route Complete"
+
+
 if __name__ == "__main__":
     app.run(load_dotenv=True)

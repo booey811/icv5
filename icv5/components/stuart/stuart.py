@@ -242,12 +242,13 @@ class StuartClient:
                     ['assignment_code', str(info['assignment_code'])],
                     ['stuart_job_id', str(info['stuart_id'])],
                     ['booking_time', [int(datetime.datetime.now().hour), int(datetime.datetime.now().minute)]],
-                    ['ex_vat', int(info['cost_ex'])],
-                    ['vat', int(info['tax'])],
+                    ['ex_vat', round(float(info['cost_ex']), 2)],
+                    ['vat', round(float(info['tax']), 2)],
                     ['delivery_postcode', str(info['delivery_postcode'])],
                     ['collection_postcode', str(info['collection_postcode'])],
                     ['tracking_url', [str('Tracking'), str(info['tracking_url'])]],
-                    ['estimated_time', int(res_dict['duration'])]
+                    ['estimated_time', int(res_dict['duration'])],
+                    ['distance', round(float(info['distance']), 2)]
                 ],
             )
             update = ['{}: {}'.format(item, str(info[item]).replace('"', '')) for item in info]

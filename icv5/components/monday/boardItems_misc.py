@@ -1,4 +1,9 @@
-from icv5.components.monday import boardItem, column_keys, exceptions
+from datetime import datetime
+
+from moncli import ColumnType
+from moncli.entities import create_column_value
+
+from icv5.components.monday import boardItem, column_keys, exceptions, manage
 
 
 
@@ -54,9 +59,29 @@ class StuartDataItem(boardItem.MondayWrapper):
         if blank_item:
             self.create_blank_item()
 
+    @staticmethod
+    def get_data_item(stuart_job_id):
+
+        col_val = create_column_value(id='stuart_job_id', column_type=ColumnType.text, value=str(stuart_job_id))
+
+        for pulse in manage.Manager().get_board('stuart_data_new').get_items_by_column_values(col_val):
+            return StuartDataItem(pulse.id)
+
     def create_blank_item(self):
 
         return self
+
+    def update_timings(self, direction):
+
+        hour = datetime.now().hour
+        min = datetime.now().minute
+
+        if direction == 'collecting':
+            self.collection_time.change_value([hour, min])
+        elif direction == 'delivering':
+            self.delivery_time.change_value([hour, min])
+
+        self.apply_column_changes()
 
 
 class NoEmailOnMonday(Exception):
@@ -66,3 +91,7 @@ class NoEmailOnMonday(Exception):
             general_enquiry_item.name,
             general_enquiry_item.id
         ))
+
+
+
+
