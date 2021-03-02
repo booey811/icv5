@@ -93,15 +93,5 @@ class NoEmailOnMonday(Exception):
         ))
 
 
-def test_module(usr_input):
-
-    from pprint import pprint as p
-
-    test = StuartDataItem.get_data_item(usr_input)
-
-    test.update_timings()
-
-
-test_module(130609239)
 
 
