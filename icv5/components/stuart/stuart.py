@@ -241,7 +241,6 @@ class StuartClient:
                 [
                     ['assignment_code', str(info['assignment_code'])],
                     ['stuart_job_id', str(info['stuart_id'])],
-                    ['booking_time', [int(datetime.datetime.now().hour), int(datetime.datetime.now().minute)]],
                     ['ex_vat', round(float(info['cost_ex']), 2)],
                     ['vat', round(float(info['tax']), 2)],
                     ['delivery_postcode', str(info['delivery_postcode'])],
@@ -251,6 +250,12 @@ class StuartClient:
                     ['distance', round(float(info['distance']), 2)]
                 ],
             )
+
+            if self.main_item.booking_date.easy:
+                new.booking_time.change_value([int(self.main_item.hour), int(self.main_item.minute)])
+            else:
+                new.booking_time.change_value([int(datetime.datetime.now().hour), int(datetime.datetime.now().minute)])
+
             update = ['{}: {}'.format(item, str(info[item]).replace('"', '')) for item in info]
 
             self.add_tracking_to_zendesk(update, info['tracking_url'])
