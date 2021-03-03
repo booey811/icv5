@@ -229,8 +229,11 @@ inventory_repair = {
     'tracking': {
         'column_id': 'tracking',
         'type': 'status'
+    },
+    'dual_only_id': {
+        'column_id': 'dual_only_id',
+        'type': 'text'
     }
-
 }
 
 inventory_part = {

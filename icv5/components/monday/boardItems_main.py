@@ -42,6 +42,9 @@ class MainBoardItem(MainBoardWrapper):
 
     def create_inventory_info(self):
 
+
+        """MAKE AN OPTION TO CHECK STOCK ONLY WHICH RETRNS THE INVENTOIRY ITEMS THEMSELVES"""
+
         ids = []
         names = []
         colours = {
@@ -88,6 +91,7 @@ class MainBoardItem(MainBoardWrapper):
             new_product_item.colour.change_value(str(self.colour.easy))
         new_product_item.device_label.change_value(str(self.device.easy[0]))
         new_product_item.repair_label.change_value(str(self.repairs.easy[count]))
+        new_product_item.dual_only_id.change_value('{}-{}'.format(self.device_id.easy, self.repair_id.easy))
 
         created_item = manage.Manager().get_board('inventory_products').add_item(
             item_name=name,
@@ -147,7 +151,8 @@ class MainBoardItem(MainBoardWrapper):
                         subitem.part_url.change_value(
                             [
                                 repairboard_item.partboard_id.easy,
-                                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(repairboard_item.id))
+                                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(
+                                    str(repairboard_item.id))
                             ]
                         )
                         new_subitem = financial_object.item.create_subitem(
@@ -177,52 +182,100 @@ class MainBoardItem(MainBoardWrapper):
         repairs_board = manage.Manager().get_board('inventory_products')
 
         parts_info = {}
+        update = ['STOCK CHECK\n\n']
 
         for repair_id in repairs_info['ids']:
 
+            splitted = repair_id.split('-')
+
+            if len(splitted) == 3:
+                search = '{}-{}'.format(splitted[0], splitted[1])
+            else:
+                search = repair_id
+
             col_val = moncli.entities.create_column_value(
-                id='combined_id',
+                id='dual_only_id',
                 column_type=moncli.ColumnType.text,
-                text=str(repair_id)
+                text=str(search)
             )
 
-            col_val.value = '"{}"'.format(str(repair_id))
+            col_val.value = '"{}"'.format(str(search))
 
             results = repairs_board.get_items_by_column_values(col_val)
 
             if len(results) == 0:
                 raise exceptions.CannotFindRepairProduct(self, repair_id)
 
-            elif len(results) > 1:
-                raise exceptions.TooManyRepairProducts(self, repair_id)
-
-            elif len(results) == 1:
-                self.process_stock_check_results(results, parts_info)
+            elif len(results) > 0:
+                self.process_stock_check_results(results, parts_info, repairs_board)
 
             else:
                 print('MainItem.check_stock else route')
                 return False
 
-            update = ['STOCK CHECK\n\n']
-
-            for repair in parts_info:
-                update.append(
-                    '{} (Tracking: {}) == {}'.format(
-                        repair.replace('"', ''),
-                        parts_info[repair]['tracking'],
-                        parts_info[repair]['quantity']
-                    )
+        for repair in parts_info:
+            update.append(
+                '{} (Tracking: {}) == {}'.format(
+                    repair.replace('"', ''),
+                    parts_info[repair]['tracking'],
+                    parts_info[repair]['quantity']
                 )
+            )
 
-        self.item.add_update('\n'.join(update))
+        quantities = [parts_info[item]['quantity'] for item in parts_info]
+        if any(num < 5 for num in quantities):
+            status = 'Low Stock'
+            self.status.change_value('Error')
+        elif any(num < 1 for num in quantities):
+            status = 'No Stock'
+            self.status.change_value('Error')
+        elif all(num > 4 for num in quantities):
+            status = 'Stock Available'
+        else:
+            status = 'Error'
 
-    def process_stock_check_results(self, results, parts_info):
+        if status not in ['Stock Available', 'Error']:
+            manage.Manager().add_update(
+                self,
+                update='\n'.join(update),
+                notify=[
+                    "{}\nWe may not have the required stock for this repair, please click me and check!".format(
+                        self.name
+                    ),
+                    self.user_id
+                ]
+            )
 
+        else:
+            manage.Manager().add_update(
+                self,
+                update='\n'.join(update),
+            )
+
+        self.be_stock_checker.change_value(status)
+        self.apply_column_changes()
+
+    def process_stock_check_results(self, results, parts_info, repairs_board):
+
+        colours = {
+            'TrackPad',
+            'Charging Port',
+            'Headphone Jack',
+            'Home Button',
+            'Front Screen Universal',
+            'Rear Glass',
+            'Front Screen (LG)',
+            'Front Screen (Tosh)',
+            'Rear Housing'
+        }
+
+        products = []
         for pulse in results:
-            product = boardItems_inventory.InventoryRepairItem(pulse.id)
+            products.append(boardItems_inventory.InventoryRepairItem(pulse.id))
 
-        name = str(product.name)
-        quantity = int(product.quantity.easy)
-        tracking = str(product.tracking.easy)
 
-        parts_info[name] = {'quantity': quantity, 'tracking': tracking}
+        for product_item in products:
+            name = str(product_item.name)
+            quantity = int(product_item.quantity.easy)
+            tracking = str(product_item.tracking.easy)
+            parts_info[name] = {'quantity': quantity, 'tracking': tracking}

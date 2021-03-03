@@ -15,7 +15,3 @@ from icv5.components.zendesk import ticket
 from icv5.components.zendesk.assets import custom_fields
 
 from pprint import pprint as p
-# 
-# webhook = {'event': {'userId': 4251271}}
-# 
-# item_id = 1092341311
