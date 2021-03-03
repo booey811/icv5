@@ -207,7 +207,10 @@ class StuartClient:
         self.process_successful_booking(response)
 
     def process_successful_booking(self, response):
+
         res_dict = json.loads(response.text)
+        new = boardItems_misc.StuartDataItem(blank_item=True)
+
         if response.status_code == 201:
             info = {
                 'assignment_code': res_dict['assignment_code'],
@@ -225,18 +228,23 @@ class StuartClient:
                 'tax': res_dict['pricing']['tax_amount'],
                 'estimated_time': res_dict['duration']
             }
-            data = boardItems_misc.StuartDataItem(blank_item=True)
+
             if info['delivery_postcode'] == 'W1W 8JQ':
                 name = '{} COLLECTION'.format(self.main_item.name)
                 self.main_item.be_courier_collection.change_value('Booking Complete')
+                if self.main_item.booking_date.time:
+                    new.booking_time.change_value(
+                        [int(self.main_item.booking_date.time.split(':')[0]),
+                         int(self.main_item.booking_date.time.split(':')[1])]
+                    )
+                else:
+                    new.booking_time.change_value([int(datetime.datetime.now().hour), int(datetime.datetime.now().minute)])
+
             else:
                 name = '{} RETURN'.format(self.main_item.name)
                 self.main_item.be_courier_return.change_value('Booking Complete')
-            new_id = manage.Manager().get_board('stuart_data_new').add_item(
-                item_name=name,
-                column_values=data.adjusted_values
-            ).id
-            new = boardItems_misc.StuartDataItem(item_id=new_id)
+                new.booking_time.change_value([int(datetime.datetime.now().hour), int(datetime.datetime.now().minute)])
+
             new.change_multiple_attributes(
                 [
                     ['assignment_code', str(info['assignment_code'])],
@@ -249,16 +257,13 @@ class StuartClient:
                     ['estimated_time', int(res_dict['duration'])],
                     ['distance', round(float(info['distance']), 2)]
                 ],
+                return_only=True
             )
 
-            if self.main_item.booking_date.easy:
-                new.booking_time.change_value(
-                    [int(self.main_item.booking_date.time.split(':')[0]),
-                     int(self.main_item.booking_date.split(':')[1])]
-                )
-
-            else:
-                new.booking_time.change_value([int(datetime.datetime.now().hour), int(datetime.datetime.now().minute)])
+            stuart_log = manage.Manager().get_board('stuart_data_new').add_item(
+                item_name=name,
+                column_values=new.adjusted_values
+            )
 
             update = ['{}: {}'.format(item, str(info[item]).replace('"', '')) for item in info]
 
