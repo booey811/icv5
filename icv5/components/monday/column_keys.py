@@ -159,6 +159,10 @@ main_wrapper = {
     'company': {
         'column_id': 'company',
         'type': 'text'
+    },
+    'be_stock_checker': {
+        'column_id': 'be_stock_checker',
+        'type': 'status'
     }
 }
 
@@ -221,7 +225,12 @@ inventory_repair = {
     'quantity': {
         'column_id': 'quantity',
         'type': 'readonly'
+    },
+    'tracking': {
+        'column_id': 'tracking',
+        'type': 'status'
     }
+
 }
 
 inventory_part = {
@@ -347,7 +356,6 @@ reporting_financial_sub = {
 
 
 # FinancialDictionaries
-
 financial_wrapper = {
 
 }

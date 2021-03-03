@@ -132,6 +132,28 @@ def book_courier_collection():
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Courier Collection Booking Route Complete'
 
+# MONDAY ROUTES == Stock Checker
+# Stock -> Checking
+@app.route('/monday/stock/check', methods=["POST"])
+def check_stock_levels():
+    """This route checks the required stock for the specified repair'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    main_item = boardItems_main.MainBoardItem(item_id=data["event"]["pulseId"], webhook_payload=data)
+
+    main_item.check_stock()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Courier Collection Booking Route Complete'
+
 
 # MONDAY ROUTES == Book Return
 # be_courier_return ==> Attempting Booking

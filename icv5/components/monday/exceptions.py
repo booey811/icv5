@@ -45,17 +45,31 @@ class NotDevelopedError(Exception):
         print("{} columns have not been developed fully yet".format(column_type))
 
 
-class CannotFindRepairMapping(Exception):
+class CannotFindRepairProduct(Exception):
 
     def __init__(self, monday_object, code_string):
-        print('Unable to find this repair on Repair Mappings Board')
+        print('Unable to find this repair on Products(Repairs) Board')
 
         manage.Manager().add_update(
-            item_object=monday_object.item,
-            user_id=monday_object.user_id,
-            client='error',
-            update='Cannot Find Repair Mapping For {}'.format(code_string),
-            notify=['Cannot Find Repair Mapping For {}'.format(code_string), 4251271]
+            monday_object,
+            update='Unable to find this repair on Products(Repairs) Board\n{}'.format(code_string),
+            notify=[
+                'Unable to find this repair on Products(Repairs) Board\n{}\nPlease let Gabe know'.format(code_string),
+                monday_object.user_id
+            ]
+        )
+
+class TooManyRepairProducts(Exception):
+    def __init__(self, monday_object, code_string):
+        print('Found Too Many Results on Products(Repairs) Board')
+
+        manage.Manager().add_update(
+            monday_object,
+            update='Found Too Many Results on Products(Repairs) Board\n{}'.format(code_string),
+            notify=[
+                'Found Too Many Results on Products(Repairs) Board\n{}\nPlease let Gabe know'.format(code_string),
+                monday_object.user_id
+            ]
         )
 
 

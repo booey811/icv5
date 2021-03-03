@@ -170,3 +170,59 @@ class MainBoardItem(MainBoardWrapper):
 
         self.eod.change_value('Complete')
         self.apply_column_changes()
+
+    def check_stock(self):
+
+        repairs_info = self.create_inventory_info()
+        repairs_board = manage.Manager().get_board('inventory_products')
+
+        parts_info = {}
+
+        for repair_id in repairs_info['ids']:
+
+            col_val = moncli.entities.create_column_value(
+                id='combined_id',
+                column_type=moncli.ColumnType.text,
+                text=str(repair_id)
+            )
+
+            col_val.value = '"{}"'.format(str(repair_id))
+
+            results = repairs_board.get_items_by_column_values(col_val)
+
+            if len(results) == 0:
+                raise exceptions.CannotFindRepairProduct(self, repair_id)
+
+            elif len(results) > 1:
+                raise exceptions.TooManyRepairProducts(self, repair_id)
+
+            elif len(results) == 1:
+                self.process_stock_check_results(results, parts_info)
+
+            else:
+                print('MainItem.check_stock else route')
+                return False
+
+            update = ['STOCK CHECK\n\n']
+
+            for repair in parts_info:
+                update.append(
+                    '{} (Tracking: {}) == {}'.format(
+                        repair.replace('"', ''),
+                        parts_info[repair]['tracking'],
+                        parts_info[repair]['quantity']
+                    )
+                )
+
+        self.item.add_update('\n'.join(update))
+
+    def process_stock_check_results(self, results, parts_info):
+
+        for pulse in results:
+            product = boardItems_inventory.InventoryRepairItem(pulse.id)
+
+        name = str(product.name)
+        quantity = int(product.quantity.easy)
+        tracking = str(product.tracking.easy)
+
+        parts_info[name] = {'quantity': quantity, 'tracking': tracking}
