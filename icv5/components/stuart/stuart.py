@@ -269,9 +269,10 @@ class StuartClient:
 
             self.add_tracking_to_zendesk(update, info['tracking_url'])
 
-            self.main_item.item.add_update(
-                '\n'.join(update)
-            )
+            body = '\n'.join(update)
+            body = body.replace('"', '')
+
+            self.main_item.item.add_update(body)
 
             self.main_item.apply_column_changes()
 
