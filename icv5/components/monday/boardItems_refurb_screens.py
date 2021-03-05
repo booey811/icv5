@@ -28,7 +28,6 @@ class ScreenRefurbWrapper(boardItem.MondayWrapper):
 
 
 class ScreenRefurbMenuItem(ScreenRefurbWrapper):
-
     column_dictionary = column_keys.screen_refurbs_menu
 
     def __init__(self, item_id=None, webhook_payload=None, blank_item=False):
@@ -55,15 +54,19 @@ class ScreenRefurbOngoingItem(ScreenRefurbWrapper):
 
         self.final_quantity = int(self.starting_quantity.easy) - int(self.lcd_damage.easy) - int(self.re_runs.easy)
 
-    def process_batch_completion(self, type):
+    def process_batch_completion(self, refurb_type):
 
         refurb_part_item = ScreenRefurbMenuItem(self.refurb_part_id.easy)
 
-        if type == 'glassing':
+        if refurb_type == 'glassing':
 
             refurb_part_item.deglassed_stock.change_value(
                 int(refurb_part_item.deglassed_stock.easy) - int(self.starting_quantity.easy)
             )
+
+            if int(self.re_runs.easy) > 0:
+                refurb_part_item.refurbable_stock.change_value(
+                    int(refurb_part_item.refurbable_stock.easy) + int(self.re_runs.easy))
 
             stock_item = boardItems_inventory.InventoryPartItem(self.part_id.easy)
 
@@ -71,7 +74,7 @@ class ScreenRefurbOngoingItem(ScreenRefurbWrapper):
 
             stock_item.apply_column_changes()
 
-        elif type == 'deglassing':
+        elif refurb_type == 'deglassing':
 
             refurb_part_item.refurbable_stock.change_value(
                 int(refurb_part_item.refurbable_stock.easy) - int(self.starting_quantity.easy)
