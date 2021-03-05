@@ -346,7 +346,7 @@ def create_zendesk_ticket_for_enquiry():
 # MONDAY ROUTES == Screen Refurbs Ongoing Board
 # Status -> Complete && Type -> Glassing
 @app.route('/monday/screen-refurbs/glassing/complete', methods=["POST"])
-def screen_refurbs_batch_complete():
+def screen_refurbs_glassing_batch_complete():
     """This route is for processing refurb completions, generating associated reports and adding to stock'"""
 
     start_time = time.time()
@@ -368,7 +368,7 @@ def screen_refurbs_batch_complete():
 # MONDAY ROUTES == Screen Refurbs Ongoing Board
 # Status -> Complete && Type -> Deglassing
 @app.route('/monday/screen-refurbs/deglassing/complete', methods=["POST"])
-def screen_refurbs_batch_complete():
+def screen_refurbs_deglassing_batch_complete():
     """This route is for processing refurb completions, generating associated reports and adding to stock'"""
 
     start_time = time.time()
