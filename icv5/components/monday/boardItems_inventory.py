@@ -81,8 +81,6 @@ class InventoryPartItem(InventoryWrapper):
         return new
 
 
-
-
 class InventoryStockCountItem(InventoryWrapper):
     column_dictionary = column_keys.inventory_stock_count
 
@@ -195,7 +193,7 @@ class InventoryOrderItem(InventoryWrapper):
     def calculate_new_supply_price(self, stock_item, total_stock):
 
         # Check to see if no supply price has been set, if not then use price from current order
-        if int(stock_item.quantity.easy) == 0:
+        if int(stock_item.quantity.easy) < 1:
             supply_price = float(self.unit_cost.easy)
 
         # Calculate Supply Price
