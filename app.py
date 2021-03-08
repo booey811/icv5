@@ -5,7 +5,7 @@ import flask
 
 from icv5.components import unify, stuart
 from icv5.components.monday import boardItems_main, boardItems_refurbs, boardItems_inventory, manage, boardItems_misc, \
-    boardItems_reporting, boardItems_financial
+    boardItems_reporting, boardItems_financial, boardItems_refurb_screens
 from icv5.components.phonecheck import phonecheck
 from icv5.components.zendesk import ticket
 from icv5.components.stuart import stuart
@@ -128,6 +128,28 @@ def book_courier_collection():
     except (stuart.DistanceTooGreat or stuart.EmailInvalid or stuart.CannotGeocodeAddress or
             stuart.UnknownValidationError or stuart.CourierDetailsMissing or stuart.PhoneNumberInvalid):
         pass
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Courier Collection Booking Route Complete'
+
+# MONDAY ROUTES == Stock Checker
+# Stock -> Checking
+@app.route('/monday/stock/check', methods=["POST"])
+def check_stock_levels():
+    """This route checks the required stock for the specified repair'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    main_item = boardItems_main.MainBoardItem(item_id=data["event"]["pulseId"], webhook_payload=data)
+
+    main_item.check_stock()
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Courier Collection Booking Route Complete'
@@ -319,6 +341,50 @@ def create_zendesk_ticket_for_enquiry():
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Zendesk Query Creation Complete'
+
+
+# MONDAY ROUTES == Screen Refurbs Ongoing Board
+# Status -> Complete && Type -> Glassing
+@app.route('/monday/screen-refurbs/glassing/complete', methods=["POST"])
+def screen_refurbs_glassing_batch_complete():
+    """This route is for processing refurb completions, generating associated reports and adding to stock'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    screen_refurb = boardItems_refurb_screens.ScreenRefurbOngoingItem(data["event"]["pulseId"], data)
+    screen_refurb.process_batch_completion('glassing')
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Monday Glassing Screen Refurb Route Complete'
+
+
+# MONDAY ROUTES == Screen Refurbs Ongoing Board
+# Status -> Complete && Type -> Deglassing
+@app.route('/monday/screen-refurbs/deglassing/complete', methods=["POST"])
+def screen_refurbs_deglassing_batch_complete():
+    """This route is for processing refurb completions, generating associated reports and adding to stock'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    screen_refurb = boardItems_refurb_screens.ScreenRefurbOngoingItem(data["event"]["pulseId"], data)
+    screen_refurb.process_batch_completion('deglassing')
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Monday Glassing Screen Refurb Route Complete'
 
 
 # ROUTES // ++++++++++++ ZENDESK ++++++++++++ \\

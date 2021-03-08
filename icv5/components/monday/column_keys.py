@@ -159,6 +159,10 @@ main_wrapper = {
     'company': {
         'column_id': 'company',
         'type': 'text'
+    },
+    'be_stock_checker': {
+        'column_id': 'be_stock_checker',
+        'type': 'status'
     }
 }
 
@@ -221,6 +225,14 @@ inventory_repair = {
     'quantity': {
         'column_id': 'quantity',
         'type': 'readonly'
+    },
+    'tracking': {
+        'column_id': 'tracking',
+        'type': 'status'
+    },
+    'dual_only_id': {
+        'column_id': 'dual_only_id',
+        'type': 'text'
     }
 }
 
@@ -347,7 +359,6 @@ reporting_financial_sub = {
 
 
 # FinancialDictionaries
-
 financial_wrapper = {
 
 }
@@ -485,6 +496,77 @@ inventory_movement = {
     'colour_id': {
         'column_id': 'colour_id1',
         'type': 'text'
+    }
+}
+
+
+# NEW Screen Refurb Dictionaries
+screen_refurbs_wrapper = {
+    'combined_id': {
+        'column_id': 'combined_id',
+        'type': 'text'
+    },
+    'device_id': {
+        'column_id': 'device_id',
+        'type': 'text'
+    },
+    'repair_id': {
+        'column_id': 'repair_id',
+        'type': 'text'
+    },
+    'colour_id': {
+        'column_id': 'colour_id',
+        'type': 'text'
+    },
+    'device_label': {
+        'column_id': 'device_label',
+        'type': 'text'
+    },
+    'repair_label': {
+        'column_id': 'repair_label',
+        'type': 'text'
+    },
+    'colour_label': {
+        'column_id': 'colour_label',
+        'type': 'text'
+    },
+    'part_id': {
+        'column_id': 'part_id',
+        'type': 'text'
+    }
+}
+
+screen_refurbs_menu = {
+    'refurbable_stock': {
+        'column_id': 'refurbable_stock',
+        'type': 'number'
+    },
+    'deglassed_stock': {
+        'column_id': 'deglassed_stock',
+        'type': 'number'
+    }
+}
+
+screen_refurbs_ongoing = {
+    'starting_quantity': {
+        'column_id': 'starting_quantity',
+        'type': 'number'
+    },
+    'lcd_damage': {
+        'column_id': 'lcd_damage',
+        'type': 'number'
+    },
+    're_runs': {
+        'column_id': 're_runs',
+        'type': 'number'
+    },
+    'refurb_part_id': {
+        'column_id': 'refurb_part_id',
+        'type': 'text'
+    },
+    'refurb_type': {
+        'column_id': 'refurb_type',
+        'type': 'status'
     }
 }
 
