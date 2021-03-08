@@ -48,14 +48,18 @@ class FinancialBoardItem(FinancialWrapper):
 
         inventory_dict = self.create_inventory_codes(repairs_dict)
 
+        stock_status = 'Do Now!'
+
         for code in inventory_dict:
             print(inventory_dict[code])
             print(code)
 
+            if code.split('-')[1] == '63':
+                stock_status = 'Manual'
+
             try:
-                inv_item = boardItems_inventory.InventoryRepairItem(
-                    self.get_inventory_from_product_board(code, inventory_dict[code]).id
-                )
+                inv_id = self.get_inventory_from_product_board(code, inventory_dict[code]).id
+                inv_item = boardItems_inventory.InventoryRepairItem(inv_id)
                 if self.be_generator.easy:
                     continue
 
@@ -71,7 +75,8 @@ class FinancialBoardItem(FinancialWrapper):
             self.attach_repair_subitem(inv_item)
 
         self.parts_status.change_value('Complete')
-        self.apply_column_changes()
+        self.stock_adjustment.change_value(stock_status)
+        self.apply_column_changes(verbose=True)
 
     def attach_repair_subitem(self, inventory_item):
 
@@ -107,7 +112,7 @@ class FinancialBoardItem(FinancialWrapper):
 
         col_val.value = '"{}"'.format(str(inventory_code))
 
-        results = manage.Manager().get_board('inventory_parts').get_items_by_column_values(col_val)
+        results = manage.Manager().get_board('inventory_products').get_items_by_column_values(col_val)
 
         if len(results) == 0:
             raise exceptions.NoItemsFoundFromMondayClientSearch(inventory_code)

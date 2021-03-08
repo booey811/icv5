@@ -379,6 +379,10 @@ financial_item = {
     'be_generator': {
         'column_id': 'be_generator',
         'type': 'check'
+    },
+    'stock_adjustment': {
+        'column_id': 'stock_adjustment',
+        'type': 'status'
     }
 }
 
