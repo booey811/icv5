@@ -230,7 +230,7 @@ class StuartClient:
             }
 
             if info['delivery_postcode'] == 'W1W 8JQ':
-                name = '{} COLLECTION'.format(self.main_item.name)
+                name = '{} COLLECTION'.format(self.main_item.name.replace('"', '').replace("'", ''))
                 self.main_item.be_courier_collection.change_value('Booking Complete')
                 if self.main_item.booking_date.time:
                     new.booking_time.change_value(
@@ -241,19 +241,19 @@ class StuartClient:
                     new.booking_time.change_value([int(datetime.datetime.now().hour), int(datetime.datetime.now().minute)])
 
             else:
-                name = '{} RETURN'.format(self.main_item.name)
+                name = '{} RETURN'.format(self.main_item.name.replace('"', '').replace("'", ''))
                 self.main_item.be_courier_return.change_value('Booking Complete')
                 new.booking_time.change_value([int(datetime.datetime.now().hour), int(datetime.datetime.now().minute)])
 
             new.change_multiple_attributes(
                 [
-                    ['assignment_code', str(info['assignment_code'])],
-                    ['stuart_job_id', str(info['stuart_id'])],
+                    ['assignment_code', str(info['assignment_code']).replace('"', '').replace("'", '')],
+                    ['stuart_job_id', str(info['stuart_id']).replace('"', '').replace("'", '')],
                     ['ex_vat', round(float(info['cost_ex']), 2)],
                     ['vat', round(float(info['tax']), 2)],
-                    ['delivery_postcode', str(info['delivery_postcode'])],
-                    ['collection_postcode', str(info['collection_postcode'])],
-                    ['tracking_url', [str('Tracking'), str(info['tracking_url'])]],
+                    ['delivery_postcode', str(info['delivery_postcode']).replace('"', '').replace("'", '')],
+                    ['collection_postcode', str(info['collection_postcode']).replace('"', '').replace("'", '')],
+                    ['tracking_url', [str('Tracking').replace('"', '').replace("'", ''), str(info['tracking_url']).replace('"', '').replace("'", '')]],
                     ['estimated_time', int(res_dict['duration'])],
                     ['distance', round(float(info['distance']), 2)]
                 ],
@@ -265,12 +265,12 @@ class StuartClient:
                 column_values=new.adjusted_values
             )
 
-            update = ['{}: {}'.format(item, str(info[item]).replace('"', '')) for item in info]
+            update = ['{}: {}'.format(item, str(info[item]).replace('"', '').replace("'", '')) for item in info]
 
             self.add_tracking_to_zendesk(update, info['tracking_url'])
 
             body = '\n'.join(update)
-            body = body.replace('"', '')
+            body = body.replace('"', '').replace("'", '')
 
             self.main_item.item.add_update(body)
 
