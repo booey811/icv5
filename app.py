@@ -132,6 +132,7 @@ def book_courier_collection():
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Courier Collection Booking Route Complete'
 
+
 # MONDAY ROUTES == Stock Checker
 # Stock -> Checking
 @app.route('/monday/stock/check', methods=["POST"])
@@ -294,6 +295,7 @@ def process_repair_subitems():
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Financial Reporting Repairs Profile Route Complete'
 
+
 # MONDAY ROUTES == Financial Board
 # Parts Status ==> Void
 @app.route('/monday/reporting/financial/void', methods=["POST"])
@@ -411,7 +413,6 @@ def update_enquiry_board_with_destination():
 # Callback Function
 @app.route("/stuart/updates", methods=["POST"])
 def stuart_responses():
-
     data = flask.request.get_data().decode("utf-8")
 
     data = json.loads(data)

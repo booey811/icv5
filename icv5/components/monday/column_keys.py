@@ -233,6 +233,10 @@ inventory_repair = {
     'dual_only_id': {
         'column_id': 'dual_only_id',
         'type': 'text'
+    },
+    'repair_credits': {
+        'column_id': 'repair_credits',
+        'type': 'number'
     }
 }
 
@@ -383,6 +387,10 @@ financial_item = {
     'stock_adjustment': {
         'column_id': 'stock_adjustment',
         'type': 'status'
+    },
+    'repair_credits': {
+        'column_id': 'repair_credits',
+        'type': 'readonly'
     }
 }
 
@@ -433,6 +441,10 @@ financial_subitem = {
     'movement_url': {
         'column_id': 'movement_url',
         'type': 'link'
+    },
+    'repair_credits': {
+        'column_id': 'repair_credits',
+        'type': 'readonly'
     }
 }
 
