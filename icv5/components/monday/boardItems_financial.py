@@ -41,14 +41,13 @@ class FinancialBoardItem(FinancialWrapper):
     def construct_repairs_profile(self):
 
         self.disassemble_repairs_profile()
-
         self.get_mainboard_item()
 
         repairs_dict = self.create_repairs_dict()
-
         inventory_dict = self.create_inventory_codes(repairs_dict)
 
         stock_status = 'Do Now!'
+
 
         for code in inventory_dict:
             print(inventory_dict[code])

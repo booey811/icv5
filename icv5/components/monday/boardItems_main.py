@@ -184,9 +184,21 @@ class MainBoardItem(MainBoardWrapper):
         parts_info = {}
         update = ['STOCK CHECK\n\n']
 
+        untracked = [
+            '35',  # Tempered Glass
+            '72',  # Liq Dam
+            '99',  # Face ID
+            '11',  # Apple Boot
+            '37',  # Logic Board
+            '10',  # Audio IC
+        ]
+
         for repair_id in repairs_info['ids']:
 
             splitted = repair_id.split('-')
+
+            if splitted[1] in untracked:
+                continue
 
             if len(splitted) == 3:
                 search = '{}-{}'.format(splitted[0], splitted[1])
