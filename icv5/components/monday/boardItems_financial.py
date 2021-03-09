@@ -87,7 +87,8 @@ class FinancialBoardItem(FinancialWrapper):
                 ['sale_price', round(float(inventory_item.sale_price.easy), 2)],
                 ['supply_price', round(float(inventory_item.supply_price.easy)), 2],
                 ['quantity_used', 1],
-                ['partboard_id', str(inventory_item.partboard_id.easy)]
+                ['partboard_id', str(inventory_item.partboard_id.easy)],
+                ['repair_credits', int(inventory_item.repair_credits.easy)]
             ],
             return_only=True
         )
