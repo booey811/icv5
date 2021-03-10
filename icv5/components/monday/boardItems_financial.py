@@ -48,7 +48,6 @@ class FinancialBoardItem(FinancialWrapper):
 
         stock_status = 'Do Now!'
 
-
         for code in inventory_dict:
             print(inventory_dict[code])
             print(code)
@@ -90,8 +89,7 @@ class FinancialBoardItem(FinancialWrapper):
                 ['partboard_id', str(inventory_item.partboard_id.easy)],
                 ['repair_credits', int(inventory_item.repair_credits.easy)]
             ],
-            return_only=True,
-            verbose=True
+            return_only=True
         )
 
         new_subitem = self.item.create_subitem(
@@ -188,7 +186,6 @@ class FinancialBoardItem(FinancialWrapper):
             results = self.cli_client.get_items(ids=self.subitems.ids)
 
             for pulse in results:
-
                 subitem = FinancialBoardSubItem(pulse.id)
 
                 subitem.void_financial_entry()
@@ -273,7 +270,13 @@ class FinancialBoardSubItem(FinancialWrapper):
 
         inv = FinancialInventoryMovementItem(blank_item=True)
 
-        inv.generate_inventory_item_fields(parent_item, part_item, int(part_item.quantity.easy), new_quantity)
+        inv.generate_inventory_item_fields(
+            part_item=part_item,
+            old_quantity=int(part_item.quantity.easy),
+            new_quantity=new_quantity,
+            parent_item=parent_item,
+            movement_type='OUT - iCorrect'
+        )
 
         movement = manage.Manager().get_board('inventory_movements').add_item(
             item_name=part_item.name.replace('"', ''),
@@ -299,17 +302,41 @@ class FinancialBoardSubItem(FinancialWrapper):
 
     def void_financial_entry(self):
 
-        if self.movementboard_id.easy:
-            for item in self.cli_client.get_items(ids=[self.movementboard_id.easy], limit=1):
-                item.delete()
-
-        if not self.quantity_used.easy:
+        if int(self.quantity_used.easy) == 0:
             pass
-        elif self.partboard_id.easy:
-            part_item = boardItems_inventory.InventoryPartItem(self.partboard_id.easy)
-            part_item.adjust_stock(-int(self.quantity_used.easy))
+        elif not self.quantity_used.easy:
+            pass
+        elif self.partboard_id.easy and self.eod_status.easy == 'Complete':
+            self.reverse_stock_changes()
+        else:
+            print('FinancialSubItem.void_financial_entry else route')
 
         self.item.delete()
+
+    def reverse_stock_changes(self):
+
+        part_item = boardItems_inventory.InventoryPartItem(self.partboard_id.easy)
+
+        current_quantity = int(part_item.quantity.easy)
+        used_quantity = -int(self.quantity_used.easy)
+        new_quantity = current_quantity + used_quantity
+
+        part_item.adjust_stock(used_quantity)
+
+        inv = FinancialInventoryMovementItem(blank_item=True)
+
+        inv.generate_inventory_item_fields(
+            part_item,
+            current_quantity,
+            new_quantity,
+            movement_type='IN - Void'
+        )
+
+        movement_item = manage.Manager().get_board('inventory_movements').add_item(
+            item_name=self.name,
+            column_values=inv.adjusted_values
+        )
+
 
 class FinancialMainBoardLinkItem(boardItem.MondayWrapper):
 
@@ -362,26 +389,42 @@ class FinancialInventoryMovementItem(boardItem.MondayWrapper):
 
         return self
 
-    def generate_inventory_item_fields(self, parent_item, part_item, old_quantity, new_quantity):
+    def generate_inventory_item_fields(self, part_item, old_quantity, new_quantity, parent_item=None, movement_type=None):
+
+        movement_types = [
+            'OUT - iCorrect',
+            'OUT - Refurb',
+            'OUT - Damaged',
+            'OUT - Return',
+            'IN - Order',
+            'IN - Refurbished Screen',
+            'IN - Void'
+        ]
+
+        if movement_type not in movement_types:
+            raise exceptions.InvalidMovementType(movement_type)
+
+        atts_to_change = [
+            ['quantity_before', int(old_quantity)],
+            ['quantity_after', int(new_quantity)],
+            ['movement_type', str(movement_type)],
+            ['device_label', str(part_item.device_label.easy)],
+            ['repair_label', str(part_item.repair_label.easy)],
+            ['colour_label', str(part_item.colour_label.easy)],
+            ['device_id', str(part_item.device_id.easy)],
+            ['repair_id', str(part_item.repair_id.easy)],
+            ['colour_id', str(part_item.colour_id.easy)]
+        ]
+
+        if parent_item:
+            atts_to_change.append(['mainboard_name', str(parent_item.name)])
+            atts_to_change.append(['mainboard_id', str(parent_item.id)])
 
         self.change_multiple_attributes(
-            [
-                ['quantity_before', int(old_quantity)],
-                ['quantity_after', int(new_quantity)],
-                ['mainboard_name', str(parent_item.name)],
-                ['mainboard_id', str(parent_item.id)],
-                ['movement_type', str('Out - iCorrect')],
-                ['device_label', str(part_item.device_label.easy)],
-                ['repair_label', str(part_item.repair_label.easy)],
-                ['colour_label', str(part_item.colour_label.easy)],
-                ['device_id', str(part_item.device_id.easy)],
-                ['repair_id', str(part_item.repair_id.easy)],
-                ['colour_id', str(part_item.colour_id.easy)]
-            ],
+            atts_to_change,
             return_only=True
         )
 
         self.part_url.change_value(
             [str(part_item.id), 'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(part_item.id))]
         )
-

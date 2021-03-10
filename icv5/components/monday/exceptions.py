@@ -112,3 +112,10 @@ class TooManyItemsFoundInProducts(Exception):
         print('Too Many Products Found for {}\n\nPart ID: {}'.format(name, part_id))
         finance_item.parts_status.change_value('Failed')
         finance_item.item.add_update('Too Many Products Found for {}\n\nPart ID: {}'.format(name, part_id))
+
+
+class InvalidMovementType(Exception):
+
+    def __init__(self, movement_type):
+
+        print('While Attempting to Add to Inventory Movements Board an Invalid Movement Type Was Selected: {}'.format(movement_type))
