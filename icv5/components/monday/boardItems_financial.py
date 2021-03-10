@@ -319,7 +319,7 @@ class FinancialBoardSubItem(FinancialWrapper):
 
         current_quantity = int(part_item.quantity.easy)
         used_quantity = -int(self.quantity_used.easy)
-        new_quantity = current_quantity + used_quantity
+        new_quantity = current_quantity - used_quantity
 
         part_item.adjust_stock(used_quantity)
 
