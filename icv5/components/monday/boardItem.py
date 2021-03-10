@@ -74,6 +74,9 @@ class MondayWrapper:
 
         for pair in list_of_attributevalues:
 
+            if verbose:
+                print('Attribute: {}'.format(pair[0]))
+
             obj_att = getattr(self, pair[0])
             obj_att.change_value(pair[1])
 

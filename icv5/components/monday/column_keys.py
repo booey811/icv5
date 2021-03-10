@@ -444,7 +444,7 @@ financial_subitem = {
     },
     'repair_credits': {
         'column_id': 'repair_credits',
-        'type': 'readonly'
+        'type': 'number'
     }
 }
 

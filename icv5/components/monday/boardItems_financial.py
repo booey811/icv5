@@ -90,7 +90,8 @@ class FinancialBoardItem(FinancialWrapper):
                 ['partboard_id', str(inventory_item.partboard_id.easy)],
                 ['repair_credits', int(inventory_item.repair_credits.easy)]
             ],
-            return_only=True
+            return_only=True,
+            verbose=True
         )
 
         new_subitem = self.item.create_subitem(
