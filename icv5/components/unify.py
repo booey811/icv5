@@ -29,5 +29,3 @@ web_payload = {'event': {'userId': '4251271'}}
 
 
 # ============================================================ TEST VARIABLES ============================================================
-finance = boardItems_financial.FinancialBoardItem(item_id=1118915314, webhook_payload=web_payload)
-finance.construct_repairs_profile()
