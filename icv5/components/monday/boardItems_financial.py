@@ -264,18 +264,21 @@ class FinancialBoardSubItem(FinancialWrapper):
         if quantity_to_change == 0 or not quantity_to_change:
             print('No Parts Used For This Repair')
             self.item.add_update('No Parts Used in This Repair')
-            return False
-
-        new_quantity = part_item.adjust_stock(quantity_to_change)
+            new_quantity = old_quantity = int(part_item.quantity.easy)
+            movement_type = 'No Parts Used'
+        else:
+            new_quantity = part_item.adjust_stock(quantity_to_change)
+            old_quantity = int(part_item.quantity.easy)
+            movement_type = 'OUT - iCorrect'
 
         inv = FinancialInventoryMovementItem(blank_item=True)
 
         inv.generate_inventory_item_fields(
             part_item=part_item,
-            old_quantity=int(part_item.quantity.easy),
+            old_quantity=old_quantity,
             new_quantity=new_quantity,
             parent_item=parent_item,
-            movement_type='OUT - iCorrect'
+            movement_type=movement_type
         )
 
         movement = manage.Manager().get_board('inventory_movements').add_item(
@@ -398,7 +401,8 @@ class FinancialInventoryMovementItem(boardItem.MondayWrapper):
             'OUT - Return',
             'IN - Order',
             'IN - Refurbished Screen',
-            'IN - Void'
+            'IN - Void',
+            'No Parts Used'
         ]
 
         if movement_type not in movement_types:
