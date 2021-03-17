@@ -252,6 +252,18 @@ inventory_part = {
     'supply_price': {
         'column_id': 'supply_price',
         'type': 'number'
+    },
+    'glass': {
+        'column_id': 'glass_only',
+        'type': 'number'
+    },
+    'touch': {
+        'column_id': 'glass_touch',
+        'type': 'number'
+    },
+    'lcd': {
+        'column_id': 'glass_touch_lcd',
+        'type': 'number'
     }
 }
 

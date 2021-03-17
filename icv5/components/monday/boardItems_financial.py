@@ -81,6 +81,12 @@ class FinancialBoardItem(FinancialWrapper):
         subitem = FinancialBoardSubItem(blank_item=True)
         url = 'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(inventory_item.partboard_id.easy))
         subitem.part_url.change_value([str(inventory_item.partboard_id.easy), url])
+        prices = [
+            inventory_item.lcd.easy,
+            inventory_item.touch.easy,
+            inventory_item.glass.easy,
+            inventory_item.supply_price.easy
+        ]
         subitem.change_multiple_attributes(
             [
                 ['sale_price', round(float(inventory_item.sale_price.easy), 2)],

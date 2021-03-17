@@ -31,3 +31,21 @@ main_GABETEST = 1002886137
 
 
 # ============================================================ TEST VARIABLES ============================================================
+inventory_item = boardItems_inventory.InventoryPartItem(1056741842)
+
+prices = [
+    inventory_item.lcd.easy,
+    inventory_item.touch.easy,
+    inventory_item.glass.easy,
+    inventory_item.supply_price.easy
+]
+
+print(prices)
+
+for item in prices:
+    if not item:
+        print('empty')
+        print(item)
+    else:
+        print('take this value')
+        print(item)
