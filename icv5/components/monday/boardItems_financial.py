@@ -138,7 +138,8 @@ class FinancialBoardItem(FinancialWrapper):
             'Rear Glass',
             'Front Screen (LG)',
             'Front Screen (Tosh)',
-            'Rear Housing'
+            'Rear Housing',
+            'Microphone'
         ]
 
         inventory_codes = {}
