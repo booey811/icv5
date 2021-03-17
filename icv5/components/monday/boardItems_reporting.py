@@ -59,31 +59,7 @@ class InventoryMovementItem(ReportingWrapper):
         parts_item.apply_column_changes()
 
 
-class FinancialCreationItem(ReportingWrapper):
-    column_dictionary = column_keys.reporting_financial
-
-    def __init__(self, item_id=None, blank_item=True):
-        self.subitems = None
-        self.parts_status = None
-        self.mainboard_id = None
-        if item_id:
-            super().__init__(item_id, self)
-
-        elif blank_item:
-            super().__init__(None, self, blank_item=blank_item)
-
-    def add_repair_subitems(self, main_item):
-        try:
-            main_item.create_inventory_log('financial', financial_object=self)
-        except exceptions.ProductBeingCreated:
-            self.parts_status.change_value('Failed')
-            self.subitems.delete_all_subitems()
-        finally:
-            self.apply_column_changes()
-
-
 class FinancialItem(ReportingWrapper):
-
     column_dictionary = column_keys.reporting_financial
 
     def __init__(self, item_id=None, main_item=None, blank_item=True):
@@ -242,15 +218,14 @@ class FinancialItem(ReportingWrapper):
     def void_entry(self):
 
         for subitem_id in self.subitems.ids:
-
             subitem = FinancialSubItem(subitem_id)
 
             subitem.void_entry()
 
             subitem.item.delete()
 
-class FinancialSubItem(ReportingWrapper):
 
+class FinancialSubItem(ReportingWrapper):
     column_dictionary = column_keys.reporting_financial_sub
 
     def __init__(self, item_id=None, blank_item=True):
@@ -276,13 +251,3 @@ class FinancialSubItem(ReportingWrapper):
             item.delete()
             return
 
-
-class FinancialCreationSubItem(ReportingWrapper):
-    column_dictionary = column_keys.reporting_financial_sub
-
-    def __init__(self, item_id=None, blank_item=True):
-        if item_id:
-            super().__init__(item_id, self)
-
-        elif blank_item:
-            super().__init__(None, self, blank_item=blank_item)

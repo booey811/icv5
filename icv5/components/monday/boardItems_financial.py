@@ -204,7 +204,8 @@ class FinancialBoardItem(FinancialWrapper):
             ['repair_id', str(repair_id)],
             ['device_label', str(inventory_dict[inventory_code]['device'])],
             ['repair_label', str(inventory_dict[inventory_code]['repair'])],
-            ['combined_id', inventory_code]
+            ['combined_id', inventory_code],
+            ['dual_only_id', '{}-{}'.format(device_id, repair_id)]
         ]
 
         product_name = '{} {}'.format(
