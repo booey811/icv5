@@ -99,83 +99,6 @@ class MainBoardItem(MainBoardWrapper):
         )
         return created_item
 
-    def create_inventory_log(self, log_type='main', financial_object=False, retry=False):
-
-        count = 0
-        info = self.create_inventory_info()
-
-        for part_id in info['ids']:
-            results = manage.Manager().search_board(
-                board_id='984924063',
-                column_type='text',
-                column_id=boardItems_inventory.InventoryWrapper.new_column_dictionary['combined_id']['column_id'],
-                value=str(part_id)
-            )
-
-            # No Results - Create A Product
-            if len(results) == 0:
-                new_product = boardItems_inventory.InventoryRepairItem(
-                    self.create_product_item(part_id, info['names'][count], count).id
-                )
-                if log_type == 'main':
-                    time.sleep(5)
-                    repairboard_item = boardItems_inventory.InventoryRepairItem(new_product.id)
-                    repairboard_item.complete.change_value('Trigger')
-                    repairboard_item.apply_column_changes()
-                    count += 1
-                    continue
-                elif log_type == 'financial' and financial_object:
-                    financial_object.parts_status.change_value('Failed')
-                    financial_object.subitems.delete_all_subitems()
-                    raise exceptions.ProductBeingCreated(info['names'][count])
-
-            # 1 Results - Check Out Stock
-            elif len(results) == 1:
-                for pulse in results:
-                    repairboard_item = boardItems_inventory.InventoryRepairItem(pulse.id)
-                    if log_type == 'financial' and financial_object:
-                        subitem = boardItems_reporting.FinancialCreationSubItem()
-                        if count > 0:
-                            discounted = int(repairboard_item.sale_price.easy) - 10
-                        else:
-                            discounted = repairboard_item.sale_price.easy
-                        subitem.change_multiple_attributes(
-                            [
-                                ['sale_price', repairboard_item.sale_price.easy],
-                                ['supply_price', repairboard_item.supply_price.easy],
-                                ['discounted_price', discounted],
-                                ['quantity_used', 1]
-                            ],
-                            return_only=True
-                        )
-                        subitem.part_url.change_value(
-                            [
-                                repairboard_item.partboard_id.easy,
-                                'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(
-                                    str(repairboard_item.id))
-                            ]
-                        )
-                        new_subitem = financial_object.item.create_subitem(
-                            item_name=repairboard_item.name,
-                            column_values=subitem.adjusted_values
-                        )
-                        financial_object.parts_status.change_value('Complete')
-
-                    else:
-                        repairboard_item.complete.change_value('Trigger')
-                        repairboard_item.apply_column_changes()
-
-            else:
-                print('MainBoardItem.create_inventory_log else route')
-
-            count += 1
-
-        if log_type == 'financial':
-            return
-
-        self.eod.change_value('Complete')
-        self.apply_column_changes()
-
     def check_stock(self):
 
         repairs_info = self.create_inventory_info()
@@ -235,11 +158,11 @@ class MainBoardItem(MainBoardWrapper):
             )
 
         quantities = [parts_info[item]['quantity'] for item in parts_info]
-        if any(num < 5 for num in quantities):
-            status = 'Low Stock'
-            self.status.change_value('Error')
-        elif any(num < 1 for num in quantities):
+        if any(num < 1 for num in quantities):
             status = 'No Stock'
+            self.status.change_value('Error')
+        elif any(num < 5 for num in quantities):
+            status = 'Low Stock'
             self.status.change_value('Error')
         elif all(num > 4 for num in quantities):
             status = 'Stock Available'
@@ -282,12 +205,18 @@ class MainBoardItem(MainBoardWrapper):
         }
 
         products = []
+
         for pulse in results:
             products.append(boardItems_inventory.InventoryRepairItem(pulse.id))
 
-
+        parts = []
         for product_item in products:
-            name = str(product_item.name)
-            quantity = int(product_item.quantity.easy)
-            tracking = str(product_item.tracking.easy)
-            parts_info[name] = {'quantity': quantity, 'tracking': tracking}
+            part_id = str(product_item.partboard_id.easy)
+            if part_id in parts:
+                continue
+            else:
+                name = str(product_item.name)
+                quantity = int(product_item.quantity.easy)
+                tracking = str(product_item.tracking.easy)
+                parts_info[name] = {'quantity': quantity, 'tracking': tracking, 'part_id': part_id}
+                parts.append(part_id)
