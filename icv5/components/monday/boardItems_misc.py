@@ -80,6 +80,7 @@ class StuartDataItem(boardItem.MondayWrapper):
             self.collection_time.change_value([hour, min])
         elif direction == 'delivering':
             self.delivery_time.change_value([hour, min])
+            self.status.change_value('Complete')
 
         self.apply_column_changes()
 

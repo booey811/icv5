@@ -1025,5 +1025,9 @@ stuart_data = {
     'assignment_code': {
         'column_id': 'assignment_code',
         'type': 'text'
+    },
+    'status': {
+        'column_id': 'status',
+        'type': 'status'
     }
 }
