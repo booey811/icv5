@@ -255,7 +255,8 @@ class StuartClient:
                     ['collection_postcode', str(info['collection_postcode']).replace('"', '').replace("'", '')],
                     ['tracking_url', [str('Tracking').replace('"', '').replace("'", ''), str(info['tracking_url']).replace('"', '').replace("'", '')]],
                     ['estimated_time', int(res_dict['duration'])],
-                    ['distance', round(float(info['distance']), 2)]
+                    ['distance', round(float(info['distance']), 2)],
+                    ['status', 'In Progress']
                 ],
                 return_only=True
             )

@@ -1,5 +1,6 @@
 import json
 import time
+from pprint import pprint as p
 
 import flask
 
@@ -401,7 +402,11 @@ def stuart_responses():
         job_id = data["data"]["id"]
         data_item = boardItems_misc.StuartDataItem.get_data_item(job_id)
 
-        if data['data']['currentDelivery']["status"] == 'delivering':
+        if data['data']['status'] == 'canceled':
+            data_item.status.change_value('Cancelled')
+            data_item.apply_column_changes()
+
+        elif data['data']['currentDelivery']["status"] == 'delivering':
             print('COLLECTION UPDATE')
             data_item.update_timings('collecting')
             print("Has Been Picked Up")
