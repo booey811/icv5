@@ -49,8 +49,6 @@ class FinancialBoardItem(FinancialWrapper):
         stock_status = 'Do Now!'
 
         for code in inventory_dict:
-            print(inventory_dict[code])
-            print(code)
 
             if code.split('-')[1] == '63':
                 stock_status = 'Manual'
@@ -74,17 +72,34 @@ class FinancialBoardItem(FinancialWrapper):
 
         self.parts_status.change_value('Complete')
         self.stock_adjustment.change_value(stock_status)
-        self.apply_column_changes(verbose=True)
+        self.apply_column_changes()
 
     def attach_repair_subitem(self, inventory_item):
 
         subitem = FinancialBoardSubItem(blank_item=True)
         url = 'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(inventory_item.partboard_id.easy))
         subitem.part_url.change_value([str(inventory_item.partboard_id.easy), url])
+
+        if 'screen' in inventory_item.name or 'Screen' in inventory_item.name:
+            prices = [
+                [inventory_item.lcd.easy, 'G T & LCD'],
+                [inventory_item.touch.easy, 'G & T'],
+                [inventory_item.glass.easy, 'T'],
+                [inventory_item.supply_price.easy, 'Bought Screen']
+            ]
+            supply_info = next((item for item in prices if item[0]), [0, 'No Supply Price'])
+            supply_price = supply_info[0]
+            name = '{}:{} - {}'.format(inventory_item.name, supply_info[1], self.main_item.refurb.easy)
+
+        else:
+            name = inventory_item.name
+            supply_price = inventory_item.supply_price.easy
+
+
         subitem.change_multiple_attributes(
             [
                 ['sale_price', round(float(inventory_item.sale_price.easy), 2)],
-                ['supply_price', round(float(inventory_item.supply_price.easy)), 2],
+                ['supply_price', round(float(supply_price)), 2],
                 ['quantity_used', 1],
                 ['partboard_id', str(inventory_item.partboard_id.easy)],
                 ['repair_credits', int(inventory_item.repair_credits.easy)]
@@ -93,7 +108,7 @@ class FinancialBoardItem(FinancialWrapper):
         )
 
         new_subitem = self.item.create_subitem(
-            item_name=str(inventory_item.name),
+            item_name=str(name),
             column_values=subitem.adjusted_values
         )
 
