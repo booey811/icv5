@@ -237,6 +237,18 @@ inventory_repair = {
     'repair_credits': {
         'column_id': 'repair_credits',
         'type': 'number'
+    },
+    'glass': {
+        'column_id': 'glass_only',
+        'type': 'readonly'
+    },
+    'touch': {
+        'column_id': 'glass___touch',
+        'type': 'readonly'
+    },
+    'lcd': {
+        'column_id': 'glass__touch___lcd',
+        'type': 'readonly'
     }
 }
 
@@ -417,6 +429,10 @@ financial_mainlink = {
     },
     'colour': {
         'column_id': 'status8',
+        'type': 'status'
+    },
+    'refurb': {
+        'column_id': 'status_15',
         'type': 'status'
     }
 }
