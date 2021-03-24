@@ -253,10 +253,15 @@ class FinancialBoardItem(FinancialWrapper):
 
     def stock_deductions_and_recording(self):
 
-        for item_id in self.subitems.ids:
-            subitem = FinancialBoardSubItem(item_id=item_id)
+        if self.linked_client.easy == 'Refurb':
+            self.stock_adjustment.change_value('Manual')
+            self.apply_column_changes()
 
-            subitem.process_stock_adjustment(self)
+        else:
+            for item_id in self.subitems.ids:
+                subitem = FinancialBoardSubItem(item_id=item_id)
+
+                subitem.process_stock_adjustment(self)
 
 
 class FinancialBoardSubItem(FinancialWrapper):
@@ -449,3 +454,8 @@ class FinancialInventoryMovementItem(boardItem.MondayWrapper):
         self.part_url.change_value(
             [str(part_item.id), 'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(part_item.id))]
         )
+
+
+test = FinancialBoardItem(1144991541)
+
+print()

@@ -415,6 +415,10 @@ financial_item = {
     'repair_credits': {
         'column_id': 'repair_credits',
         'type': 'readonly'
+    },
+    'linked_client': {
+        'column_id': 'client',
+        'type': 'readonly'
     }
 }
 
