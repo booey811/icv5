@@ -70,6 +70,9 @@ class FinancialBoardItem(FinancialWrapper):
 
             self.attach_repair_subitem(inv_item)
 
+        if self.linked_client.easy == 'Refurb':
+            stock_status = 'Manual'
+
         self.parts_status.change_value('Complete')
         self.stock_adjustment.change_value(stock_status)
         self.apply_column_changes()
@@ -253,15 +256,10 @@ class FinancialBoardItem(FinancialWrapper):
 
     def stock_deductions_and_recording(self):
 
-        if self.linked_client.easy == 'Refurb':
-            self.stock_adjustment.change_value('Manual')
-            self.apply_column_changes()
+        for item_id in self.subitems.ids:
+            subitem = FinancialBoardSubItem(item_id=item_id)
 
-        else:
-            for item_id in self.subitems.ids:
-                subitem = FinancialBoardSubItem(item_id=item_id)
-
-                subitem.process_stock_adjustment(self)
+            subitem.process_stock_adjustment(self)
 
 
 class FinancialBoardSubItem(FinancialWrapper):
