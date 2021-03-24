@@ -3,7 +3,7 @@ from datetime import datetime
 from moncli import ColumnType
 from moncli.entities import create_column_value
 
-from icv5.components.monday import boardItem, column_keys, exceptions, manage
+from icv5.components.monday import boardItem, column_keys, exceptions, manage, boardItems_inventory, boardItems_reporting
 
 
 
@@ -85,6 +85,53 @@ class StuartDataItem(boardItem.MondayWrapper):
         self.apply_column_changes()
 
 
+class WastageBoardItem(boardItem.MondayWrapper):
+
+    column_dictionary = column_keys.wastage_item
+
+    def __init__(self, item_id=None, webhook_payload=None, blank_item=False):
+
+        super().__init__(webhook_payload=webhook_payload)
+
+        if not blank_item:
+            self.set_client_and_item(self, item_id)
+
+        self.set_attributes(self, self.column_dictionary)
+
+        if blank_item:
+            self.create_blank_item()
+
+    def create_blank_item(self):
+
+        return self
+
+    def process_wastage(self):
+
+        part_item = boardItems_inventory.InventoryPartItem(self.partboard_id.easy)
+
+        new_quantity = part_item.adjust_stock(int(self.waste_quantity.easy))
+
+        log = boardItems_reporting.InventoryMovementItem()
+
+        log.change_multiple_attributes(
+            [
+                ['quantity_before', int(part_item.quantity.easy)],
+                ['quantity_after', int(new_quantity)],
+                ['product_id', str(part_item.id)],
+                ['movement_type', 'OUT - Damaged']
+            ],
+            return_only=True
+        )
+
+        manage.Manager().get_board('inventory_movements').add_item(
+            item_name=str(self.name),
+            column_values=log.adjusted_values
+        )
+
+        self.waste_status.change_value('Complete')
+        self.apply_column_changes()
+
+
 class NoEmailOnMonday(Exception):
 
     def __init__(self, general_enquiry_item):
@@ -92,7 +139,3 @@ class NoEmailOnMonday(Exception):
             general_enquiry_item.name,
             general_enquiry_item.id
         ))
-
-
-
-

@@ -369,6 +369,28 @@ def screen_refurbs_deglassing_batch_complete():
     return 'Monday Glassing Screen Refurb Route Complete'
 
 
+# MONDAY ROUTES == Wastage Board
+# Waste Status -> Processing
+@app.route('/monday/inventory/waste', methods=["POST"])
+def stock_removal_as_waste():
+    """This route is for processing refurb completions, generating associated reports and adding to stock'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    test = boardItems_misc.WastageBoardItem(item_id=data["event"]["pulseId"], webhook_payload=data)
+    test.process_wastage()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Stock Damaged Route Complete'
+
+
 # ROUTES // ++++++++++++ ZENDESK ++++++++++++ \\
 # ZENDESK ROUTES == Enquiries Board Updates
 # Add to Monday:Checked and BoardID Present

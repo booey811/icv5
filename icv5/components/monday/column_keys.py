@@ -1059,3 +1059,18 @@ stuart_data = {
         'type': 'status'
     }
 }
+
+wastage_item = {
+    'waste_quantity': {
+        'column_id': 'quantity',
+        'type': 'number'
+    },
+    'waste_status': {
+        'column_id': 'waste_status',
+        'type': 'status'
+    },
+    'partboard_id': {
+        'column_id': 'partboard_id',
+        'type': 'text'
+    }
+}
