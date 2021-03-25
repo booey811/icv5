@@ -369,6 +369,50 @@ def screen_refurbs_deglassing_batch_complete():
     return 'Monday Glassing Screen Refurb Route Complete'
 
 
+# MONDAY ROUTES == Screen Refurbs Batch Creation
+# Status -> Complete && Type -> Deglassing
+@app.route('/monday/screen-refurbs/generate-batch', methods=["POST"])
+def generate_screen_refurb_batch():
+    """This route is for processing refurb completions, generating associated reports and adding to stock'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    menu_item = boardItems_refurb_screens.ScreenRefurbMenuItem(item_id=data["event"]["pulseId"], webhook_payload=data)
+    menu_item.generate_batch()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Screen Refurb Batch Generation Route Complete'
+
+
+# MONDAY ROUTES == Screen Refurbs Batch Completion
+# Status -> Complete && Type -> Deglassing
+@app.route('/monday/screen-refurbs/batch-completed', methods=["POST"])
+def refurb_batch_completed():
+    """This route is for processing refurb completions, generating associated reports and adding to stock'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    batch = boardItems_refurb_screens.ScreenRefurbOngoingItem(item_id=data["event"]["pulseId"], webhook_payload=data)
+    batch.process_batch_completion_new()
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Screen Refurb Batch Completion Route Complete'
+
+
 # MONDAY ROUTES == Wastage Board
 # Waste Status -> Processing
 @app.route('/monday/inventory/waste', methods=["POST"])

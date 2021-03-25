@@ -592,6 +592,10 @@ screen_refurbs_menu = {
     'deglassed_stock': {
         'column_id': 'deglassed_stock',
         'type': 'number'
+    },
+    'batch_size': {
+        'column_id': 'batch_size',
+        'type': 'number'
     }
 }
 
@@ -615,9 +619,42 @@ screen_refurbs_ongoing = {
     'refurb_type': {
         'column_id': 'refurb_type',
         'type': 'status'
+    },
+    'sub_item_ids': {
+        'column_id': 'subitems',
+        'type': 'subitem'
+    },
+    'batch_generator': {
+        'column_id': 'batch_generator',
+        'type': 'status'
     }
 }
 
+screen_refurbs_ongoing_subitem = {
+
+    'final_result': {
+        'column_id': 'final_result',
+        'type': 'status'
+    },
+    'framing': {
+        'column_id': 'framing',
+        'type': 'status'
+    },
+    'glassing': {
+        'column_id': 'glassing',
+        'type': 'status'
+    },
+    'deglassing': {
+        'column_id': 'deglassing',
+        'type': 'status'
+    },
+    'screen_source': {
+        'column_id': 'screen_source',
+        'type': 'status'
+    },
+
+
+}
 
 # Screen Refurb Dictionaries
 screen_refurb_wrapper = {

@@ -50,7 +50,8 @@ class Manager:
         'inventory_logging': '989490856',
         'inventory_stock_counts': '1008986497',
         'stuart_data_new': '1031579094',
-        'inventory_movements': '989490856'
+        'inventory_movements': '989490856',
+        'refurb_batches': '1160810465'
     }
 
     def __init__(self):

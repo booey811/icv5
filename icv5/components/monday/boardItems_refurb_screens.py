@@ -38,6 +38,54 @@ class ScreenRefurbMenuItem(ScreenRefurbWrapper):
         else:
             print('ScreenRefurbMenuItem INIT else route')
 
+    def generate_batch(self, refurb_phase):
+
+        config = {
+            'glassing': {
+                'phase': 'Glassing',
+
+            }
+        }
+
+        batch_board = manage.Manager().get_board('refurb_batches')
+
+        parent_item_gen = ScreenRefurbOngoingItem(blank_item=True)
+
+        parent_item_gen.change_multiple_attributes(
+            [
+                ['combined_id', str(self.combined_id.easy)],
+                ['device_id', str(self.device_id.easy)],
+                ['repair_id', str(self.repair_id.easy)],
+                ['colour_id', str(self.colour_id.easy)],
+                ['device_label', str(self.device_label.easy)],
+                ['repair_label', str(self.repair_label.easy)],
+                ['colour_label', str(self.colour_label.easy)],
+                ['part_id', str(self.part_id.easy)],
+                ['']
+            ],
+            return_only=True
+        )
+
+        parent_item = batch_board.add_item(
+            item_name=self.name,
+            column_values=parent_item_gen.adjusted_values
+        )
+
+        count = 1
+        while count <= int(self.batch_size.easy):
+            subitem_gen = ScreenRefurbOngoingSubItem(blank_item=True)
+            subitem_gen.change_multiple_attributes(
+                [
+                    ['part_id', str(self.part_id.easy)],
+                ],
+                return_only=True
+            )
+            parent_item.create_subitem(
+                item_name=self.name,
+                column_values=subitem_gen.adjusted_values
+            )
+            count += 1
+
 
 class ScreenRefurbOngoingItem(ScreenRefurbWrapper):
 
@@ -89,3 +137,35 @@ class ScreenRefurbOngoingItem(ScreenRefurbWrapper):
             return False
 
         refurb_part_item.apply_column_changes()
+
+    def process_batch_completion_new(self):
+        success = 0
+        binned = 0
+        re_run = 0
+        for subitem_id in self.sub_item_ids.ids:
+            screen = ScreenRefurbOngoingSubItem(item_id=subitem_id)
+            if screen.final_result.easy == 'Successful':
+                success += 1
+            elif screen.final_result.easy == 'Binned':
+                binned += 1
+            elif screen.final_result.easy == 'Re-Started':
+                re_run += 1
+            else:
+                print('ScreenRefurbOngoingItem.process_batch_completion')
+
+
+
+
+class ScreenRefurbOngoingSubItem(ScreenRefurbWrapper):
+
+    column_dictionary = column_keys.screen_refurbs_ongoing_subitem
+
+    def __init__(self, item_id=None, webhook_payload=None, blank_item=False):
+        if item_id:
+            super().__init__(item_id, self, webhook_payload=webhook_payload)
+        elif blank_item:
+            super().__init__(None, self, blank_item=True)
+        else:
+            print('ScreenRefurbOngoingSubItem INIT else route')
+
+
