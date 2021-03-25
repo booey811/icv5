@@ -453,7 +453,3 @@ class FinancialInventoryMovementItem(boardItem.MondayWrapper):
             [str(part_item.id), 'https://icorrect.monday.com/boards/985177480/pulses/{}'.format(str(part_item.id))]
         )
 
-
-test = FinancialBoardItem(1144991541)
-
-print()
