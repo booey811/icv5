@@ -42,7 +42,7 @@ def create_customer(name, email, phone=None):
 
     headers = {
         'content-type': "application/json",
-        'authorization': "Bearer 5Ladw3FITzySnwpPrgaiq_tBlIuBKY9JvfLRMVZ2"
+        'authorization': vend_auth
     }
 
     response = requests.request("POST", url, data=payload, headers=headers)

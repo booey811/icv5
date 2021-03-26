@@ -123,7 +123,13 @@ def add_sale_data_to_vend():
 
     main_item = boardItems_main.MainBoardItem(item_id=data['event']['pulseId'], webhook_payload=data)
 
-    convert_to_vend(main_item)
+    if main_item.v_id.easy:
+        main_item.add_to_vend.change_value('Added')
+        main_item.apply_column_changes()
+        print('Sale Already Added to Vend')
+
+    else:
+        convert_to_vend(main_item)
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Main Board Creates Vend Sale Route Complete'
