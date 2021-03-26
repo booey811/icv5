@@ -16,6 +16,7 @@ from icv5.components.monday import boardItems_main, boardItems_inventory, boardI
 from icv5.components.stuart import stuart
 from icv5.components.zendesk import ticket
 from icv5.components.zendesk.assets import custom_fields
+from icv5.components.vend.vend import convert_to_vend
 
 from pprint import pprint as p
 
@@ -27,8 +28,4 @@ data = {'event': {'userId': '4251271'}}
 main_GABETEST = 1002886137
 
 
-
-
-
 # ============================================================ TEST VARIABLES ============================================================
-

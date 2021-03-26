@@ -10,6 +10,7 @@ from icv5.components.monday import boardItems_main, boardItems_refurbs, boardIte
 from icv5.components.phonecheck import phonecheck
 from icv5.components.zendesk import ticket
 from icv5.components.stuart import stuart
+from icv5.components.vend.vend import convert_to_vend
 
 # APP SET UP
 app = flask.Flask(__name__)
@@ -103,6 +104,30 @@ def zenlink_creation():
 
     print("--- %s seconds ---" % (time.time() - start_time))
     return 'Main Board Zendesk Link Creation Complete'
+
+
+# MONDAY ROUTES == Main Board
+# Status -> Booking Confirmed & CLient = End User & Service = Walk-In
+@app.route('/monday/main/create-vend', methods=['POST'])
+def add_sale_data_to_vend():
+    """Creates a ticket on Zendesk and links them'"""
+
+    start_time = time.time()
+    webhook = flask.request.get_data()
+    # Authenticate & Create Object
+    data = monday_handshake(webhook)
+    if data[0] is False:
+        return data[1]
+    else:
+        data = data[1]
+
+    main_item = boardItems_main.MainBoardItem(item_id=data['event']['pulseId'], webhook_payload=data)
+
+    convert_to_vend(main_item)
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    return 'Main Board Creates Vend Sale Route Complete'
+
 
 
 # MONDAY ROUTES == Book Collection

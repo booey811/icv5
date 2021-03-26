@@ -163,6 +163,10 @@ main_wrapper = {
     'be_stock_checker': {
         'column_id': 'be_stock_checker',
         'type': 'status'
+    },
+    'add_to_vend': {
+        'column_id': 'add_to_vend',
+        'type': 'status'
     }
 }
 
