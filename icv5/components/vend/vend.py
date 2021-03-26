@@ -98,5 +98,3 @@ def convert_to_vend(monday_object):
 
     finally:
         monday_object.apply_column_changes()
-
-
