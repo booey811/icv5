@@ -269,6 +269,10 @@ inventory_part = {
         'column_id': 'supply_price',
         'type': 'number'
     },
+    'supply_price_new': {
+        'column_id': 'new_supply_price0',
+        'type': 'number'
+    },
     'glass': {
         'column_id': 'glass_only',
         'type': 'number'

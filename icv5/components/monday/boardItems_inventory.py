@@ -71,6 +71,9 @@ class InventoryPartItem(InventoryWrapper):
         elif blank_item:
             super().__init__(None, self, blank_item=blank_item)
 
+        if self.supply_price_new.easy:
+            self.supply_price.easy = self.supply_price_new.easy
+
     def adjust_stock(self, quantity_to_adjust):
 
         current = int(self.quantity.easy)
