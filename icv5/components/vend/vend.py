@@ -13,7 +13,7 @@ def get_customer(name, email, phone):
 
     querystring = {"email": f"{email}", "type": "customers"}
 
-    headers = {'authorization': vend_auth}
+    headers = {'authorization': os.environ['VENDSYS']}
 
     response = requests.request("GET", url, headers=headers, params=querystring)
 
@@ -42,7 +42,7 @@ def create_customer(name, email, phone=None):
 
     headers = {
         'content-type': "application/json",
-        'authorization': vend_auth
+        'authorization': os.environ['VENDSYS']
     }
 
     response = requests.request("POST", url, data=payload, headers=headers)
@@ -73,7 +73,7 @@ def create_sale(customer_id):
     url = "https://icorrect.vendhq.com/api/register_sales"
     headers = {
         'content-type': "application/json",
-        'authorization': vend_auth
+        'authorization': os.environ['VENDSYS']
     }
 
     response = requests.request("POST", url, data=payload, headers=headers)
