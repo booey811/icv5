@@ -1086,3 +1086,11 @@ wastage_item = {
         'type': 'text'
     }
 }
+
+
+def convert_keys(dict):
+
+    for item in dict:
+
+        print("'{}': '{}'".format(dict[item]['column_id'], item))
+
