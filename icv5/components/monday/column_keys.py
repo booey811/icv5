@@ -1088,9 +1088,12 @@ wastage_item = {
 }
 
 
-def convert_keys(dict):
+def convert_keys(dict_list):
 
-    for item in dict:
+    for dict_ in dict_list:
 
-        print("'{}': '{}'".format(dict[item]['column_id'], item))
+        for item in dict_:
+
+            print("'{}': '{}',".format(dict_[item]['column_id'], item))
+
 
